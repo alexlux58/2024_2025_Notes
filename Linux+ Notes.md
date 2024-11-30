@@ -3640,12 +3640,16 @@ lldp information
 - **Chroot Jail**: Restricts a process to a specific directory.
   - **/etc/chroot.conf**: Configuration file for chroot.
   - **/etc/chroot.d**: Directory that contains chroot configuration files.
-- **SELinux**: Security-Enhanced Linux. Provides access control security policies.
+- **SELinux**: Security-Enhanced Linux. Provides access control security policies. References inodes directly.
   - **/etc/selinux/config**: Configuration file for SELinux.
   - **/etc/selinux/semanage.conf**: Configuration file for SELinux.
   - **/etc/selinux/semanage.conf.d**: Directory that contains SELinux configuration files.
-- **AppArmor**: Application Armor. Provides access control security policies.
+- **AppArmor**: Application Armor. Provides access control security policies. Works with file system objects.
   - **/etc/apparmor.d**: Directory that contains AppArmor configuration files.
+  - **tunables**: AppArmor tunables file.
+    - **/etc/apparmor.d/tunables/home**: AppArmor tunables file.
+  - **abstractions**: AppArmor abstractions file.
+  - **profiles**: AppArmor profiles file.
 - **ACLs**: Access Control Lists. Provide fine-grained permissions for files and directories.
   - **getfacl**: Get file ACLs.
   - **setfacl**: Set file ACLs.
@@ -3662,6 +3666,23 @@ lldp information
 - **firewalld**: Dynamic Firewall Manager. Command-line utility for configuring the Linux kernel firewall.
   - **/etc/firewalld**: Directory that contains firewalld configuration files.
 - **(fail2ban) Fail2Ban**: Intrusion prevention software.
+- **fail2ban-client**: Fail2Ban command-line client. Manages Fail2Ban configuration.
+- **fail2ban-server**: Fail2Ban server. Monitors log files and bans malicious IP addresses.
+- **sealert**: SELinux alert browser. Displays detailed information about SELinux alerts.
+- **semanage**: SELinux policy management tool. Manages SELinux policy.
+- **setenforce**: Set the enforcing mode of SELinux.
+- **getenforce**: Get the enforcing mode of SELinux.
+- **restorecon**: Restore the SELinux context of files.
+- **chcon**: Change the SELinux context of files.
+- **audit2allow**: Generate SELinux policy modules.
+  - **RuleName.pp**: SELinux policy module. Policy package file.
+  - **RuleName.te**: SELinux policy module. Type engorcement file.
+- **audit2why**: Explain SELinux audit messages.
+- **auditd**: Audit daemon. Collects and logs SELinux audit messages.
+- **ls-Z**: List SELinux context of files.
+- **ps-Z**: List SELinux context of processes.
+- **runcon**: Run a command in a specific SELinux context.
+- **newrole**: Change to a new SELinux role.
 
   - **/etc/fail2ban**: Directory that contains fail2ban configuration files.
 
@@ -3870,6 +3891,7 @@ Secure Shell (SSH) is a cryptographic network protocol for secure communication 
 - It should show as "masked".
 
 - **Banner**: A message displayed before the login prompt.
+
   - **/etc/issue**: Banner displayed before the login prompt.
   - **/etc/issue.net**: Banner displayed before the login prompt for remote connections.
   - **/etc/motd**: Message displayed after login.
