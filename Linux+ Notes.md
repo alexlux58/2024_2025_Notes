@@ -3568,6 +3568,75 @@ lldp information
   - `tar -uvf archive.tar file5`: Update a file in a tarball.
   - `tar -xvf archive.tar -C /tmp`: Extract a tarball to a specific directory.
 
+- **(dar) Disk Archiver**: Creates a backup of a directory.
+
+  - `dar -c archive.dar directory1`: Create a backup.
+  - `dar -x archive.dar`: Extract a backup.
+  - `dar -l archive.dar`: List the contents of a backup.
+  - `dar -r archive.dar directory2`: Add a file to a backup.
+  - `dar -u archive.dar directory3`: Update a file in a backup.
+  - `dar -x archive.dar -C /tmp`: Extract a backup to a specific directory.
+  - `dar -R mydata -c full.bak`: Create a full backup.
+  - `dar -R mydata -c -A incr.bak`: Create an incremental backup.
+  - `dar -R mydata -c -A incr.bak -K incr.snar`: Create an incremental backup with a snapshot file.
+  - `dar -R mydata -c -A incr.bak -K incr.snar -s 100M`: Create an incremental backup with a snapshot file and a size limit.
+
+- **cpio**: Copies files to and from archives.
+
+  - `cpio -o < file1 file2 file3 > archive.cpio`: Create an archive.
+  - `cpio -i < archive.cpio`: Extract an archive.
+  - `cpio -t < archive.cpio`: List the contents of an archive.
+  - `cpio -p directory1 < archive.cpio`: Copy files to a directory.
+  - `cpio -d < archive.cpio`: Create directories as needed.
+  - `cpio -m < archive.cpio`: Preserve modification times.
+  - `cpio -v < archive.cpio`: Verbose output.
+
+- **dd (disk duplicate)**: Copies and converts files.
+
+  - `dd if=/dev/sda of=/dev/sdb`: Copy a disk.
+  - `dd if=/dev/sda of=/tmp/disk.img`: Copy a disk to an image file.
+  - `dd if=/dev/sda of=/dev/sdb bs=512 count=1`: Copy the first sector of a disk.
+  - `dd if=/dev/sda of=/dev/sdb bs=1M count=1`: Copy the first megabyte of a disk.
+  - `dd if=/dev/zero of=/dev/sda`: Write zeros to a disk.
+  - `dd if=/dev/zero of=/dev/sda bs=1M count=1`: Write zeros to the first megabyte of a disk.
+  - `dd if=/dev/urandom of=/dev/sda`: Write random data to a disk.
+  - `dd if=/dev/urandom of=/dev/sda bs=1M count=1`: Write random data to the first megabyte of a disk.
+
+- **mirrorvg**: Copies a volume group to another disk.
+
+  - `mirrorvg -m /dev/vg1 /dev/sdb`: Mirror a volume group.
+  - `mirrorvg -l /dev/vg1`: List logical volumes in a volume group.
+  - `mirrorvg -c /dev/vg1`: Check a mirrored volume group.
+  - `mirrorvg -r /dev/vg1`: Remove a mirrored volume group.
+  - `mirrorvg -s /dev/vg1`: Split a mirrored volume group.
+  - `mirrorvg -b /dev/vg1`: Break a mirrored volume group.
+  - `mirrorvg -a /dev/vg1`: Add a mirrored volume group.
+  - `mirrorvg -p /dev/vg1`: Print mirrored volume group information.
+
+- **pvmove**: Moves physical extents from one disk to another.
+
+  - `pvmove /dev/sda /dev/sdb`: Move physical extents.
+  - `pvmove -n /dev/sda /dev/sdb`: Move physical extents with a name.
+  - `pvmove -v /dev/sda /dev/sdb`: Move physical extents with verbose output.
+  - `pvmove -b /dev/sda /dev/sdb`: Move physical extents with a background process.
+  - `pvmove -i 10 /dev/sda /dev/sdb`: Move physical extents with an interval.
+  - `pvmove -t 10 /dev/sda /dev/sdb`: Move physical extents with a timeout.
+  - `pvmove -d /dev/sda /dev/sdb`: Move physical extents with debug output.
+  - `pvmove -s /dev/sda /dev/sdb`: Move physical extents with a status report.
+
+- **rsync**: Synchronizes files and directories between two locations.
+
+  - `rsync -avz /tmp/dir1/ /tmp/dir2`: Synchronize directories.
+  - `rsync -avz /tmp/dir1/ user@remote:/tmp/dir2`: Synchronize directories over SSH.
+  - `rsync -avz --delete /tmp/dir1/ /tmp/dir2`: Synchronize directories and delete extraneous files.
+  - `rsync -avz --exclude='*.txt' /tmp/dir1/ /tmp/dir2`: Synchronize directories and exclude files.
+  - `rsync -avz --dry-run /tmp/dir1/ /tmp/dir2`: Synchronize directories without making changes.
+  - `rsync -avz --progress /tmp/dir1/ /tmp/dir2`: Synchronize directories and show progress.
+  - `rsync -avz --bwlimit=100 /tmp/dir1/ /tmp/dir2`: Synchronize directories and limit bandwidth.
+  - `rsync -avz --log-file=/tmp/rsync.log /tmp/dir1/ /tmp/dir2`: Synchronize directories and log output.
+  - `rsync -avz --include='*.txt' /tmp/dir1/ /tmp/dir2`: Synchronize directories and include files.
+  - `rsync -avz --exclude='*.txt' --delete /tmp/dir1/ /tmp/dir2`: Synchronize directories and exclude files.
+
 - **(gzip) GNU Zip**: Compresses files with a .gz extension.
 
       - `gzip file1`: Compress a file.
@@ -3661,11 +3730,127 @@ lldp information
 - **iptables**: Command-line utility for configuring the Linux kernel firewall.
   - **/etc/sysconfig/iptables**: Configuration file for iptables.
   - **/etc/sysconfig/iptables-config**: Configuration file for iptables.
+  - **/etc/sysconfig/ip6tables**: Configuration file for iptables.
+  - **/etc/sysconfig/ip6tables-config**: Configuration file for iptables.
+  - **/var/log/messages**: Log file for iptables. Contains system messages.
+  - **/var/log/kern.log**: Log file for iptables. Contains kernel messages.
+    - **Filter table**: Default table for iptables.
+      - **INPUT chain**: Input chain for iptables.
+      - **OUTPUT chain**: Output chain for iptables.
+      - **FORWARD chain**: Forward chain for iptables.
+    - **NAT table**: Network Address Translation table for iptables.
+      - **PREROUTING chain**: Pre-routing chain for iptables.
+      - **POSTROUTING chain**: Post-routing chain for iptables.
+      - **OUTPUT chain**: Output chain for iptables.
+    - **Mangle table**: Packet alteration table for iptables. Used to alter the packets' TCP/IP header.
+      - **PREROUTING chain**: Pre-routing chain for iptables.
+      - **OUTPUT chain**: Output chain for iptables.
+      - **INPUT chain**: Input chain for iptables.
+      - **FORWARD chain**: Forward chain for iptables.
+      - **POSTROUTING chain**: Post-routing chain for iptables.
+    - **Raw table**: Raw table for iptables. Used to mark packets for special processing. Does not track connection state. Used for performance.
+      - **PREROUTING chain**: Pre-routing chain for iptables.
+      - **OUTPUT chain**: Output chain for iptables.
+    - **Security table**: Security table for iptables. Used to filter packets based on SELinux context.
+      - **INPUT chain**: Input chain for iptables.
+      - **OUTPUT chain**: Output chain for iptables.
+      - **FORWARD chain**: Forward chain for iptables.
 - **ufw**: Uncomplicated Firewall. Command-line utility for configuring the Linux kernel firewall.
   - **/etc/ufw**: Directory that contains ufw configuration files.
-- **firewalld**: Dynamic Firewall Manager. Command-line utility for configuring the Linux kernel firewall.
+  - **/etc/default/ufw**: Configuration file for ufw. Configure high-level settings like policy defaults and kernel module usage.
+  - **/etc/ufw/before.rules**: Configuration file for ufw.
+  - **/etc/ufw/after.rules**: Configuration file for ufw.
+  - **/etc/ufw/sysctl.conf**: Configuration file for ufw.
+- **firewalld**: Dynamic Firewall Manager. Command-line utility for configuring the Linux kernel firewall without requiring a restart.
   - **/etc/firewalld**: Directory that contains firewalld configuration files.
+  - **/etc/firewalld/firewalld.conf**: Configuration file for firewalld.
+  - **/etc/firewalld/zones**: Directory that contains firewalld zone configuration files.
+  - **/etc/firewalld/services**: Directory that contains firewalld service configuration files.
+  - **/etc/firewalld/icmptypes**: Directory that contains firewalld ICMP type configuration files.
+  - **/etc/firewalld/richrules**: Directory that contains firewalld rich rule configuration files.
+  - **/etc/firewalld/direct.xml**: Configuration file for firewalld.
+  - **firewall-cmd**: Command-line utility for firewalld.
+    - **--get-zones**: Get firewalld zones.
+    - **--get-services**: Get firewalld services.
+    - **--get-active-zones**: Get active firewalld zones.
+    - **--get-default-zone**: Get the default firewalld zone.
+    - **--get-icmptypes**: Get firewalld ICMP types.
+    - **--get-rich-rules**: Get firewalld rich rules.
+    - **--get-log-denied**: Get firewalld log denied.
+    - **--get-logging**: Get firewalld logging.
+    - **--get-nflog-group**: Get firewalld nflog group.
+    - **--get-nflog-prefix**: Get firewalld nflog prefix.
+    - **--get-nflog-range**: Get firewalld nflog range.
+    - **--get-nflog-threshold**: Get firewalld nflog threshold.
+    - **--get-nflog-size**: Get firewalld nflog size.
+    - **--get-nflog-numeric**: Get firewalld nflog numeric.
+    - **--get-nflog-reset**: Get firewalld nflog reset.
+  - **firewall-offline-cmd**: Command-line utility for firewalld.
+  - **firewall-config**: Graphical utility for firewalld.
+- **DenyHost**: Intrusion prevention software.
+  - **/etc/denyhosts.conf**: Configuration file for DenyHost.
+    - **ADMIN_EMAIL**: Email address for DenyHost notifications.
+      - **SMTP_HOST**: SMTP server for DenyHost notifications.
+      - **SMTP_PORT**: SMTP port for DenyHost notifications.
+      - **SMTP_FROM**: Email address for DenyHost notifications.
+      - **SMTP_SUBJECT**: Subject line for DenyHost notifications.
+      - **SMTP_USERNAME**: SMTP username for DenyHost notifications.
+      - **SMTP_PASSWORD**: SMTP password for DenyHost notifications.
+    - **BLOCK_SERVICE**: Service to block for DenyHost.
+    - **DENY_THRESHOLD_INVALID**: Invalid login threshold for DenyHost.
+    - **DENY_THRESHOLD_VALID**: Valid login threshold for DenyHost.
+    - **DENY_THRESHOLD_ROOT**: Root login threshold for DenyHost.
+    - **DENY_THRESHOLD_RESTRICTED**: Restricted login threshold for DenyHost.
+    - **DENY_THRESHOLD_ROOT_RESTRICTED**: Root restricted login threshold for DenyHost.
+    - **DENY_THRESHOLD_UNKNOWN**: Unknown login threshold for DenyHost.
+    - **DENY_THRESHOLD_VALID_FROM_SAME_IP**: Valid login from the same IP threshold for DenyHost.
+    - **DENY_THRESHOLD_ROOT_FROM_SAME_IP**: Root login from the same IP threshold for DenyHost.
+    - **DENY_THRESHOLD_RESTRICTED_FROM_SAME_IP**: Restricted login from the same IP threshold for DenyHost.
+    - **DENY_THRESHOLD_ROOT_RESTRICTED_FROM_SAME_IP**: Root restricted login from the same IP threshold for DenyHost.
+    - **DENY_THRESHOLD_UNKNOWN_FROM_SAME_IP**: Unknown login from the same IP threshold for DenyHost.
+    - **DENY_THRESHOLD_ROOT_RESTRICTED**: Root restricted login threshold for DenyHost.
+  - **/etc/hosts.deny**: Configuration file for DenyHost.
+  - **/var/log/denyhosts**: Log file for DenyHost.
 - **(fail2ban) Fail2Ban**: Intrusion prevention software.
+- **/etc/fail2ban/jail.conf**: Configuration file for Fail2Ban.
+  - **[DEFAULT]**: Default section for Fail2Ban.
+    - **ignoreip**: IP addresses to ignore for Fail2Ban.
+    - **bantime**: Ban time for Fail2Ban.
+    - **findtime**: Find time for Fail2Ban.
+    - **maxretry**: Maximum retries for Fail2Ban.
+    - **backend**: Backend for Fail2Ban.
+    - **usedns**: Use DNS for Fail2Ban.
+    - **destemail**: Destination email for Fail2Ban.
+    - **sender**: Sender for Fail2Ban.
+    - **mta**: Mail transfer agent for Fail2Ban.
+    - **protocol**: Protocol for Fail2Ban.
+    - **chain**: Chain for Fail2Ban.
+    - **action**: Action for Fail2Ban.
+    - **banaction**: Ban action for Fail2Ban.
+    - **bantime**: Ban time for Fail2Ban.
+    - **findtime**: Find time for Fail2Ban.
+    - **maxretry**: Maximum retries for Fail2Ban.
+    - **backend**: Backend for Fail2Ban.
+    - **usedns**: Use DNS for Fail2Ban.
+    - **destemail**: Destination email for Fail2Ban.
+    - **sender**: Sender for Fail2Ban.
+    - **mta**: Mail transfer agent for Fail2Ban.
+    - **protocol**: Protocol for Fail2Ban.
+    - **chain**: Chain for Fail2Ban.
+    - **action**: Action for Fail2Ban.
+    - **banaction**: Ban action for Fail2Ban.
+  - **[sshd]**: SSHD section for Fail2Ban.
+    - **enabled**: Enable SSHD for Fail2Ban.
+    - **port**: Port for SSHD for Fail2Ban.
+    - **filter**: Filter for SSHD for Fail2Ban.
+    - **logpath**: Log path for SSHD for Fail2Ban.
+    - **maxretry**: Maximum retries for SSHD for Fail2Ban.
+    - **findtime**: Find time for SSHD for Fail2Ban.
+    - **bantime**: Ban time for SSHD for Fail2Ban.
+    - **action**: Action for SSHD for Fail2Ban.
+    - **banaction**: Ban action for SSHD for Fail2Ban.
+  - **[apache]**: Apache section for Fail2Ban.
+    - **enabled**: Enable Apache for Fail2Ban.
 - **fail2ban-client**: Fail2Ban command-line client. Manages Fail2Ban configuration.
 - **fail2ban-server**: Fail2Ban server. Monitors log files and bans malicious IP addresses.
 - **sealert**: SELinux alert browser. Displays detailed information about SELinux alerts.
@@ -3896,3 +4081,428 @@ Secure Shell (SSH) is a cryptographic network protocol for secure communication 
   - **/etc/issue.net**: Banner displayed before the login prompt for remote connections.
   - **/etc/motd**: Message displayed after login.
   - **/etc/ssh/banner**: Banner displayed before SSH login.
+
+### Logging and Monitoring
+
+- **syslog**: System logging daemon. Collects and logs system messages.
+
+  - **/etc/syslog.conf**: Configuration file for syslog.
+  - **/etc/rsyslog.conf**: Configuration file for rsyslog.
+  - **/var/log/messages**: Log file for system messages.
+  - **/var/log/syslog**: Log file for system messages.
+  - **/var/log/auth.log**: Log file for authentication messages.
+  - **/var/log/secure**: Log file for security messages.
+  - **/var/log/maillog**: Log file for mail messages.
+  - **/var/log/cron**: Log file for cron messages.
+  - **/var/log/boot.log**: Log file for boot messages.
+  - **/var/log/kern.log**: Log file for kernel messages.
+  - **/var/log/dmesg**: Log file for kernel messages.
+  - **/var/log/lastlog**: Log file for last login information.
+  - **/var/log/wtmp**: Log file for login records.
+  - **/var/log/btmp**: Log file for failed login attempts.
+  - **/var/log/utmp**: Log file for current login information.
+  - **/var/log/[application]**: Log file for application messages.
+  - **logger**: Command-line utility for logging messages.
+    - `-p`: Priority level.
+    - `-t`: Tag.
+    - `-f`: File.
+    - `-i`: ID.
+    - `-u`: Socket.
+    - `-P`: Port.
+    - `-n`: Network.
+    - `-d`: Debug.
+    - `-s`: Size.
+    - `-r`: Remote.
+    - `-T`: Timestamp.
+    - `-h`: Host.
+    - `-m`: Message.
+    - `-w`: Wait.
+    - `-v`: Verbose.
+    - `-k`: Secure.
+    - `-a`: Append.
+    - `-b`: Batch.
+    - `-c`: Count.
+    - `-e`: Exit.
+    - `-l`: Level.
+    - `-o`: Output.
+    - `-q`: Quiet.
+    - `-x`: Hex.
+    - `-z`: Zero.
+    - `-A`: Address.
+    - `-B`: Buffer.
+    - `-C`: Command.
+    - `-D`: Directory.
+    - `-E`: Escape.
+    - `-F`: Facility.
+    - `-G`: Group.
+    - `-H`: Header.
+    - `-I`: Interval
+    - `-J`: Journal.
+
+- **journalctl**: Query and display messages from the systemd journal.
+
+  - `-b`: Show messages from the current boot.
+  - `-u`: Show messages from a specific unit.
+  - `-f`: Follow messages in real-time.
+  - `-n`: Show the last N lines.
+  - `-p`: Show messages with a specific priority.
+  - `-r`: Reverse the output.
+  - `-o`: Output format.
+  - `-k`: Show kernel messages.
+  - `-x`: Show messages in a concise format.
+  - `-t`: Show messages with a specific tag.
+  - `-S`: Show messages since a specific time.
+  - `-U`: Show messages until a specific time.
+  - `-M`: Show messages from a specific machine.
+  - `-a`: Show all messages.
+  - `-c`: Show messages from a specific catalog.
+  - `-l`: Show messages with long lines.
+  - `-i`: Show messages with a specific identifier.
+  - `-m`: Show messages with a specific message ID.
+  - `-q`: Show messages with a specific message ID.
+  - `-e`: Show messages with a specific message ID.
+  - `-g`: Show messages with a specific message ID.
+  - `-h`: Show messages with a specific message ID.
+  - `-j`: Show messages with a specific message ID.
+  - `-n`: Show messages with a specific message ID.
+  - `-o`: Show messages with a specific message ID.
+  - `-p`: Show messages with a specific message ID.
+  - `-r`: Show messages with a specific message ID.
+  - `-s`: Show messages with a specific message ID.
+  - `-t`: Show messages with a specific message ID.
+  - `-u`: Show messages with a specific message ID.
+  - `-v`: Show messages with a specific message ID.
+  - `-w`: Show messages with a specific message ID.
+  - `-x`: Show messages with a specific message ID.
+  - `-y`: Show messages with a specific message ID.
+  - `-z`: Show messages with a specific message ID.
+  - `-A`: Show messages with a specific message ID.
+  - `-B`: Show messages with a specific message ID.
+  - `-C`: Show messages with a specific message ID.
+  - `-D`: Show messages with a specific message ID.
+  - `-E`: Show messages with a specific message ID.
+  - `-F`: Show messages with a specific message ID
+
+- **logrotate**: Rotates, compresses, and archives log files.
+
+  - **/etc/logrotate.conf**: Configuration file for logrotate.
+  - **/etc/logrotate.d**: Directory that contains logrotate configuration files.
+  - **/var/lib/logrotate/status**: Logrotate status file.
+  - **/var/log/logrotate**: Logrotate log file.
+  - **/var/log/messages**: Log file for logrotate messages.
+  - **/var/log/syslog**: Log file for logrotate messages.
+  - **/var/log/auth.log**: Log file for logrotate messages.
+  - **/var/log/secure**: Log file for logrotate messages.
+  - **/var/log/maillog**: Log file for logrotate messages.
+  - **/var/log/cron**: Log file for logrotate messages.
+  - **/var/log/boot.log**: Log file for logrotate messages.
+  - **/var/log/kern.log**: Log file for logrotate messages.
+  - **/var/log/dmesg**: Log file for logrotate messages.
+  - **/var/log/lastlog**: Log file for logrotate messages.
+  - **/var/log/wtmp**: Log file for logrotate messages.
+  - **/var/log/btmp**: Log file for logrotate messages.
+  - **/var/log/utmp**: Log file for logrotate messages.
+
+- **logwatch**: Log analysis and reporting tool.
+- **logcheck**: Log analysis and reporting tool.
+- **rsyslog**: Enhanced system logging daemon.
+- **auditd**: Audit daemon. Collects and logs security messages.
+- **auditctl**: Audit control command. Manages audit rules.
+- **ausearch**: Audit search command. Searches audit logs.
+- **aureport**: Audit report command. Generates audit reports.
+- **autrace**: Audit trace command. Traces system calls.
+- **auparse**: Audit parse command. Parses audit logs.
+- **audit.rules**: Audit rules file. Contains audit rules.
+- **/etc/audit/auditd.conf**: Configuration file for auditd.
+- **/etc/audit/audit.rules**: Configuration file for audit rules.
+- **/var/log/audit/audit.log**: Log file for audit messages.
+- **/var/log/audit/audit.rules**: Log file for audit rules.
+- **/var/log/audit/audit.rules.d**: Directory that contains audit rules files.
+
+- **syslog-ng**: Enhanced system logging daemon.
+- **logstash**: Log data processing pipeline.
+- **fluentd**: Log data collector.
+- **graylog**: Log management platform.
+- **splunk**: Log analysis and monitoring tool.
+- **kibana**: Data visualization tool.
+- **grafana**: Data visualization tool.
+- **prometheus**: Monitoring and alerting toolkit.
+- **telegraf**: Agent for collecting metrics.
+- **influxdb**: Time-series database.
+- **elasticsearch**: Distributed search and analytics engine.
+
+- **last**: Show last logins.
+- **lastb**: Show last failed logins.
+- **lastlog**: Show last login information.
+- **utmpdump**: Dump UTMP file.
+- **wtmpdump**: Dump WTMP file.
+- **ac**: Show connect time.
+- **acpid**: Advanced Configuration and Power Interface daemon.
+- **apmd**: Advanced Power Management daemon.
+- **atd**: Job scheduler daemon.
+
+### Bash Scripting
+
+- **Shebang**: Specifies the interpreter for the script.
+
+  - `#!/bin/bash`: Use the Bash interpreter.
+  - `#!/bin/sh`: Use the Bourne shell interpreter.
+  - `#!/bin/zsh`: Use the Z shell interpreter.
+  - `#!/bin/dash`: Use the Debian Almquist shell interpreter.
+  - `#!/bin/ksh`: Use the Korn shell interpreter.
+  - `#!/bin/csh`: Use the C shell interpreter.
+  - `#!/bin/tcsh`: Use the TENEX C shell interpreter.
+
+- **Variables**: Store and manipulate data.
+
+  - `variable=value`: Assign a value to a variable.
+  - `echo $variable`: Print the value of a variable.
+  - `export variable`: Export a variable to the environment.
+  - `unset variable`: Unset a variable.
+  - `readonly variable`: Make a variable read-only.
+  - `readonly -p`: List read-only variables.
+  - `readonly -f`: List read-only functions.
+
+- **Environment Variables**: Predefined variables.
+
+  - `$HOME`: Home directory.
+  - `$PATH`: Search path for executables.
+  - `$PWD`: Present working directory.
+  - `$USER`: Username.
+  - `$SHELL`: Shell.
+  - `$TERM`: Terminal type.
+  - `$EDITOR`: Default text editor.
+  - `$LANG`: Default language.
+  - `$LC_ALL`: Default locale.
+  - `$TZ`: Timezone.
+  - `$HOSTNAME`: Hostname.
+  - `$PS1`: Primary prompt.
+  - `$PS2`: Secondary prompt.
+  - `$PS3`: Select prompt.
+  - `$PS4`: Debug prompt.
+  - `$IFS`: Internal field separator.
+  - `$RANDOM`: Random number.
+  - `$UID`: User ID.
+  - `$EUID`: Effective user ID.
+  - `$GID`: Group ID.
+  - `$EGID`: Effective group ID.
+  - `$PPID`: Parent process ID.
+  - `$BASH_VERSION`: Bash version.
+  - `$BASH`: Bash path.
+  - `$BASH_ENV`: Bash environment file.
+  - `$BASH_VERSINFO`: Bash version information.
+  - `$BASH_SOURCE`: Bash source file.
+  - `$BASH_SUBSHELL`: Bash subshell level.
+  - `$BASH_ALIASES`: Bash aliases.
+  - `$BASH_ARGC`: Bash argument count.
+  - `$BASH_ARGV`: Bash argument vector.
+  - `$BASH_LINENO`: Bash line number.
+  - `$BASH_REMATCH`: Bash regular expression match.
+  - `$BASH_EXECUTION_STRING`: Bash execution string.
+  - `$BASH_COMMAND`: Bash command
+
+  - **local configuration**: /etc/locale.conf
+  - **user configuration**: ~/.bashrc
+  - **system configuration**: /etc/bash.bashrc
+  - **global configuration**: /etc/profile
+  - **user configuration**: ~/.bash_profile
+  - **LC\_\*={locale}**: Colletion of Localization Environment Variables for the system. Used to set the locale for the system.
+  - **LANG={locale}**: Default locale for the system. Used to set the default locale for the system.
+  - **LANGUAGE={locale}**: Language preference for the system. Used to set the language preference for the system.
+  - **LC_ALL={locale}**: Override for all locale settings. Used to override all locale settings.
+  - **TZ={timezone}**: Timezone for the system. Used to set the timezone for the system.
+  - **PS1={prompt}**: Primary prompt for the shell. Used to set the primary prompt for the shell.
+
+- **env**: Display environment variables.
+- **printenv**: Display environment variables.
+- **set**: Display shell variables.
+- **export**: Export environment variables.
+- **unset**: Unset environment variables.
+- **readonly**: Make variables read-only.
+- **declare**: Declare variables.
+- **local**: Declare local variables.
+- **typeset**: Declare variables.
+- **read**: Read input from the user.
+- **shift**: Shift positional parameters.
+- **source**: Execute a script.
+
+- **HISTFILESIZE**: Maximum number of lines in the history file.
+- **HISTSIZE**: Maximum number of commands in the history.
+- **HISTCONTROL**: Control how commands are saved in the history.
+- **HISTIGNORE**: Ignore commands in the history.
+- **HISTTIMEFORMAT**: Format for displaying the history timestamp.
+- **HISTFILE**: History file location.
+
+- **alias**: Create an alias for a command.
+- **unalias**: Remove an alias.
+
+- **Comments**: Add comments to scripts.
+
+  - `# comment`: Single-line comment.
+  - `: 'comment'`: Multi-line comment.
+  - `<<'EOF'`: Here document start.
+  - `EOF`: Here document end.
+
+- **Quotes**: Preserve whitespace and special characters.
+
+  - `echo "message"`: Print a message.
+  - `echo 'message'`: Print a message.
+  - `echo "Hello, $USER!"`: Print a message with a variable.
+  - `echo 'Hello, $USER!'`: Print a message without a variable.
+  - `echo "Hello, \$USER!"`: Print a message with an escaped variable.
+  - `echo "Hello, ${USER}!"`: Print a message with a variable in braces.
+  - `echo "Hello, $(whoami)!"`: Print a message with command substitution.
+  - `echo "Hello, `whoami`!"`: Print a message with command substitution.
+  - `echo "Hello, $((2+2))!"`: Print a message with arithmetic expansion.
+  - `echo "Hello, $[2+2]!"`: Print a message with arithmetic expansion.
+  - `echo "Hello, $USER"!`: Print a message with a variable and punctuation.
+  - `echo "Hello, $USER!"`: Print a message with a variable and an exclamation mark.
+  - `echo "Hello, $USER!"`: Print a message with a variable and double quotes.
+  - `echo 'Hello, $USER!'`: Print a message with a variable and single quotes.
+  - `echo "Hello, $USER!"`: Print a message with a variable and escaped quotes.
+  - `echo "Hello, $USER!"`: Print a message with a variable and nested quotes.
+  - `echo "Hello, $USER!"`: Print a message with a variable and backticks.
+  - `echo "Hello, $USER!"`: Print a message with a variable and double quotes.
+  - `echo "Hello, $USER!"`: Print a message with a variable and single quotes.
+  - `echo "Hello, $USER!"`: Print a message with a variable and escaped quotes.
+  - `echo "Hello, $USER!"`: Print a message with a variable and nested quotes.
+  - `echo "Hello, $USER!"`: Print a message with a variable and backticks.
+
+- **Special Variables**: Predefined variables.
+
+  - `$0`: Script name.
+  - `$1`, `$2`, ...: Positional parameters.
+  - `$@`: All positional parameters.
+  - `$#`: Number of positional parameters.
+  - `$?`: Exit status of the last command.
+  - `$$`: Process ID of the script.
+  - `$!`: Process ID of the last background command.
+  - `$USER`: Username of the user running the script.
+  - `$HOME`: Home directory of the user running the script.
+  - `$PWD`: Current working directory.
+  - `$SHELL`: Shell of the user running the script.
+  - `$HOSTNAME`: Hostname of the machine.
+  - `$RANDOM`: Random number.
+  - `$LINENO`: Current line number.
+
+- **Arithmetic**: Perform mathematical operations.
+
+  - `((expression))`: Evaluate an arithmetic expression.
+  - `let variable=expression`: Assign the result of an expression to a variable.
+  - `((variable++))`: Increment a variable.
+  - `((variable--))`: Decrement a variable.
+  - `((variable+=value))`: Add a value to a variable.
+  - `((variable-=value))`: Subtract a value from a variable.
+  - `((variable*=value))`: Multiply a variable by a value.
+  - `((variable/=value))`: Divide a variable by a value.
+  - `((variable%=value))`: Get the remainder of a variable divided by a value.
+
+- **Conditional Expressions**: Make decisions based on conditions.
+
+      - `if condition; then commands; fi`: Execute commands if a condition is true.
+      - `if condition; then commands; else other_commands; fi`: Execute commands based on a condition.
+      - `if condition; then commands; elif other_condition; then other_commands; else more_commands; fi`: Execute commands based on multiple conditions.
+      - `[[ expression ]]`: Evaluate an expression.
+      - `[[ -e file ]]`: Check if a file exists.
+      - `[[ -f file ]]`: Check if a file is a regular file.
+      - `[[ -d file ]]`: Check if a file is a directory.
+      - `[[ -r file ]]`: Check if a file is readable.
+      - `[[ -w file ]]`: Check if a file is writable.
+      - `[[ -x file ]]`: Check if a file is executable.
+      - `[[ -z string ]]`: Check if a string is empty.
+      - `[[ -n string ]]`: Check if a string is not empty.
+      - `[[ string1 == string2 ]]`: Check if two strings are equal.
+      - `[[ string1 != string2 ]]`: Check if two strings are not equal.
+      - `[[ n1 -eq n2 ]]`: Check if two numbers are equal.
+      - `[[ n1 -ne n2 ]]`: Check if two numbers are not equal.
+      - `[[ n1 -lt n2 ]]`: Check if n1 is less than n2.
+      - `[[ n1 -le n2 ]]`: Check if n1 is less than or equal to n2.
+      - `[[ n1 -gt n2 ]]`: Check if n1 is greater than n2.
+      - `[[ n1 -ge n2 ]]`: Check if n1 is greater than or equal to n2.
+      - `[[ !condition ]]`: Negate a condition.
+      - `[[ condition1 && condition2 ]]`: Check if both conditions are true.
+      - `[[ condition1 || condition2 ]]`: Check if either condition is true.
+
+- **String Manipulation**: Modify and extract strings.
+
+      - `variable="string"`: Assign a string to a variable.
+      - `echo ${#variable}`: Get the length of a string.
+      - `echo ${variable:position:length}`: Extract a substring.
+      - `echo ${variable#pattern}`: Remove the shortest match from the beginning.
+      - `echo ${variable##pattern}`: Remove the longest match from the beginning.
+      - `echo ${variable%pattern}`: Remove the shortest match from the end.
+      - `echo ${variable%%pattern}`: Remove the longest match from the end.
+      - `echo ${variable/pattern/replacement}`: Replace the first match.
+      - `echo ${variable//pattern/replacement}`: Replace all matches.
+      - `echo ${variable^}`: Uppercase the first character.
+      - `echo ${variable^^}`: Uppercase all characters.
+      - `echo ${variable,}`: Lowercase the first character.
+      - `echo ${variable,,}`: Lowercase all characters.
+
+- **Arrays**: Store multiple values.
+
+  - `array=(value1 value2 value3)`: Create an array.
+  - `echo ${array[0]}`: Print the first element of an array.
+  - `echo ${array[@]}`: Print all elements of an array.
+  - `echo ${#array[@]}`: Print the length of an array.
+  - `unset array[1]`: Unset an element of an array.
+  - `unset array`: Unset an array.
+  - `array+=(value4)`: Append an element to an array.
+  - `array=( "${array[@]}" "value5" )`: Append an element to an array.
+  - `array=( "${array[@]:0:2}" )`: Slice an array.
+  - `array=( "${array[@]:1}" )`: Slice an array.
+  - `array=( "${array[@]/pattern/replacement}" )`: Replace elements in an array.
+  - `array=( $(command) )`: Assign the output of a command to an array.
+
+- **Functions**: Group commands for reuse.
+
+  - `function_name() { commands }`: Define a function.
+  - `function_name`: Call a function.
+  - `return value`: Return a value from a function.
+  - `local variable=value`: Define a local variable in a function.
+  - `unset -f function_name`: Unset a function.
+  - `declare -f`: List defined functions.
+  - `declare -F`: List function names.
+  - `declare -i`: Declare an integer variable.
+
+- **Loops**: Repeat commands.
+
+  - `for variable in list; do commands; done`: Iterate over a list.
+  - `while condition; do commands; done`: Execute commands while a condition is true.
+  - `until condition; do commands; done`: Execute commands until a condition is true.
+  - `break`: Exit a loop.
+  - `continue`: Skip the current iteration.
+  - `select variable in list; do commands; done`: Create a menu.
+  - `case variable in pattern1) commands;; pattern2) commands;; esac`: Execute commands based on a pattern.
+  - `getopts options variable`: Parse command-line options.
+  - `shift`: Shift command-line arguments.
+  - `shopt -s extglob`: Enable extended globbing.
+
+- **Input/Output**: Read and write data.
+
+  - `read variable`: Read input from the user.
+  - `echo "message" > file`: Write output to a file.
+  - `echo "message" >> file`: Append output to a file.
+  - `cat file`: Display the contents of a file.
+  - `wc -l file`: Count lines in a file.
+  - `grep pattern file`: Search for a pattern in a file.
+  - `sed 's/old/new/' file`: Replace text in a file.
+  - `awk '{print $1}' file`: Extract columns from a file.
+
+- **Command Substitution**: Execute commands and use the output.
+
+  - `$(command)`: Execute a command and use the output.
+  - `variable=$(command)`: Assign the output of a command to a variable.
+
+- **Exit Status**: Return a status code.
+
+  - `$?`: Get the exit status of the last command.
+  - `exit status`: Return a status code.
+
+- **Debugging**: Troubleshoot scripts.
+  - `set -x`: Enable debugging mode.
+  - `set +x`: Disable debugging mode.
+  - `set -e`: Exit on error.
+  - `set +e`: Continue on error.
+  - `set -u`: Treat unset variables as errors.
+  - `set +u`: Treat unset variables as normal.
