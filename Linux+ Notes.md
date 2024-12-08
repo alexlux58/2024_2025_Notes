@@ -2209,6 +2209,22 @@
   - `at -r`: Schedule a command to run at a later time with remove.
   - `at -v`: Schedule a command to run at a later time with verbose.
 
+- **atq**: List the user's pending jobs.
+- **Commands**:
+
+  - `atq`: List the user's pending jobs.
+  - `atq -c`: List the user's pending jobs with cat.
+  - `atq -l`: List the user's pending jobs with list.
+  - `atq -q`: List the user's pending jobs with queue.
+
+- **atrm**: Remove jobs from the queue.
+- **Commands**:
+
+  - `atrm`: Remove jobs from the queue.
+  - `atrm -c`: Remove jobs from the queue with cat.
+  - `atrm -l`: Remove jobs from the queue with list.
+  - `atrm -q`: Remove jobs from the queue with queue.
+
 - **batch**: Schedule commands to run when system load levels permit.
 - **Commands**:
 
@@ -2222,6 +2238,32 @@
   - `crontab -e`: Schedule a command to run at a later time with edit.
   - `crontab -l`: Schedule a command to run at a later time with list.
   - `crontab -r`: Schedule a command to run at a later time with remove.
+
+examples:
+
+30 41 _ 3 4 /home/user/backup.sh: Run the backup.sh script at 41:30 on the 3rd and 4th month of the week.
+30 41 _ _ 4 /home/user/backup.sh: Run the backup.sh script at 41:30 on the 4th day of the week.
+30 41 1 _ _ /home/user/backup.sh: Run the backup.sh script at 41:30 on the 1st day of the month.
+30 41 _ _ 4,5 /home/user/backup.sh: Run the backup.sh script at 41:30 on the 4th and 5th day of the week.
+30 41 _ \* 4-6 /home/user/backup.sh: Run the backup.sh script at 41:30 on the 4th, 5th, and 6th day of the week.
+
+- **Schedule crontab files**:
+
+/etc/cron.d: Directory containing system cron jobs.
+/etc/cron.daily: Directory containing daily cron jobs.
+/etc/cron.hourly: Directory containing hourly cron jobs.
+/etc/cron.monthly: Directory containing monthly cron jobs.
+/etc/cron.weekly: Directory containing weekly cron jobs.
+/var/spool/cron: Directory containing user cron jobs.
+
+- **anacron**: Schedule commands to run at a later time.
+- **Commands**:
+
+  - `anacron`: Schedule commands to run at a later time.
+  - `anacron -d`: Schedule commands to run at a later time with debug.
+  - `anacron -f`: Schedule commands to run at a later time with force.
+  - `anacron -n`: Schedule commands to run at a later time with no-run.
+  - `anacron -s`: Schedule commands to run at a later time with serial.
 
 - **systemd-run**: Run a command in a transient scope unit.
 - **Commands**:
@@ -4422,6 +4464,12 @@ Secure Shell (SSH) is a cryptographic network protocol for secure communication 
       - `[[ !condition ]]`: Negate a condition.
       - `[[ condition1 && condition2 ]]`: Check if both conditions are true.
       - `[[ condition1 || condition2 ]]`: Check if either condition is true.
+      - `(("$a" < "$b"))`: Compare two numbers.
+      - `(("$a" <= "$b"))`: Compare two numbers.
+      - `(("$a" > "$b"))`: Compare two numbers.
+      - `(("$a" >= "$b"))`: Compare two numbers.
+      - `(("$a" == "$b"))`: Compare two numbers.
+      - `(("$a" != "$b"))`: Compare two numbers.
 
 - **String Manipulation**: Modify and extract strings.
 
@@ -4489,20 +4537,267 @@ Secure Shell (SSH) is a cryptographic network protocol for secure communication 
   - `sed 's/old/new/' file`: Replace text in a file.
   - `awk '{print $1}' file`: Extract columns from a file.
 
+- **Error Handling**: Handle errors.
+
+  - `set -e`: Exit on error.
+  - `set +e`: Continue on error.
+  - `trap 'command' signal`: Execute a command when a signal is received.
+  - `exit status`: Return a status code.
+
+- **File Manipulation**: Manage files and directories.
+
+  - `touch file`: Create an empty file.
+  - `rm file`: Remove a file.
+  - `rm -r directory`: Remove a directory.
+  - `cp file1 file2`: Copy a file.
+  - `cp -r directory1 directory2`: Copy a directory.
+  - `mv file1 file2`: Move a file.
+  - `mv directory1 directory2`: Move a directory.
+  - `ln -s target link`: Create a symbolic link.
+  - `ln target link`: Create a hard link.
+  - `mkdir directory`: Create a directory.
+  - `rmdir directory`: Remove an empty directory.
+  - `chmod permissions file`: Change file permissions.
+  - `chown user:group file`: Change file ownership.
+  - `chown -R user:group directory`: Change directory ownership.
+  - `find directory -name pattern`: Find files by name.
+  - `find directory -type type`: Find files by type.
+  - `find directory -size size`: Find files by size.
+  - `find directory -exec command {} \;`: Execute a command on files.
+  - `find directory -delete`: Delete files.
+  - `grep pattern file`: Search for a pattern in a file.
+  - `grep -r pattern directory`: Search for a pattern in files.
+  - `grep -v pattern file`: Invert the match.
+  - `grep -i pattern file`: Ignore case.
+  - `grep -n pattern file`: Show line numbers.
+  - `grep -c pattern file`: Count matches.
+  - `grep -l pattern file`: List files with matches.
+  - `sed 's/old/new/' file`: Replace text in a file.
+  - `sed -i 's/old/new/' file`: Replace text in a file.
+  - `awk '{print $1}' file`: Extract columns from a file.
+  - `awk '{print $NF}' file`: Extract the last column.
+  - `awk '{print NF}' file`: Count columns.
+  - `awk '/pattern/' file`: Search for a pattern.
+  - `awk '/pattern/ {print $1}' file`: Extract columns with a pattern.
+  - `awk 'NR==1' file`: Extract the first line.
+  - `awk 'NR==2' file`: Extract the second line.
+
 - **Command Substitution**: Execute commands and use the output.
 
   - `$(command)`: Execute a command and use the output.
   - `variable=$(command)`: Assign the output of a command to a variable.
+
+- **Redirection**: Redirect input and output.
+
+  - `command > file`: Redirect output to a file.
+  - `command >> file`: Append output to a file.
+  - `command < file`: Redirect input from a file.
+  - `command1 | command2`: Pipe output to another command.
+  - `command &> file`: Redirect both stdout and stderr to a file.
+  - `command1 2>&1 | command2`: Pipe stdout and stderr to another command.
+  - `command > file 2>&1`: Redirect stdout and stderr to a file.
+  - `command > /dev/null`: Discard output.
+  - `command 2> /dev/null`: Discard errors.
+  - `command &> /dev/null`: Discard output and errors.
 
 - **Exit Status**: Return a status code.
 
   - `$?`: Get the exit status of the last command.
   - `exit status`: Return a status code.
 
+- **Positional Parameters**: Access command-line arguments.
+
+  - `$0`: Script name.
+  - `$1`, `$2`, ...: Positional parameters.
+  - `$@`: All positional parameters.
+  - `$#`: Number of positional parameters.
+  - `$*`: All positional parameters as a single string.
+  - `shift`: Shift positional parameters.
+  - `set --`: Clear positional parameters.
+  - `set value`: Set positional parameters.
+  - `shift n`: Shift n positional parameters.
+
+  - example:
+
+    ```bash
+    #!/bin/bash
+    echo "Script name: $0"
+    echo "First argument: $1"
+    echo "Second argument: $2"
+    echo "All arguments: $@"
+    echo "Number of arguments: $#"
+    ```
+
+  - **exec**: Replace the current process with a new process.
+
+    - `exec command`: Execute a command.
+    - `exec < file`: Redirect stdin from a file.
+    - `exec > file`: Redirect stdout to a file.
+    - `exec 2> file`: Redirect stderr to a file.
+    - `exec &> file`: Redirect stdout and stderr to a file.
+    - `exec 2>&1`: Redirect stderr to stdout.
+    - `exec 3< file`: Open file for reading on file descriptor 3.
+    - `exec 4> file`: Open file for writing on file descriptor 4.
+    - `exec 5<> file`: Open file for reading and writing on file descriptor 5.
+    - `exec 6>&1`: Duplicate stdout to file descriptor 6.
+    - `exec 7>&-`: Close file descriptor 7.
+
+  - **trap**: Execute a command when a signal is received.
+
+    - `trap 'command' signal`: Execute a command when a signal is received.
+    - `trap - signal`: Reset the action for a signal.
+    - `trap 'command' EXIT`: Execute a command when the script exits.
+    - `trap 'command' ERR`: Execute a command when an error occurs.
+    - `trap 'command' INT`: Execute a command when interrupted.
+    - `trap 'command' TERM`: Execute a command when terminated.
+    - `trap 'command' HUP`: Execute a command
+
+  - **Signals**: Notify a process of an event.
+
+    - `SIGHUP`: Hangup.
+    - `SIGINT`: Interrupt.
+    - `SIGQUIT`: Quit.
+    - `SIGILL`: Illegal instruction.
+    - `SIGTRAP`: Trace/breakpoint trap.
+    - `SIGABRT`: Abort.
+    - `SIGBUS`: Bus error.
+    - `SIGFPE`: Floating point exception.
+    - `SIGKILL`: Kill.
+    - `SIGUSR1`: User-defined signal 1.
+    - `SIGSEGV`: Segmentation fault.
+    - `SIGUSR2`: User-defined signal 2.
+    - `SIGPIPE`: Broken pipe.
+    - `SIGALRM`: Alarm clock.
+    - `SIGTERM`: Termination.
+    - `SIGSTKFLT`: Stack fault.
+    - `SIGCHLD`: Child status has changed.
+
 - **Debugging**: Troubleshoot scripts.
+
   - `set -x`: Enable debugging mode.
   - `set +x`: Disable debugging mode.
   - `set -e`: Exit on error.
   - `set +e`: Continue on error.
   - `set -u`: Treat unset variables as errors.
   - `set +u`: Treat unset variables as normal.
+
+- **Search**:
+
+- `*`: Match zero or more characters.
+- `?`: Match any single character.
+- `[...]`: Match any character in the set.
+- `[^...]`: Match any character not in the set.
+- `[:class:]`: Match any character in the class.
+- `[^:class:]`: Match any character not in the class.
+- `?()`: Match zero or one occurrence.
+- `*()`: Match zero or more occurrences.
+- `+()`: Match one or more occurrences.
+- `@()`: Match one occurrence.
+- `!(pattern)`: Match anything except the pattern.
+
+- **Regex**: Search for patterns in text.
+
+  - `.`: Match any character.
+  - `^`: Match the start of a line.
+  - `$`: Match the end of a line.
+  - `[]`: Match any character in the set.
+  - `[^]`: Match any character not in the set.
+  - `*`: Match zero or more occurrences.
+  - `+`: Match one or more occurrences.
+  - `?`: Match zero or one occurrence.
+  - `()` : Group expressions.
+  - `|`: Alternation.
+  - `\`: Escape special characters.
+  - `\b`: Word boundary.
+  - `\B`: Not a word boundary.
+  - `\d`: Digit.
+  - `\D`: Not a digit.
+  - `\s`: Whitespace.
+  - `\S`: Not whitespace.
+  - `\w`: Word character.
+  - `\W`: Not a word character.
+  - `\1`: Backreference.
+  - `(?i)`: Case-insensitive.
+  - `(?s)`: Dot matches newline.
+  - `(?m)`: Multi-line mode.
+  - `(?x)`: Extended mode.
+  - `(?=)`: Positive lookahead.
+  - `(?!)`: Negative lookahead.
+  - `(?<=)`: Positive lookbehind.
+  - `(?<!)`: Negative lookbehind.
+  - `(?#)`: Comment.
+
+- **Sandbox applications**: Isolate applications in a secure environment.
+
+  - **snapd**: Package manager for snaps.
+  - **flatpak**: Package manager for Flatpaks.
+  - **appimage**: Package format for portable applications.
+  - **chroot**: Change the root directory for a process.
+  - **firejail**: Sandboxing tool for Linux.
+  - **bubblewrap**: Unprivileged sandboxing tool.
+  - **docker**: Containerization platform.
+  - **podman**: Containerization tool.
+  - **lxc**: Linux Containers.
+  - **lxd**: Container management tool.
+  - **systemd-nspawn**: Container management tool.
+  - **singularity**: Container platform for HPC.
+  - **kata**: Lightweight virtual machines.
+  - **qemu**: Virtualization platform.
+  - **virt-manager**: Virtual machine manager.
+  - **libvirt**: Virtualization API.
+  - **vagrant**: Development environment manager.
+  - **packer**: Image builder.
+  - **vagrant-libvirt**: Vagrant provider for libvirt.
+  - **vagrant-virtualbox**: Vagrant provider for VirtualBox.
+  - **vagrant-vmware**: Vagrant provider for VMware.
+  - **vagrant-aws**: Vagrant provider for AWS.
+  - **vagrant-azure**: Vagrant provider for Azure.
+  - **vagrant-digitalocean**: Vagrant provider for DigitalOcean.
+  - **vagrant-google**: Vagrant provider for Google Cloud.
+  - **vagrant-hyperv**: Vagrant provider for Hyper-V.
+  - **vagrant-libvirt**: Vagrant provider for libvirt.
+  - **vagrant-lxc**: Vagrant provider for LXC.
+  - **vagrant-parallels**: Vagrant provider for Parallels.
+  - **vagrant-vmware**: Vagrant provider for VMware.
+  - **vagrant-virtualbox**: Vagrant provider for VirtualBox.
+  - **vagrant-winrm**: Vagrant plugin for WinRM.
+  - **vagrant-sshfs**: Vagrant plugin for SSHFS.
+  - **vagrant-scp**: Vagrant plugin for SCP.
+  - **vagrant-share**: Vagrant plugin for sharing.
+  - **vagrant-proxyconf**: Vagrant plugin for proxy configuration.
+  - **vagrant-omnibus**: Vagrant plugin for Omnibus.
+  - **vagrant-berkshelf**: Vagrant plugin for Berkshelf.
+  - **vagrant-cachier**: Vagrant plugin for caching.
+  - **vagrant-vbguest**: Vagrant
+
+- **Saltstack**: Configuration management and orchestration tool (Python).
+
+  - **salt-master**: Salt master daemon.
+  - **salt-minion**: Salt minion daemon.
+  - **salt-ssh**: Salt SSH client.
+  - **salt-call**: Salt local client.
+  - **salt-cloud**: Salt cloud client.
+  - **salt-api**: Salt API daemon.
+  - **salt-syndic**: Salt syndic daemon.
+  - **salt-key**: Salt key manager.
+  - **salt-run**: Salt runner.
+  - **salt-cp**: Salt file copy client.
+  - **salt**: Salt command-line tool.
+  - **salt-unity**: Salt Unity client.
+  - **salt-unity-runner**: Salt Unity runner.
+  - **salt-unity-ssh**: Salt Unity SSH client.
+  - **salt-unity-ssh-runner**: Salt Unity SSH runner.
+  - **salt-unity-ssh-key**: Salt Unity SSH key manager.
+  - **salt-unity-ssh-key-runner**: Salt Unity SSH key runner.
+  - **salt-unity-ssh-key-manager**: Salt Unity SSH key manager.
+  - **salt-unity-ssh-key-manager-runner**: Salt Unity SSH key manager runner.
+  - **salt-unity-ssh-key-manager-ssh**: Salt Unity SSH key manager SSH client.
+  - **salt-unity-ssh-key-manager-ssh-runner**: Salt Unity SSH key manager SSH runner.
+  - **salt-unity-ssh-key-manager-ssh-key**: Salt Unity SSH key manager SSH key manager.
+  - **salt-unity-ssh-key-manager-ssh-key-runner**: Salt Unity SSH key manager SSH key runner.
+  - **salt-unity-ssh-key-manager-ssh-key-manager**: Salt Unity SSH key manager SSH key manager.
+  - **salt-unity-ssh-key-manager-ssh-key-manager-runner**: Salt Unity SSH key manager SSH key manager runner.
+  - **salt-unity-ssh-key-manager-ssh-key-manager-ssh**: Salt Unity SSH key manager SSH key manager SSH client.
+  - **salt-unity-ssh-key-manager-ssh-key-manager-ssh-runner**: Salt Unity SSH key manager SSH key manager SSH runner.
+  - **salt-unity-ssh-key-manager-ssh-key-manager-ssh-key**: Salt Unity SSH key manager SSH key manager SSH key manager.
+  - **salt-unity-ssh-key-manager-ssh-key-manager-ssh-key-runner**: Salt Unity SSH key manager SSH key manager SSH
