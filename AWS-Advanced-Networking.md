@@ -21,6 +21,8 @@
 | Security                  | Private subnet is more secure                     | Public subnet is less secure                            | Elastic is less secure                                       |
 | Use case                  | Internal communication                            | Web servers, Load balancers, etc.                       | Web servers, Load balancers, etc.                            |
 
+---
+
 # Default VPC in AWS
 
 - **AWS Default VPC**:
@@ -57,6 +59,8 @@
 
 - All subnets in the default VPC are public due to the route table configuration.
 - Default VPC simplifies networking setup for new AWS users by providing immediate internet connectivity.
+
+---
 
 # Exercise 1: Creating a Custom VPC
 
@@ -103,6 +107,8 @@
        - **Target**: Internet Gateway (igw-xxx)
      - Save the route.
 
+---
+
 ### Exercise 2 (Continuing with previous setup)
 
 1. **Create a Private Subnet**
@@ -125,3 +131,69 @@
      - Add rule All-ICMP IPv4 for Public Subnet source CIDR
 
 5. **Note down EC2-B Private IP Address**
+
+---
+
+# NAT Gateway
+
+- AWS managed NAT, higher bandwidth, better availability, and no maintenance/admin.
+- Pay by the hour for usage and bandwidth.
+- NAT is created in a specific AZ, uses an EIP, and is associated with a specific subnet.
+- 5 Gbps bandwidth with automatic scaling up to 100Gbps.
+- No security group to manage / required. NACL at subnet level applies to NACL at subnet level applies to NAT Gateway.
+- Supported protocols: TCP, UDP and ICMP.
+- Uses ports 1024-65535 for outbound traffic.
+- NAT gateway must be created in a public subnet so that it can communicate with the internet.
+- NAT gateway should be allocated Elastic IP (EIP) to communicate with the internet.
+- NAT gateway is used to provide internet access to instances in private subnets.
+
+# EC2 NAT Instance
+
+- Must be in a public subnet.
+- Must have a Public IP or Elastic IP.
+- Should be launched using AWS provided NAT AMIs.
+- Disable Source/Destination Check on the NAT instance.
+- Update Private subnet route tables to route internet traffic through NAT instance.
+- For internet traffic set target as NAT instance ID in the route table.
+
+**Exercise 3 (Continuing with previous setup)**
+
+- **Create a NAT Gateway in your VPC**
+
+  - VPC => NAT Gateways => Create NAT Gateway
+  - Subnet: MyVPC-Public (Must select Public Subnet)
+  - EIP: Create New EIP
+  - Create NAT Gateway
+  - It takes 5--10 minutes for NAT Gateway to be Active
+
+- **Add a route in Private subnet for internet traffic and route through NAT Gateway**
+
+  - Route Tables => Select MyVPC-Private route table
+  - Routes => Edit => Add another route
+    - Destination: 0.0.0.0/0
+    - Target: nat-gateway
+    - Save
+
+- **Now again try to ping google.com from EC2-B**
+
+  - `ping google.com`
+  - It should work now.
+
+---
+
+# NAT Gateway vs NAT Instance
+
+| **Attribute**           | **NAT Gateway**                                                                                                                                                | **NAT Instance**                                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Availability**        | Highly available within AZ. Create a NAT Gateway in each Availability Zone to ensure zone-independent architecture.                                            | Use a script to manage failover between instances.                                                                   |
+| **Bandwidth**           | Can scale up to 45 Gbps.                                                                                                                                       | Depends on the bandwidth of the instance type.                                                                       |
+| **Maintenance**         | Managed by AWS. You do not need to perform any maintenance.                                                                                                    | Managed by you, for example, by installing software updates or operating system patches on the instance.             |
+| **Performance**         | Software is optimized for handling NAT traffic.                                                                                                                | A generic Amazon Linux AMI that's configured to perform NAT.                                                         |
+| **Cost**                | Charged depending on the number of NAT Gateways you use, duration of usage, and amount of data that you send through the NAT Gateways.                         | Charged depending on the number of NAT Instances that you use, duration of usage, and instance type and size.        |
+| **Type and size**       | Uniform offering; you don't need to decide on the type or size.                                                                                                | Choose a suitable instance type and size, according to your predicted workload.                                      |
+| **Public IP addresses** | Choose the Elastic IP address to associate with a NAT Gateway at creation.                                                                                     | Use an Elastic IP address or a public IP address with a NAT Instance.                                                |
+| **Security groups**     | Cannot be associated with a NAT Gateway. You can associate security groups with your resources behind the NAT Gateway to control inbound and outbound traffic. | Associate with your NAT Instance and the resources behind your NAT Instance to control inbound and outbound traffic. |
+| **Port forwarding**     | Not supported.                                                                                                                                                 | Manually customize the configuration to support port forwarding.                                                     |
+| **Bastion servers**     | Not supported.                                                                                                                                                 | Use as a bastion server.                                                                                             |
+
+---
