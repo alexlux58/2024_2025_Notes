@@ -457,3 +457,94 @@ C. Infrastructure
 Infrastructure automation is the term most closely associated with adding (and removing)
 servers in response to load and demand and is frequently associated with continuous integration/continuous deployment (CI/CD) scenarios.
 The other options are not accurate descriptions of this type of automation.
+
+</details>
+
+---
+
+### Question 20
+
+Which command can be used to indicate a local variable within a Bash script?
+
+A. localvar
+B. ll
+C. local
+D. %local%
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. local
+
+**Explanation:**
+When executed as part of a function, the local command can be used to create a local variable in a Bash script. The other options are not valid commands for this purpose.
+
+</details>
+
+---
+
+### Question 21
+
+Which git command is used to retrieve a repository from a remote server?
+
+A. clone
+B. checkout
+C. co
+D. retr
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. clone
+
+**Explanation:**
+The clone command retrieves a copy of the repository for a local use. The checkout and co commands are used with Subversion and not with git. The retr command is not a valid git command.
+
+</details>
+
+---
+
+### Question 22
+
+You need to echo the name of the script back to the user for a usage or help output. Which positional parameter can be used for this purpose?
+
+A. $me
+B. $1
+C. $myname
+D. $0
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. $0
+
+**Explanation:**
+The $0 parameter contains the name of the script being called. The other answers are not valid positional parameters for this purpose.
+
+</details>
+
+---
+
+### Question 23
+
+Which of the following commands can be used to print the contents of the current shell environment?
+
+A. echoenv
+B. printenv
+C. showenv
+D. envvar
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. printenv
+
+**Explanation:**
+The printenv command can be used to print the contents of the current shell environment such as environment variables. Within the output you'll find things
+like the $SHELL variable, which specifies the current shell. The other options shown are not valid commands.
+
+</details>
+
+---
+
+### Question 24
