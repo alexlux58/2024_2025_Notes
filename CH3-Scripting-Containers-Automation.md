@@ -548,3 +548,46 @@ like the $SHELL variable, which specifies the current shell. The other options s
 ---
 
 ### Question 24
+
+You are writing a while loop in a Bash script and need to compare two string values. Which operator is used for this purpose?
+
+A. -ne
+B. =
+C. equal
+D. eq
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. =
+
+**Explanation:**
+A single equal sign is used for string comparison in a Bash script. Of the other answers, -ne is valid but is used when comparing integers. The
+string eq would be an operator if preceded by a single dash, as in -eq. In that case, -eq is used for integer comparison.
+
+</details>
+
+---
+
+### Question 25
+
+You need to create a Bash script that will loop continually and perform some commands within the loop. Which of the following lines will accomplish this task?
+
+A. if [ $exit -eq "exit"]
+B. while true; do
+C. for ($i=0, $i++)
+D. continue until ($exit)
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. while true; do
+
+**Explanation:**
+A while loop that evaluates boolean true will accomplish the task described. The other options given are syntactically incorrect in various ways.
+
+</details>
+
+---
+
+### Question 26
