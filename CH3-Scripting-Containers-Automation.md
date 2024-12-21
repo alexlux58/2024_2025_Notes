@@ -591,3 +591,824 @@ A while loop that evaluates boolean true will accomplish the task described. The
 ---
 
 ### Question 26
+
+Which of the following commands changes the location to which HEAD is pointing with git?
+
+A. git point
+B. git checkout
+C. git change
+D. git load
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. git checkout
+
+**Explanation:**
+The git checkout command switches the working copy to the specified branch and points the HEAD toward that branch. The other
+options are not valid git commands.
+
+**Example:**
+
+```bash
+# Create a new branch
+git checkout -b new_branch
+# Output: Switched to a new branch 'new_branch'
+```
+
+</details>
+
+---
+
+### Question 27
+
+You need to declare a variable as part of the environment prior to running a Bash script.
+Which of the following commands can be used to accomplish this task?
+
+A. dec
+B. create
+C. export
+D. get
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. export
+
+**Explanation:**
+The export command adds a variable to the current environment and is frequently used for the scenario described. The other options are not valid commands for this purpose.
+
+**example:**
+
+```bash
+export APP_ENV="production"
+```
+
+</details>
+
+---
+
+### Question 28
+
+Which of the following commands displays the contents of the PATH variable in Bash?
+
+A. echo PATH
+B. echo $PATH
+C. echo $CURPATH
+D. ext $PATH
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. echo $PATH
+
+**Explanation:**
+The current contents of the PATH variable, or any other shell environment variable, can be displayed using the echo command.
+Variables in Bash use a $ as part of the identifier. Therefore, any option without the $ would not work.
+
+</details>
+
+---
+
+### Question 29
+
+Which character sequence is used to execute a command within a subshell in a Bash script?
+
+A. $()
+B. subs()
+C. $%
+D. $(~
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. $()
+
+**Explanation:**
+The $() sequence executes a command within a subshell, which is helpful for ensuring that global variables in a Bash script cannot be modified.
+The other sequences shown are not valid for the scenario described.
+
+</details>
+
+---
+
+### Question 30
+
+You need to make a change to the configuration of the SSH daemon across your infrastructure. Being able to do so
+from a central server is an example of which type of automation?
+
+A. Security
+B. Automated configuration management
+C. Development configuration management
+D. Usability management
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. Automated configuration management
+
+**Explanation:**
+Managing configuration with orchestration is described in this scenario, so option B is the closest response. The other options are not accurate descriptions of this type of automation.
+
+</details>
+
+---
+
+### Question 31
+
+Which option is used with the env command in order to remove a variable from the environment?
+
+A. -r
+B. -u
+C. -n
+D. -d
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. -u
+
+**Explanation:**
+The -u option or --unset will remove a variable from the environment. The other options are not valid with the env command.
+
+</details>
+
+---
+
+### Question 32
+
+Within a Bash script, you need to run two commands but only run the second command if the first succeeds.
+Which of the following metacharacters can be use to accomplish this task?
+
+A. <>
+B. &
+C. &&
+D. |
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. &&
+
+**Explanation:**
+The double-ampersand metacharacter executes the right-hand command only if the first command exits with a successful exit
+code (0). A single ampersand sends the command into the background, thus making option B incorrect. A pipe character executes the
+second command but does so regardless of the success or failure of the first command, thus making option D incorrect.
+
+</details>
+
+---
+
+### Question 33
+
+You need to redirect the output from a command and append that output to a file. Which of the following character sequences accomplishes this task?
+
+A. >
+B. >>
+C. |
+D. ^
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. >>
+
+**Explanation:**
+Two greater-than signs append output to the specified destination. Option A includes only one greater-than sign, which overwrites rather than appends output.
+The pipe character in option C does not send output to a file, and option D does not work for the purpose described.
+
+</details>
+
+---
+
+### Question 34
+
+You need to obtain a directory listing of all files and directories except those that begin with the letter p. Which of the following commands accomplishes this task?
+
+A. ls -l !p
+B. ls -l [!p]
+C. ls -l [^p]
+D. ls -l [^p]\*
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. ls -l [^p]\*
+
+**Explanation:**
+File globbing is the process of expansion of special characters, which is required for this scenario. In this case, the negation character is the carret, thus making
+option D correct. Option C is missing the crucial globbing pattern needed for this scenario. Option B is incorrect because the square brackets are not needed for this scenario.
+
+</details>
+
+---
+
+### Question 35
+
+Which of the following files is used within a git repository in order to indicate files and file patterns that should not be versioned?
+
+A. novers
+B. .gitignore
+C. .gitignore.txt
+D. gitnover
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. .gitignore
+
+**Explanation:**
+The .gitignore file is used to specify files and file patterns that should not be versioned. The other options are not valid files for this purpose. The .gitignore file is typically placed in the root of the repository. It can be used to specify files, directories, and file patterns that should not be versioned.
+
+</details>
+
+---
+
+### Question 36
+
+You need to iterate through a directory listing and perform an operation on certain files within it. To accomplish this task, you will be using a Bash script
+and a looping construct. Which looping construct is most appropriate for this purpose?
+
+A. until
+B. do
+C. for
+D. foreach
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. for
+
+**Explanation:**
+The for loop should be used for this purpose because it iterates through a list. An until loop would require additional code, thus
+making it a less-preferable construct for the purpose described. There is no do loop or foreach loop in Bash, thus making those options incorrect.
+
+</details>
+
+---
+
+### Question 37
+
+You are debugging a Bash script written by a different system administrator. Within the script, you see
+a command surrounded by backquotes, or `. What will be the result of surrounding the command with backquotes?
+
+A. The command will execute and send all output to the console.
+B. The command will not execute.
+C. The command will execute as if the $() command substitution was used.
+D. The command will execute and send all output to /dev/null.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. The command will execute as if the $() command substitution was used.
+
+**Explanation:**
+Command substitution can be accomplished using backquotes or $(). These two methods are substantially but not completely equivalent. The backquote method is older and is less flexible than the $() method. The backquote method is still used in many scripts, but the $() method is more common in modern scripts.
+
+</details>
+
+---
+
+### Question 38
+
+Which git command displays a short history of commits along with the commit ID?
+
+A. showhist
+B. list
+C. log
+D. hist
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. log
+
+**Explanation:**
+The log command displays a short history of commits along with the commit ID. The other options are not valid git commands.
+
+**Example:**
+
+```bash
+git log
+```
+
+</details>
+
+---
+
+### Question 39
+
+You are committing code to a git repository and need to include a message on the command line. Which option enables this behavior?
+
+A. -m
+B. -h
+C. -f
+D. -l
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. -m
+
+**Explanation:**
+The -m option enables a message to be included in the commit, thereby alleviating the need to go into an editor to create the commit message. The other options
+shown do not accomplish the required task.
+
+**Example:**
+
+```bash
+git commit -m "Initial commit"
+```
+
+</details>
+
+---
+
+### Question 40
+
+Compiling software when a developer commits code to a certain branch in a repository is an example of which type of automation?
+
+A. Infrastructure
+B. Build
+C. Complex
+D. DevOps
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. Build
+
+**Explanation:**
+Compiling software when a developer commits code to a certain branch in a repository is an example of build automation. The other options are not accurate descriptions of this type of automation. Build automation is a key component of continuous integration/continuous deployment (CI/CD) scenarios.
+
+</details>
+
+---
+
+### Question 41
+
+You are working with a MySQL database and need to read in several SQL commands from a file and send them into the MySQL CLI for execution. You will be using STDIN redirection for this. Which of the following commands is correct, assuming a filename of customers.sql?
+
+A. mysql < customers.sql
+B. mysql | customers.sql
+C. mysql > customers.sql
+mysql >< customers.sql
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. mysql < customers.sql
+
+**Explanation:**
+In this scenario, STDIN redirection is accomplished with a less-than sign to take the contents of customers.sql and send those contents into the mysql command. It's also likely that the mysql command would have things like -u for the username and -p to prompt for the password, but those were not relevant to the scenario and are not required in all circumstances. The other options shown are not valid for the purpose described. Options B and C take output from the mysql command, while option D is an invalid character sequence.
+
+</details>
+
+---
+
+### Question 42
+
+You are collaborating on a coding project using git as the source code management tool. Teammates are saying that they cannot see your code, although you have been committing code regularly. Which of the following is most likely the problem?
+
+A. You have not added commit messages.
+B. You need to send the commit IDs to the teammates.
+C. You have not executed git push to send the code to the server.
+D. You are committing using the -h flag.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. You have not executed git push to send the code to the server.
+
+**Explanation:**
+More than likely you have not executed git push to send the code to the server. Of the other options, you do not need to send commit IDs to teammates and there is nothing to indicate that you have been having problems committing the code itself. The -h flag is not a valid flag for the git commit command.
+
+</details>
+
+---
+
+### Question 43
+
+Which option to the chmod command performs a recursive change?
+
+A. -re
+B. -R
+C. -c
+D. -v
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. -R
+
+**Explanation:**
+The -R option performs a recursive change to the targets identified by the chmod command. The other options do not perform recursive changes for chmod.
+
+</details>
+
+---
+
+### Question 44
+
+Which character sequence is used to indicate the default case within a case statement in a Bash script?
+
+A. ()
+B. _._
+C. \*_
+D. _)
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. \*)
+
+**Explanation:**
+The closing parenthesis is used to denote a case; when preceded by an asterisk, the default case is indicated. The other options are not valid for this purpose.
+
+</details>
+
+---
+
+### Question 45
+
+Which character sequence indicates the end of an if conditional in a Bas script?
+
+A. }
+B. fi
+C. end
+D. endif
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. fi
+
+**Explanation:**
+The character sequence fi, which is the if statement backward, indicates the end of an if conditional within a Bash script. The other sequences shown as options may be used in other languages but are not valid for this purpose in a Bash script.
+
+**Example:**
+
+```bash
+if [ $USER == "root" ]; then
+    echo "You are the root user."
+fi
+```
+
+</details>
+
+---
+
+### Question 46
+
+What is the name of the default branch in a git repository?
+
+A. source
+B. main
+C. primary
+D. first
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. main
+
+**Explanation:**
+The main branch is the branch created by default within a git repository. The other names shown are not the default branch name.
+
+</details>
+
+---
+
+### Question 47
+
+You need to use the output from a command as input for another command. Which character facilitates this scenario?
+
+A. >
+B. |
+C. !
+D. `
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. |
+
+**Explanation:**
+The pipe character sends, or pipes, the output from one command into another and is commonly used in a Linux environment for creating complex command sequences, whether through scripting or directly on the command line. The other options shown are not used for the purpose described in the scenario.
+
+**Example:**
+
+```bash
+ls -l | grep "file"
+```
+
+</details>
+
+---
+
+### Question 48
+
+Which git command shows the current state of the working copy of a repository?
+
+A. git list
+B. git status
+C. git state
+D. git view
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. git status
+
+**Explanation:**
+The git status command is used to show the current state of the working copy, displaying things like untracked files, files staged for commit, and so on. The other options shown are not valid for the scenario. The git status command is a common command used in git workflows.
+
+</details>
+
+---
+
+### Question 49
+
+Which option to the echo command suppresses the ending newline character that is normally included?
+
+A. -a
+B. -n
+C. -d
+D. -y
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. -n
+
+**Explanation:**
+The -n option suppresses the ending newline character that is normally included with the echo command and is quite useful in scripting scenarios. The other options shown are not valid for this purpose.
+
+**Example:**
+
+```bash
+echo -n "Hello, "
+echo "World!"
+# Output: Hello, World!
+```
+
+</details>
+
+---
+
+### Question 50
+
+Determining the version of software installed on each client node is an example of collecting information for which collection in an automated infrastructure?
+
+A. Inventory
+B. Group
+C. Procedure
+D. Build
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. Inventory
+
+**Explanation:**
+The inventory of an infrastructure contains things like the version of software installed clients. The other options are not accurate descriptions of this type of collection in an automated infrastructure.
+
+</details>
+
+---
+
+### Question 51
+
+You need to redirect STDERR from a command into a file to capture the errors. Which character sequence can be used for this purpose?
+
+A. >
+B. %2>
+C. 2>
+D. %%>
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. 2>
+
+**Explanation:**
+Redirecting STDERR is accomplished with the character sequence 2>. The plain greater-than sign redirects STDOUT. The other greater-than sign redirects STDOUT. The other character sequences shown as options are not valid for the purpose described.
+
+**Example:**
+
+```bash
+ls -l /nonexistent 2> errors.txt
+```
+
+</details>
+
+---
+
+### Question 52
+
+You need to make a change to your git environment because
+your email address has changed. Which of the following commands ensures that your new email address will be used for all subsequent commits?
+
+A. git config user.email
+B. git change email
+C. git config email.addr
+D. git config email.address
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. git config user.email
+
+**Explanation:**
+The git config command will be used for this purpose, and the parameter is user.email.
+
+**Example:**
+
+```bash
+git config --global user.email "
+```
+
+</details>
+
+---
+
+### Question 53
+
+Which shell built-in command is used to display a list of read only variables?
+
+A. ro
+B. readonly
+C. env-ro
+D. ro-env
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. readonly
+
+**Explanation:**
+The readonly command displays the list of read-only variables
+that have been declared in the current session. The other commands listed for this question do not exist. The readonly command is used to declare variables as read-only, meaning that they cannot be changed or unset.
+
+**Example:**
+
+```bash
+readonly MY_VAR="This is a read-only variable."
+```
+
+</details>
+
+---
+
+### Question 54
+
+Assume that you're using the Bash shell and want to prevent output redirects from accidentally overwriting existing files. Which command and option can be used to invoke this behavior?
+
+A. setoutput -f
+B. overwrite=no
+C. overwrite -n
+D. set -C
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. set -C
+
+**Explanation:**
+The set command can be used for a variety of purposes to change how the shell environment works. One such option is -C, which prevents output redirection such as that done with > from overwriting a file if the file already exists. The other options shown are not valid for this purpose.
+
+</details>
+
+---
+
+### Question 55
+
+You have received a file that does not have a file extension. Which command can you run to help determine what type of file it might be?
+
+A. grep
+B. telnet
+C. file
+D. export
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. file
+
+**Explanation:**
+The file command can be used to determine which type of file is being used. This can be particularly helpful for files without extensions, where you are unsure if you should view the contents of the file. Option A, grep, is used to look within files but would not be helpful in this case. Option B, telnet, is used for remote connections and would not be helpful in this case. Option D, export, is used to add variables to the environment and would not be helpful in this case.
+
+**Example:**
+
+```bash
+file my_file
+```
+
+</details>
+
+---
+
+### Question 56
+
+Which of the following commands will display the last 50 lines of your command history when using Bash, including commands from the current session?
+
+A. bashhist 50
+B. history 50
+C. cat .bash_history
+D. tail -f .bash_history
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. history 50
+
+**Explanation:**
+The history command will display your command history, including commands from the current session. You can specify how many lines of history to display, as shown in the answer for this question. Note that .bash_history will not show the current session's history. The tail command will display the last lines of a file, but it will not show the command history.
+
+</details>
+
+---
+
+### Question 57
+
+When using Bash, how would you execute the last command starting with a certain string, even if that command was not the last one that you typed?
+
+A. Precede the command with ! and then the string to search for.
+B. Search for the command in history and then execute it.
+C. Precede the command with a ? and then the string to search for.
+D. This is not possible with Bash.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. Precede the command with ! and then the string to search for.
+
+**Explanation:**
+Preceding the command with a ! will search history and execute the specified command. For example, !vi will start your last Vi session.
+
+**example:**
+
+```bash
+!vi
+```
+
+</details>
+
+---
+
+### Question 58
+
+Which shell built-in command can be used to determine the location from which a given command will be run?
+
+A. type
+B. when
+C. find
+D. help
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. type
+
+**Explanation:**
+The type built-in command returns the location that the shell will use in order to run the given command. The find command cannot be used for this purpose, and the other commands do not exist.
+
+**Example:**
+
+```bash
+type ls
+# Output: ls is /bin/ls
+```
+
+</details>
+
+---
+
+### Question 59
+
+Which command is used to read and execute commands from a file in the Bash shell?
+
+A. run
+B. execute
+C. source
+D. func
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. source
+
+**Explanation:**
+The source command is used to execute commands from a file. A typical use case is to create functions or variables that are then available for use within the current session. The other commands listed do not exist.
+
+**Example:**
+
+```bash
+source myscript.sh
+```
+
+</details>
+
+---
+
+### Question 60
