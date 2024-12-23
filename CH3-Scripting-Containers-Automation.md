@@ -1412,3 +1412,883 @@ source myscript.sh
 ---
 
 ### Question 60
+
+You need a command to be executed on logout for all users. Within which file should this be placed (assume all users are using Bash)?
+
+A. ~/.bash_logout
+B. /etc/bash.bash_logout
+C. /home/.bash_logout
+D. /etc/bash_logout
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. /etc/bash.bash_logout
+
+**Explanation:**
+While it's true that every user has a .bash_logout, the file exists in their home directory and therefore can be edited by the user.
+Therefore, to ensure that the required command is executed at logout, the file /etc/bash.bash_logout must be used. The other options are not valid for this purpose.
+
+</details>
+
+---
+
+### Question 61
+
+Which of the following commands removes an environment variable that has been set?
+
+A. profile --unset
+B. env -u
+C. set -u
+D. import
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. env -u
+
+**Explanation:**
+The env -u command will unset an environment variable for the current session. The unset command can also be used for this purpose. The other options are not valid for this purpose.
+
+**Example:**
+
+```bash
+env -u MY_VAR
+```
+
+</details>
+
+---
+
+### Question 62
+
+When setting the shebang line of a shell script, which of the following commands will help to determine the location of the interpreter automatically?
+
+A. #!/usr/bin/env bash
+B. #!/bin/bash
+C. #!env
+D. /bin/int bash
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. #!/usr/bin/env bash
+
+**Explanation:**
+The env command, when used as #!/usr/bin/env bash, will determine the location of the Bash interpreter automatically.
+This makes the resulting script more portable for systems where Bash may not be located in /bin/.
+
+</details>
+
+---
+
+### Question 63
+
+Which of the following best describes the PS1 environment variable?
+
+A. PS1 is used to set the location of the PostScript command.
+B. PS1 is used to define the default shell prompt for Bash.
+C. PS1 is used as per-system variable.
+D. PS1 is user-defined and does not have a default value or setting.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. PS1 is used to define the default shell prompt for Bash.
+
+**Explanation:**
+The PS1 variable usually has its default set in /etc/profile and is used as the shell prompt.
+Users can customize the prompt to include hostname, working directory, and other elements.
+
+</details>
+
+---
+
+### Question 64
+
+Which variable within a Bash script is used to access the first command-line parameter?
+
+A. $ARG
+B. $0
+C. $1
+D. $ARGO
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. $1
+
+**Explanation:**
+The $1 variable is automatically available within Bash scripts and represents the first command-line argument.
+The $0 variable is the script itself. The other variables listed in this question do not exist by default.
+
+</details>
+
+---
+
+### Question 65
+
+Which of the following commands will print a list of six numbers beginning at 0?
+
+A. list 0-5
+B. seq 0 1 5
+C. echo 0-5
+D. seq 0 1 6
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. seq 0 1 5
+
+**Explanation:**
+The seq command is used to print a sequence of numbers in a variety of formats. The answer for this question provides a starting point (0), an increment (1), and the final
+number (5), thus resulting in six numbers being displayed as output. The other options shown are not valid for this purpose.
+
+</details>
+
+---
+
+### Question 66
+
+Which of the following commands will execute a script and then exit the shell?
+
+A. run
+B. source
+C. ./
+D. exec
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. exec
+
+**Explanation:**
+The exec command executes the command given as its argument and will then exit the shell. The source command does not exit the shell.
+
+**Example:**
+
+```bash
+exec myscript.sh
+```
+
+</details>
+
+---
+
+### Question 67
+
+Which command within a shell script awaits user input and places that input into a variable?
+
+A. exec
+B. get
+C. read
+D. prompt
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. read
+
+**Explanation:**
+The read command awaits user input and places that input into the specified variable. The exec command is used to execute commands, and the other
+options are not valid for the purpose described.
+
+**Example:**
+
+```bash
+read -p "Enter your name: " name
+```
+
+</details>
+
+---
+
+### Question 68
+
+What characters are used to mark sequence of commands as a function within a shell script?
+
+A. Parentheses to declare the function (optional), and curly braces to contain the commands.
+B. Curly braces to declare the function, and parentheses to contain the commands.
+C. Square brackets to declare the function, and curly braces to contain the commands.
+D. Run quotes to denote the function
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. Parentheses to declare the function (optional), and curly braces to contain the commands.
+
+**Explanation:**
+Parentheses are used to denote a function, such as myFunction(). The parentheses are optional but are then
+followed by curly braces containing the commands to be executed when the function is called. The other options are not valid for this purpose.
+
+**Example:**
+
+```bash
+myFunction() {
+    echo "This is a function."
+}
+```
+
+</details>
+
+---
+
+### Question 69
+
+Which character sequence is used to terminate a case statement in a Bash script?
+
+A. end
+B. done
+C. esac
+D. caseend
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. esac
+
+**Explanation:**
+The sequence esac, which is case spelled backward, is used to indicate that a case statement has ended. Of the other options, the done statement is used for termination
+of certain loops in Bash.
+
+**Example:**
+
+```bash
+case $1 in
+    1)
+        echo "One"
+        ;;
+    2)
+        echo "Two"
+        ;;
+esac
+```
+
+</details>
+
+---
+
+### Question 70
+
+Which option to declare displays output in a way that could then be used to another command?
+
+A. -o
+B. -n
+C. -p
+D. -m
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. -p
+
+**Example:**
+
+```bash
+declare -p MY_VAR | grep "MY_VAR"   # Output: declare -x MY_VAR="This is a variable."
+```
+
+**Explanation:**
+The -p options displays declare statements in a way that the commands are fully qualified and could then be used as input
+for another command, through either piping or redirection to a script.
+
+</details>
+
+---
+
+### Question 71
+
+Which characters are used to denote the beginning and end of the test portion of a while loop in a shell script?
+
+A. Parentheses ()
+B. Curly braces {}
+C. Square brackets []
+D. Double quotes ""
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. Square brackets []
+
+**Explanation:**
+Square brackets are used to denote the beginning and end of the test portion of a while loop in a shell script. Other languages generally use parentheses for this purpose.
+
+**Example:**
+
+```bash
+while [ $i -lt 10 ]; do
+    echo $i
+    i=$((i+1))
+done
+```
+
+</details>
+
+---
+
+### Question 72
+
+When using the test built-in with one argument, what will be the return if its argument is not null?
+
+A. false
+B. true
+C. unknown
+D. -1
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. true
+
+**Explanation:**
+The test built-in will return true and can be used to test for the value existence of a variable not being null. Note that the behavior of the test built-in differs depending
+on the number of arguments.
+
+**Example:**
+
+```bash
+if [ $MY_VAR ]; then
+    echo "MY_VAR is not null."
+fi
+
+# Output: MY_VAR is not null.
+```
+
+</details>
+
+---
+
+### Question 73
+
+Which environment variable is used when changing directory with the tilde character, such as cd ~?
+
+A. HOMEDIR
+B. HOMEPATH
+C. HOME
+D. MAILPATH
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. HOME
+
+**Explanation:**
+The HOME environment variable, set automatically to the user's home directory, is consulted when the command cd ~ is entered. The other paths beginning with
+HOME do not exist by default, and the MAILPATH environment variable shown contains a list of locations where mail is checked when the shell is used interactively.
+
+</details>
+
+---
+
+### Question 74
+
+You would like to examine the entries for a single file through the git commit history. Which command should be used for this purpose, assuming
+a filename of nhl_scores.php?
+
+A. git log --history nhl_scores.php
+B. git log --follow nhl_scores.php
+C. git history nhl_scores.php
+D. git commit-history nhl_scores.php
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. git log --follow nhl_scores.php
+
+**Explanation:**
+The git log command will be used for this purpose, with an option of --follow and the filename/path to
+follow through history. The other options shown are not valid for this purpose.
+
+**Example:**
+
+```bash
+git log --follow nhl_scores.php
+```
+
+</details>
+
+---
+
+### Question 75
+
+Which of the following best describes attributes of an inventory within an automated continuous integration/continuous deployment (CI/CD) environment?
+
+A. Parameters such as the client IP address and software versions
+B. The number of client nodes
+C. The software used on the server for the orchestration
+D. The architectural pattern for deployment
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. Parameters such as the client IP address and software versions
+
+**Explanation:**
+Parameters and other facts about the clients are also called attributes in an orchestration environment. The other options are not accurate descriptions of this type of automation.
+
+**Example:**
+
+```bash
+# Get the client IP address
+echo $SSH_CLIENT
+
+# Get the software version
+echo $SHELL
+```
+
+</details>
+
+---
+
+### Question 76
+
+Which operator should be used when comparing integers to determine if one is equal to another in a Bash script?
+
+A. -ro
+B. ===
+C. -eq
+D. -fe
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. -eq
+
+**Explanation:**
+The integer comparison -eq is used for comparing integers within Bash scripts.
+The other answers are not valid for Bash script comparison.
+
+**Example:**
+
+```bash
+if [ $i -eq 10 ]; then
+    echo "i is equal to 10."
+fi
+```
+
+</details>
+
+---
+
+### Question 77
+
+You would like to run several commands in succession but not have the output sent into the next command. Which of the following metacharacters will accomplish this task?
+
+A. &
+B. >
+C. ;
+D. |
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. ;
+
+**Explanation:**
+The semicolon metacharacter chains multiple commands together but does not use the output from one command
+as input to the next. If the output needs to be sent into the next command, the pipe character (option D) us used.
+A single ampersand places a task in the background, thus making option A incorrect; a greater-than sign redirects standard output, making option B incorrect as well.
+
+**Example:**
+
+```bash
+ls -l ; echo "This is a separate command."
+```
+
+</details>
+
+---
+
+### Question 78
+
+Which escape sequence is used to denote the alert or bell?
+
+A. \a
+B. \b
+C. \c
+D. \d
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. \a
+
+**Explanation:**
+The \a escape sequence, when used with the echo command, sounds an alert or bell. The \b option is a backspace. The \c option indicates that echo should not produce
+any additional output. There is no \d option for echo.
+
+**Example:**
+
+```bash
+echo -e "This is an alert: \a"
+
+# Output: This is an alert: (bell sound)
+```
+
+</details>
+
+---
+
+### Question 79
+
+Which of the following is a valid variable declaration in a Bash script, setting the variable NUM equal to 1?
+
+A. NUM = 1
+B. $NUM=1
+C. NUM= 1
+D. NUM=1
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. NUM=1
+
+**Explanation:**
+It is important to note that there cannot be any spaces between the variable name and the equal sign. Likewise, there cannot be any spaces between the equal sign and the contents
+of the variable. This makes option D the only correct answer.
+
+**Example:**
+
+```bash
+NUM=1
+```
+
+</details>
+
+---
+
+### Question 80
+
+Which of the following commands will obtain the date in seconds since the epoch and place it into a variable called DATE within a shell script?
+
+A. DATE="$(date +%s)"
+B. DATE="date"
+C. DATE="$(date)";
+D. DATE="$date %s"
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. DATE="$(date +%s)"
+
+**Explanation:**
+The provided answer performs command substitution and places the value from the resulting command into a variable. Note the use of +%s formatting on the date, which then
+formats the output as seconds since the epoch, as specified in the question. Option C will provide the date within the DATE variable but will not format it as specified in the question.
+
+**Example:**
+
+```bash
+DATE="$(date +%s)"
+```
+
+</details>
+
+---
+
+### Question 81
+
+Which sequence is used to mark the beginning and end of the commands to execute within a for loop in a shell script?
+
+A. Curly braces {}
+B. The keywords do and done
+C. Semicolons ;
+D. Tabs
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. The keywords do and done
+
+**Explanation:**
+In shell scripts, the commands to execute begin at the do keyword and end at the done keyword. Other languages generally
+use either curly braces or tabs. Semicolons are used to separate commands within a line.
+
+**Example:**
+
+```bash
+for i in {1..10}; do
+    echo $i
+done
+```
+
+</details>
+
+---
+
+### Question 82
+
+Which option to the declare command will create a variable that is read-only?
+
+A. -r
+B. -ro
+C. -p
+D. -x
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. -r
+
+**Explanation:**
+The -r option to declare will create or mark the variable as read-only.
+The -p option prints output in a format that can be reused.
+The -x option declares the variable for export. The -ro option does not exist.
+
+**Example:**
+
+```bash
+declare -r MY_VAR="This is a read-only variable."
+```
+
+</details>
+
+---
+
+### Question 83
+
+Which environment variable controls the format of dates and times, such as a 12-hour or 24-hour clock?
+
+A. LOCALE_DATE
+B. DATE_FORMAT
+C. LC_TIME
+D. LC_DATE
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. LC_TIME
+
+**Explanation:**
+The LC_TIME environment variable is used to control the display and behavior of the date and time and can be changed to a different
+locale in order to achieve the desired display and behavior of date and time formatting. The other options shown for this question do not exist.
+
+**Example:**
+
+```bash
+LC_TIME=en_US.UTF-8
+```
+
+</details>
+
+---
+
+### Question 84
+
+Which option to netstat displays interface information in a table-like format that might be suitable for use with scripting?
+
+A. -i
+B. -r
+C. -t
+D. -l
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. -i
+
+**Explanation:**
+The -i option shows interface information in a table-like format. This option is used to see information
+such as transmit and receive bytes as well as the MTU for the interface and other information. The -r option
+shows routes, while -l shows listening sockets. There is no -t option for netstat.
+
+**Example:**
+
+```bash
+netstat -i
+```
+
+</details>
+
+---
+
+### Question 85
+
+You are running a shell script from within your SSH session. Which key combination can be used to terminate the script?
+
+A. Ctrl+X
+B. Ctrl+-
+C. Ctrl+C
+D. Ctrl+Esc
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. Ctrl+C
+
+**Explanation:**
+The Ctrl+C key combination kills a shell script that you are running interactively. The other key combinations
+may have an effect but not within this context or for the desired behavior. Ctrl+C is a common key combination to terminate a running process.
+
+</details>
+
+---
+
+### Question 86
+
+Which of the following conditionals in a Bash script will test if the variable DAY is equal to SUNDAY?
+
+A. if ($DAY == "SUNDAY")
+B. if($DAY -eq "SUNDAY")
+C. if [ $DAY == "SUNDAY" ]
+D. if [ $DAY = "SUNDAY" ]
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. if [ $DAY == "SUNDAY" ]
+
+**Explanation:**
+Shell scripting syntax uses the format shown, with square brackets around the condition to be tested and double equal signs for a string test. Variables are preceded by
+a dollar sign as shown. The other options shown are not valid for this purpose.
+
+**Example:**
+
+```bash
+if [ $DAY == "SUNDAY" ]; then
+    echo "It's Sunday!"
+fi
+```
+
+</details>
+
+---
+
+### Question 87
+
+Which of the following commands adds ~/code/bin to the path?
+
+A. PATH=~/code/bin:$PATH
+B. PATH=/code/bin:$PATH
+C. PATH=/home/code/bin:$PATH
+D. PATH=PATH:~/code/bin
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. PATH=~/code/bin:$PATH
+
+**Explanation:**
+The syntax for setting the PATH separates the new path with a colon, as shown in the correct option.
+A primary difference between teh correct and incorrect options for this question is in how the actual specified path is shown.
+
+**Example:**
+
+```bash
+PATH=~/code/bin:$PATH
+```
+
+</details>
+
+---
+
+### Question 88
+
+Which option to git merge can be used to attempt to roll back a merge that has conflicts?
+
+A. --rollback
+B. --abort
+C. --rewind
+D. --restart
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. --abort
+
+**Explanation:**
+The --abort option attempts to roll back a problematic merge. The other options shown do not exist as options to the git merge command.
+
+**Example:**
+
+```bash
+git merge --abort
+```
+
+</details>
+
+---
+
+### Question 89
+
+Which environment variable can be used to change the default path for a new git repository?
+
+A. GIT_DIR
+B. GIT_HOME
+C. GIT_DEST
+D. GIT_LOC
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. GIT_DIR
+
+**Explanation:**
+The GIT_DIR environment variable can be used to change the default location away from the ./.git directory in which a new repository would normally
+be created. The other options are not used by git as environment variables.
+
+**Example:**
+
+```bash
+GIT_DIR=/path/to/repo
+```
+
+</details>
+
+---
+
+### Question 90
+
+Which character sequence is used to add a horizontal tab using echo with a Bash script?
+
+A. \h
+B. \t
+C. \a
+D. \f
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. \t
+
+**Explanation:**
+The \t escape sequence adds a horizontal tab. The other characters may have different meaning and so are not valid for this question. For example, \a is alert or bell.
+
+**Example:**
+
+```bash
+echo -e "Hello\tWorld!"
+```
+
+</details>
+
+---
+
+### Question 91
+
+You need to exclude a build file, called build.o, from being tracked by git. Which character sequence can be used in the .gitignore file to exclude or ignore
+that file in all directories?
+
+A. build.o
+B. /build.o
+C. \*_/build.o
+D. build._
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. \*\*/build.o
+
+**Explanation:**
+The double-asterisk sequence has special meaning and indicates that the file will be ignored in all directories. The other options shown are not valid for this purpose.
+
+**Example:**
+
+```bash
+**/build.o
+```
+
+</details>
+
+---
+
+### Question 92
