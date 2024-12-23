@@ -129,3 +129,61 @@ A. tune2fs -c
 **Explanation:**
 The tune2fs command is used for this purpose, and the -c option sets the mount count for the specified partition. The dumpe2fs command is used to print the superblock
 and block group information for the filesystem. The -m option is used to set the percentage of reserved blocks for the filesystem. The setmount command does not exist.
+
+**Example:**
+
+```bash
+tune2fs -c 30 /dev/sda1
+
+# Output
+Setting maximal mount count to 30
+
+tune2fs -l /dev/sda1 | grep 'Mount count'
+
+# Output
+Mount count:              1
+```
+
+</details>
+
+---
+
+### Question 6
+
+When checking filesystems with the fsck command, which option skips checking of the root filesystem?
+
+A. -A
+B. -M
+C. -R
+D. -S
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. -R
+
+**Explanation:**
+The -R option skips the root filesystem when the -A option is used. The -M option does not check mounted filesystems.
+The -S option skips checking the root filesystem, but only when the -A option is not used. The -A option checks all filesystems.
+
+**Example:**
+
+```bash
+fsck -AR -y
+
+# Output
+fsck from util-linux 2.34
+[/sbin/fsck.ext4 (1) -- /] fsck.ext4 -a /dev/sda1
+/dev/sda1: clean, 11/655360 files, 123456/2621440 blocks
+[/sbin/fsck.ext4 (1) -- /boot] fsck.ext4 -a /dev/sda2
+/dev/sda2: clean, 11/655360 files, 123456/2621440 blocks
+```
+
+</details>
+
+---
+
+### Question 7
+
+You have connected a USB disk to the system and need to find out its connection point within the system.
+Which of the following is the best method for accomplishing this task?
