@@ -296,3 +296,55 @@
 - Introduction to Route 53 resolver endpoints
 
 ---
+
+### Amazon DNS Server - Amazon Route 53 Resolver
+
+- VPC comes with default DNS server also called as Route53 DNS Resolver.
+- Runs at VPC Base + 2 Address (can also be accessed from within the VPC at virtual IP 169.254.169.253)
+- Resolves DNS requests from:
+  - Route 53 Private Hosted Zone
+  - VPC internal DNS
+  - Forwards other requests to Public DNS (including Route 53 Public Hosted Zones)
+  - DNS resolution is enabled by default in VPC.
+  - DNS resolution is disabled by default in peered VPCs.
+- Accessible from within the VPC
+
+#### Amazon Route 53 Private Hosted Zone
+
+1. Create a private hosted zone in Route 53. (e.g. example.internal or example.com)
+2. Create record sets pointing to EC2 instances private IPs in the VPC.
+3. DNS queries from within the VPC will resolve to the private IP addresses.
+
+#### VPC DNS
+
+- EC2 instances get Private DNS name such as
+  - ip-<private-ipv4-address>.region.compute.internal
+
+#### Public DNS
+
+- google.com, amazon.com, etc.
+- Amazon services public endpoints
+  - sqs.ap-south-1.aws.amazon.com
+  - s3.ap-south-1.amazonaws.com
+
+#### DHCP Option Sets
+
+- VPC comes with default DHCP option sets which provides these dynamic host configurations to the instances on launch
+
+  - Domain Name: ec2.internal
+  - Domain Name Servers: Amazon provided DNS server
+  - NTP Servers: Amazon provided NTP server
+  - NetBIOS Name Servers: Amazon provided NetBIOS Name Servers
+  - NetBIOS Node Type: Amazon provided NetBIOS Node Type
+
+- The options field of a Dynamic Host Configuration Protocol (DHCP) message contains the configuration parameters
+  like domain name, domain name server, NTP server and the NetBIOS node type.
+
+- AWS automatically creates and associates a DHCP option set for your VPC upon creation and sets the following parameters:
+  - domain-name-servers: This defaults to AmazonProvidedDNS.
+  - domain-name: This defaults to the internal Amazon domain name for your region (e.g., <ip>.ap-south-1.compute.internal).
+  - ntp-servers: This defaults to AmazonProvidedNTP.
+  - netbios-name-servers: This defaults to AmazonProvidedNetBIOS.
+  - netbios-node-type: This defaults to 2.
+
+---

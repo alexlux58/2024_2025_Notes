@@ -2,111 +2,787 @@
 
 ---
 
+common **command-line editing shortcuts** (often called **readline** shortcuts) to help you move around and edit text faster on a terminal. These should work in most Bash or Zsh shells by default.
+
+---
+
+## **Navigation**
+
+1.  **Move to the Beginning of the Line**
+
+    - **`Ctrl + A`**\
+      You already know this one---jumps the cursor to the start of the line.
+
+2.  **Move to the End of the Line**
+
+    - **`Ctrl + E`**\
+      Similar to `Ctrl + A`, but goes to the end of the current line.
+
+3.  **Move Forward One Word**
+
+    - **`Alt + F`** _(or `Esc` then `F` if `Alt` doesn't work)_\
+      Moves the cursor forward by one word.
+
+4.  **Move Backward One Word**
+
+    - **`Alt + B`** _(or `Esc` then `B`)_\
+      Moves the cursor backward by one word.
+
+5.  **Move Up or Down Through Command History**
+
+    - **`Ctrl + P`**: Previous command (same as the Up arrow).
+    - **`Ctrl + N`**: Next command (same as the Down arrow).
+
+---
+
+## **Deleting/Editing**
+
+1.  **Delete a Word**
+
+    - **Already Known**: **`Ctrl + W`** deletes a word to the left (from cursor to the start of the word).
+    - **Forward Delete a Word**: **`Alt + D`** deletes a word to the right (from cursor to the end of the word).
+
+2.  **Delete to the End of the Line**
+
+    - **`Ctrl + K`**\
+      Removes everything from the cursor's position to the end of the line.
+
+3.  **Delete to the Beginning of the Line**
+
+    - **`Ctrl + U`**\
+      Removes everything from the cursor's position to the start of the line.
+
+4.  **Delete from the Cursor to the End of a Word**
+
+    - **`Alt + D`**\
+      As mentioned above, deletes the text from the cursor to the end of the current word.
+
+5.  **Delete the Previous Character**
+
+    - **`Ctrl + H`**\
+      This often works like the Backspace key.
+
+6.  **Transpose (Swap) Two Characters**
+
+    - **`Ctrl + T`**\
+      Swaps the character under the cursor with the one before it. If your cursor is at the end of a word, it's handy for fixing a quick typo.
+
+---
+
+## **Miscellaneous Shortcuts**
+
+1.  **Clear the Screen**
+
+    - **`Ctrl + L`**\
+      Same as the `clear` command.
+
+2.  **Undo / Revert a Line (in some shells)**
+
+    - **`Ctrl + _`** (that is, Ctrl + Shift + -, on some keyboards)\
+      In Bash, this can undo the last text change. (It's a bit finicky to type, depending on your keyboard layout.)
+
+3.  **Auto-Completion**
+
+    - **`Tab`**\
+      While not exactly a "shortcut" like the others, pressing **`Tab`** attempts to auto-complete commands, filenames, and directories.
+
+4.  **Reverse Search Through Command History**
+
+    - **`Ctrl + R`**\
+      Initiates a reverse search. Type part of a previous command, and it will find matches in your command history. Press `Ctrl + R` again to cycle through more matches.
+
+5.  **Cancel a Running Command**
+
+    - **`Ctrl + C`**\
+      Immediately stops the running process or command.
+
+6.  **Suspend a Running Program**
+
+    - **`Ctrl + Z`**\
+      Sends the current process to the background (suspended). You can resume it with `fg` (foreground) or `bg` (background).
+
+---
+
+## **Cheat Sheet Summary**
+
+| **Action**                      | **Shortcut**            |
+| ------------------------------- | ----------------------- |
+| Beginning of line               | `Ctrl + A`              |
+| End of line                     | `Ctrl + E`              |
+| Forward one word                | `Alt + F`               |
+| Backward one word               | `Alt + B`               |
+| Delete previous word            | `Ctrl + W`              |
+| Delete next word                | `Alt + D`               |
+| Delete to end of line           | `Ctrl + K`              |
+| Delete to beginning of line     | `Ctrl + U`              |
+| Transpose two characters        | `Ctrl + T`              |
+| Reverse-i-search (history)      | `Ctrl + R`              |
+| Clear screen                    | `Ctrl + L`              |
+| Move up/down in command history | `Ctrl + P` / `Ctrl + N` |
+| Cancel running command          | `Ctrl + C`              |
+| Suspend running process         | `Ctrl + Z`              |
+| Undo last edit (sometimes)      | `Ctrl + _`              |
+
+---
+
+**With these shortcuts, you'll be zipping around the terminal in no time**
+
+---
+
 ## Users and Groups
 
-### Superuser
+## **Root User: The Superuser Account With Unrestricted Access**
 
-- **Root User**: The superuser account with unrestricted access.
+1.  **Definition**
+
+- In Unix-like systems (Linux, macOS), the "root" user is the ultimate system account that has unrestricted access to all commands, files, and services.
+- Sometimes referred to as the "superuser," it can bypass any security controls and system permissions.
+
+2.  **Why It Exists**
+
+- The root user is necessary for administering the system at the deepest level. This includes critical actions like installing system-wide software, changing file permissions, and altering system configurations that affect all users.
+
+3.  **Typical Use Cases**
+
+- **System Maintenance**: Performing package installations, OS updates, kernel modifications, or mounting/unmounting filesystems.
+- **Configuration Management**: Editing essential configuration files in `/etc/`, such as `/etc/passwd`, `/etc/ssh/sshd_config`, or `/etc/sudoers`.
+- **Service Management**: Starting, stopping, or restarting critical services (e.g., web servers, databases) that require elevated privileges.
+
+4.  **Accessing Root Privileges**
+
+- **Direct Login** (not recommended in most modern environments): Logging in **as** the root user, typically disabled by default for security reasons.
+- **sudo** (recommended): Running specific commands with root-level privileges via `sudo`.
+- Example: `sudo apt-get update` allows you to update package repositories without switching entirely to the root user.
+- **su** (substitute user): Switching to another user account (often root) during a session. For instance, `su -` starts a shell as the root user.
+
+5.  **Root vs. Non-Root**
+
+- **Non-root**: Standard user accounts are restricted in what actions they can perform, protecting the system from accidental or malicious misuse.
+- **Root**: Has no restrictions, so it can do anything, including dangerous or destructive commands (e.g., `rm -rf /`).
+
+6.  **Best Practices**
+
+1.  **Use `sudo` Instead of Logging in as Root**
+
+- Helps you keep a log of privileged actions in `/var/log/auth.log` or similar system logs.
+- Minimizes the time you spend with full root privileges, reducing the risk of accidental system damage.
+
+2.  **Principle of Least Privilege**
+
+- Grant only the necessary privileges to a user or process, and no more.
+- Define granular access in the `/etc/sudoers` file (or `/etc/sudoers.d/`) for specific commands.
+
+3.  **Protect the Root Account**
+
+- Set a strong root password, or better yet, disable direct root login and rely on `sudo` for elevated tasks.
+- Monitor who has `sudo` privileges on the system.
+
+4.  **Audit and Logging**
+
+- Periodically review logs to see which commands are being run with root privileges.
+- Adjust permissions and remove unnecessary privileges when needed.
+
+7.  **Real-World Example**
+
+- **Scenario**: You need to update system packages on a Ubuntu server.
+
+1.  As a normal user, you run:
+
+`sudo apt-get update
+sudo apt-get upgrade`
+
+2.  `sudo` prompts you for your password.
+3.  If allowed by the sudoers config, you can install and upgrade packages without having to switch to the actual root account.
+
+4.  **Security Implications**
+
+- Since the root user can override any system restrictions, it's a prime target for attackers. If compromised, an attacker gains full control of your system.
+- That's why many systems disable direct root SSH login (`PermitRootLogin no` in `/etc/ssh/sshd_config`) and rely on user-based accounts with carefully configured sudo privileges.
+
+---
+
+### **In Summary**
+
+- The **root user** is the key to system-wide administration and maintenance, offering total control over the system.
+- Because of its power, it's critical to follow best practices: minimize root usage, rely on `sudo`, enforce the principle of least privilege, and continually monitor who has elevated access.
 
 #### Sudoers Management
 
-- **sudoers file**: List users in the `/etc/sudoers` file using the `visudo` editor to delegate user accounts.
-- **Commands**:
-  - `sudoedit`: Edit a file with the user's credentials.
-  - `visudo`: Verify `/etc/sudoers` syntax before committing changes.
-    - `-c`: Check for file errors.
-    - `-f`: Edit/check location.
-    - `-s`: Check file in strict mode.
+## **visudo**
 
-### User and Group Management
+`visudo` is the safest way to edit the `/etc/sudoers` file (and files in `/etc/sudoers.d/`) because it checks for syntax errors before saving. It locks the file to prevent multiple simultaneous edits and ensures you don't accidentally break sudo access.
 
-- **Wheel Group**: Members have elevated privileges with reduced risk to system integrity.
-- **Polkit (PolicyKit)**: A framework for managing authorizations and privileges.
-  - **Commands**:
-    - `pkexec`: Execute a command as another user (e.g., `pkexec mkdir /alux`).
-    - `pkaction`: List available actions.
-    - `pkcheck`: Verify if a user is authorized for an action.
+### **1\. Basic visudo Usage**
 
-### User Accounts
+`sudo visudo`
 
-- **Storage**: User accounts are stored in the `/etc/passwd` file and configured per `/etc/login.defs`.
-- **Home Directory**: Created in `/home/<account_name>` and populated from `/etc/skel`.
-- **User Creation**: The `useradd` command does not automatically set a password.
+- **What it does**:
+  - Opens `/etc/sudoers` in your default editor (often `vi` or `nano`) with root privileges.
+  - Validates syntax upon saving.
 
-#### Useradd Options
+### **2\. Checking Syntax Without Editing**
 
-- `-c`: Comment
-- `-d`: Home directory path/name
-- `-e`: Expiration date (YYYY-MM-DD)
-- `-f`: Inactive days (0 to disable account)
-- `-g`: Primary group (name or GID)
-- `-G`: Secondary group (name or GID)
-- `-m`: Create home directory if it does not exist (default)
-- `-M`: Do not create home directory
-- `-n`: Do not create a group with the same name as the user
-- `-r`: System account
-- `-s`: Shell
-- `-u`: User ID (UID)
-- `-D`: Display default settings
+`sudo visudo -c`
 
-### User Management Commands
+- **Use Case**:
 
-- `useradd`: Create a new user.
-- `useradd -m <username>`: Create a new user with a home directory.
-- `usermod`: Modify an existing user.
-  - `usermod -aG <group> <username>`: Add a user to a group.
-- `userdel`: Delete a user.
-  - `userdel -r <username>`: Delete a user and their home directory.
-- `passwd`: Change a user's password.
-  - `passwd <username>`: Change a specific user's password.
-  - `passwd -e <username>`: Expire a user's password.
-  - `passwd -l <username>`: Lock a user's password.
-  - `passwd -u <username>`: Unlock a user's password.
-- `chfn`: Change a user's full name.
-  - `chfn -f <full_name> <username>`: Change a specific user's full name.
-  - `chfn -r <room_number> <username>`: Change a specific user's room number.
-  - `chfn -w <work_phone> <username>`: Change a specific user's work phone number.
-  - `chfn -h <home_phone> <username>`: Change a specific user's home phone number.
-  - `chfn -o <other_info> <username>`: Change a specific user's other information.
-  - `chfn -L <username>`: Lock a user's full name.
-- `chsh`: Change a user's shell.
-- `chage`: Change a user's password expiration date.
-  - `chage -l <username>`: View a user's password expiration date.
+  - Quickly validate the syntax of your `/etc/sudoers` file.
+  - If there are no errors, you will see a confirmation message like:
 
-### Group Management Commands
+    bash
 
-- `groupadd`: Create a new group.
-  - `groupadd -g <GID> <groupname>`: Create a new group with a specific GID.
-  - `groupadd -r <groupname>`: Create a new system group.
-  - `groupadd -o <groupname>`: Create a new group with a non-unique GID.
-  - `groupadd -p <password> <groupname>`: Create a new group with a password.
-  - `groupadd -K <key=value> <groupname>`: Create a new group with a key-value pair.
-  - `groupadd -U <username> <groupname>`: Create a new group with a user.
-  - `groupadd -A <username> <groupname>`: Create a new group with an administrator.
-  - `groupadd -M <username> <groupname>`: Create a new group with a member.
-  - `groupadd -S <username> <groupname>`: Create a new group with a service.
-  - `groupadd -T <username> <groupname>`: Create a new group with a template.
-  - `groupadd -Z <username> <groupname>`: Create a new group with a SELinux user.
-- `groupmod`: Modify an existing group.
-  - `groupmod -g <GID> <groupname>`: Change a group's GID.
-  - `groupmod -n <newname> <groupname>`: Change a group's name.
-  - `groupmod -o <groupname>`: Change a group's GID to a non-unique value.
-  - `groupmod -p <password> <groupname>`: Change a group's password.
-  - `groupmod -K <key=value> <groupname>`: Change a group's key-value pair.
-  - `groupmod -U <username> <groupname>`: Change a group's user.
-  - `groupmod -A <username> <groupname>`: Change a group's administrator.
-  - `groupmod -M <username> <groupname>`: Change a group's member.
-  - `groupmod -S <username> <groupname>`: Change a group's service.
-  - `groupmod -T <username> <groupname>`: Change a group's template.
-  - `groupmod -Z <username> <groupname>`: Change a group's SELinux user.
-- `groupdel`: Delete a group.
-  - `groupdel -r <groupname>`: Delete a group and its members.
-  - `groupdel -f <groupname>`: Delete a group and its members without confirmation.
-  - `groupdel -o <groupname>`: Delete a group with a non-unique GID.
-  - `groupdel -p <password> <groupname>`: Delete a group with a password.
-  - `groupdel -K <key=value> <groupname>`: Delete a group with a key-value pair.
-  - `groupdel -U <username> <groupname>`: Delete a group with a user.
-  - `groupdel -A <username> <groupname>`: Delete a group with an administrator.
+    `/etc/sudoers: parsed OK`
+
+### **3\. Editing or Checking a Different File Location**
+
+`sudo visudo -f /etc/sudoers.d/finance_team`
+
+- **Use Case**:
+  - Instead of placing all sudo rules in one file, you can break them into separate, more manageable files in the `/etc/sudoers.d/` directory (e.g., one file per team).
+  - This command tells visudo to open and validate that specific file instead of the main `/etc/sudoers`.
+
+### **4\. Strict Mode Checking**
+
+`sudo visudo -s`
+
+- **Use Case**:
+  - **Strict mode** will perform additional checks to ensure the `/etc/sudoers` file meets stricter syntax requirements.
+  - This helps catch possible mistakes or ambiguities that might not be flagged under normal checks.
+
+### **5\. Example Sudoers Entry**
+
+Inside `visudo`, you might add a line like this to grant a user (`alice`) permission to run any command with sudo privileges (without a password prompt):
+
+`alice  ALL=(ALL:ALL) NOPASSWD:ALL`
+
+Or to limit commands to just systemd operations:
+
+`alice  ALL=(ALL:ALL) /bin/systemctl`
+
+---
+
+## **sudoedit**
+
+`sudoedit` is a secure way to edit files that require elevated privileges **without** running your editor as root. It does the following:
+
+1.  Copies the file to a temporary location (as your regular user).
+2.  Invokes your preferred text editor on the temporary file.
+3.  Copies the temporary file back to the original location (with root privileges) after you save and exit.
+
+This workflow reduces the risk that a malicious plugin or misconfiguration in your text editor could cause harm while running as root.
+
+### **1\. Basic sudoedit Usage**
+
+`sudoedit /etc/ssh/sshd_config`
+
+- **Use Case**:
+  - You need to update configuration files (like `sshd_config`) that require root privileges to modify.
+  - `sudoedit` will open your default editor as your normal user, but handle the file changes with escalated privileges when saving.
+
+### **2\. Locking Down Permissions via sudoers**
+
+For `sudoedit` to work for specific files, you might configure sudoers entries like this:
+
+`alex ALL=(ALL:ALL) sudoedit /etc/apache2/apache2.conf`
+
+- **What this does**:
+  - Allows user `alex` to run `sudoedit /etc/apache2/apache2.conf` without giving blanket access to every command.
+
+### **3\. Editing Files in a Safe Way**
+
+- **Why it's safer**:
+  - If you run `sudo vi /etc/ssh/sshd_config`, then **vi** itself runs as root, which might be risky if you have untrusted plugins or environment settings.
+  - `sudoedit` mitigates these risks by performing the edit as your normal user.
+
+### **4\. Example Real-World Use Case**
+
+1.  You want a junior developer to only be able to edit Nginx configuration, nothing else.
+2.  In the `/etc/sudoers.d/limited-access` file (edited via `visudo -f`), add:
+
+    `juniordev  ALL=(root) sudoedit /etc/nginx/nginx.conf`
+
+3.  Now, your junior dev can do:
+
+    `sudoedit /etc/nginx/nginx.conf`
+
+    They can make changes safely without the risk of running the entire editor as root.
+
+## **Putting It All Together**
+
+1.  **Delegate Access**: Use `visudo` to edit the `/etc/sudoers` file or a file in `/etc/sudoers.d/`, defining who can run which commands.
+2.  **Check Your Work**: Use `visudo -c` or `visudo -s` to validate the configuration before saving.
+3.  **Safely Edit Privileged Files**: Use `sudoedit` when making changes to configuration files that require elevated permissions. This reduces security risk compared to running your editor as root.
+
+By combining **`visudo`** (for managing sudoers with confidence) and **`sudoedit`** (for safely editing privileged files), you ensure a more secure and maintainable system administration workflow.
+
+### Adding kevinlux to the sudo group
+
+---
+
+Most Linux distributions (like Ubuntu and Debian) use the `sudo` group to control who can run sudo commands. Here's the quick approach:
+
+1.  **Log in or switch to an account with sudo privileges**
+
+    - If you're not already, run:
+
+      `su - <existing_sudo_user>`
+
+    - Or log in directly with a user that has sudo privileges.
+
+2.  **Add kevinlux to the sudo group**
+
+    - Run:
+
+      `sudo usermod -aG sudo kevinlux`
+
+    - This command uses `usermod` to append (`-a`) kevinlux to the group (`-G`) called `sudo`.
+
+3.  **Verify**
+
+    - You can check to see if kevinlux is indeed in the sudo group by running:
+
+      `groups kevinlux`
+
+    - You should see `sudo` in the list of groups.
+
+4.  **Test**
+
+    - Log in as kevinlux (or switch user with `su - kevinlux`) and run a quick test:
+
+      `sudo whoami`
+
+    - If everything is correct, you should see the output `root`.
+
+---
+
+## 2\. Editing the sudoers file (via visudo)
+
+If your distro doesn't rely on the `sudo` group or you want a bit more granular control, you can edit the `sudoers` file directly:
+
+1.  **Open the sudoers file with visudo**
+
+    - Run:
+
+      `sudo visudo`
+
+    - `visudo` is safer than editing `/etc/sudoers` directly because it checks for syntax errors before saving.
+
+2.  **Add an entry for kevinlux**
+
+- Scroll down (or navigate) to the lines that look like this:
+
+# User privilege specification
+
+`root ALL=(ALL:ALL) ALL`
+
+- Just below it, add:
+
+`kevinlux ALL=(ALL:ALL) ALL`
+
+- This means user `kevinlux` can run commands as all users/groups on all hosts.
+
+3.  **Save and exit**
+
+- If you're using the default nano-like interface, press **Ctrl+O** then **Enter** to save, and **Ctrl+X** to exit.
+- If using vim, press **Esc**, then type `:wq` and hit **Enter**.
+
+4.  **Test**
+
+- As before, switch or log in as `kevinlux` and run:
+
+  `sudo whoami`
+
+- If successful, it'll print `root`.
+
+---
+
+## Extra Tips
+
+- For security, you might want to limit `kevinlux` to certain commands only. For example:
+
+  `kevinlux ALL=(ALL:ALL) /usr/bin/apt-get, /usr/bin/systemctl`
+
+  That syntax means they can only run `apt-get` and `systemctl` with sudo privileges. All other commands would be denied.
+
+- Keep in mind that any syntax mistakes in `/etc/sudoers` can lock out your sudo privileges, so using `visudo` is crucial.
+
+## **Wheel Group**
+
+1.  **What is the Wheel Group?**
+
+    - The Wheel Group is a special user group (typically named `wheel` in many Unix-like systems, or sometimes `sudo` group on Ubuntu/Debian) that grants its members elevated privileges.
+    - Its purpose is to allow authorized users to perform actions that would otherwise require the **root** account, typically via `sudo`.
+
+2.  **Why Use It?**
+
+    - Instead of logging in or switching directly to `root`, you can add specific users to the wheel group and allow them to perform administrative tasks with fewer risks.
+    - This follows the principle of least privilege: you don't give everyone root access, but instead selectively grant "wheel" membership to those who need administrative power.
+
+3.  **Practical Example**
+
+    - **Add an existing user to the wheel group** (in Fedora/CentOS/RHEL-based systems):
+
+      `sudo usermod -aG wheel username`
+
+    - **Verify wheel membership**:
+
+      `groups username`
+
+      The output should list `wheel` among the groups.
+
+---
+
+## **Polkit (PolicyKit)**
+
+1.  **Overview**
+
+    - Polkit is a framework for managing authorizations and privileges on Linux systems.
+    - It provides a way for unprivileged processes to talk to privileged processes in a controlled manner, rather than always relying on `sudo` or direct root login.
+
+2.  **Common Polkit Commands**
+
+    - **`pkexec`**: Execute a command as another user (similar to `sudo`, but uses Polkit's authorization rules).
+    - **`pkaction`**: List or examine available Polkit actions on the system.
+    - **`pkcheck`**: Check whether a user is authorized to perform a particular Polkit action.
+
+3.  **Simple Use Cases**
+
+    - **Execute a command as root with Polkit**:
+
+      `pkexec mkdir /alux`
+
+      - This will prompt you for authentication (if necessary), then create the `/alux` directory with elevated privileges.
+
+      this error often appears on systems where no PolicyKit authentication agent is running or where Polkit can't detect an "active session" for you. On a typical Ubuntu **server** (non-GUI) setup, there usually isn't a graphical Polkit agent running in the background, so `pkexec` fails with the message:
+
+`polkit-agent-helper-1: error response to PolicyKit daemon: GDBus.Error:org.freedesktop.PolicyKit1.Error.Failed: No session for cookie`
+
+### **Why You're Having This Issue**
+
+1.  **No Active Polkit Session**
+
+    - On many desktop distributions, a Polkit agent (e.g., `polkit-gnome-authentication-agent-1`) runs automatically. This agent prompts you for a password in a GUI pop-up when elevated privileges are needed.
+    - On a server environment without a GUI, Polkit doesn't see an active session by default, so it can't authenticate you. This leads to the _"No session for cookie"_ error.
+
+2.  **Not the Typical Use Case for Servers**
+
+    - On servers, commands are usually run with `sudo` instead of `pkexec` because `sudo` doesn't rely on a Polkit agent.
+    - Polkit is more commonly used in desktop systems where there's a desktop environment handling policy-related prompts.
+
+### **Where to See the Logs**
+
+- **Primary location on Ubuntu**:
+
+  1.  `/var/log/auth.log` -- This is where authentication-related events (including sudo and Polkit) get logged.
+  2.  `/var/log/syslog` -- Polkit errors might also show up here if they're not explicitly redirected to `auth.log`.
+
+- **Using journalctl (Systemd)**:
+
+  - On systemd-based systems, you can also check for Polkit logs via:
+
+    `journalctl -u polkit.service -xe`
+
+    or simply
+
+    `journalctl -xe`
+
+    to see recent system messages, including Polkit-related ones.
+
+### **Common Ways to Resolve or Work Around It**
+
+1.  **Use `sudo` Instead of `pkexec`**
+
+    - On a headless Ubuntu Server, the standard approach is:
+
+      `sudo mkdir /test`
+
+    - This bypasses the need for a Polkit agent entirely.
+
+2.  **Install & Enable a Polkit Agent (Less Common on Servers)**
+
+    - If you really need `pkexec` in a non-GUI environment, you'd have to install a console-based Polkit agent and configure it to handle authentication. This is somewhat more complex and not typically done on servers.
+
+3.  **Configure Polkit Rules**
+
+    - Even if you install a Polkit agent, you might need to set up local Polkit rules to allow your user to perform certain actions without an active GUI session. This can be more effort than using `sudo`.
+
+---
+
+### **Takeaway**
+
+- **Root Cause**: No active Polkit agent or session is available to handle the `pkexec` prompt on your Ubuntu Server.
+- **Logs**: Check `/var/log/auth.log`, `/var/log/syslog`, or use `journalctl -xe` for details.
+- **Quick Fix**: Use `sudo` on servers. Polkit (`pkexec`) is typically used on desktop systems with a running authentication agent.
+
+  - **List Available Actions**:
+
+    `pkaction`
+
+    - This shows all known Polkit actions. Each action can have different authorization requirements (e.g., only `wheel` members can perform certain tasks).
+
+  - **Check Authorization**:
+
+    `pkcheck --action org.freedesktop.policykit.exec`
+
+    - This verifies if the current user is allowed to execute a particular action.
+
+---
+
+## **User and Group Management**
+
+User management is all about controlling who can log into the system and what level of access they have.
+
+1.  **Where User Accounts Are Stored**
+
+    - User account information is stored in `/etc/passwd`. Each line in this file represents a user, including their username, user ID (UID), group ID (GID), home directory, and default shell.
+    - Password hashes (for most modern Linux systems) are stored in `/etc/shadow`, which is more secure.
+
+2.  **Home Directory**
+
+    - Typically located at `/home/<account_name>`.
+    - By default, files from `/etc/skel` (e.g., initial dotfiles like `.bashrc`, `.profile`) are copied into a user's home directory at account creation.
+    - The `useradd` command creates a new user but does **not** automatically set a password.
+    - After creating a user, you'll likely want to set a password with:
+
+      `sudo passwd <username>`
+
+---
+
+## **Using `useradd` and Its Options**
+
+Here's a rundown of the most common `useradd` options and some practical examples:
+
+| **Option** | **Meaning**                                             | **Example**                            |
+| ---------- | ------------------------------------------------------- | -------------------------------------- |
+| `-c`       | Adds a comment (usually the full name or a description) | `useradd -c "Alex the Developer" alex` |
+| `-d`       | Specifies the home directory path/name                  | `useradd -d /data/alex_home alex`      |
+| `-e`       | Sets an expiration date (in `YYYY-MM-DD` format)        | `useradd -e 2025-01-01 alex`           |
+| `-f`       | Inactive days after password expires before disabling   | `useradd -f 7 alex` (7 days)           |
+| `-g`       | Sets the primary group (by name or GID)                 | `useradd -g developers alex`           |
+| `-G`       | Sets secondary (supplementary) groups                   | `useradd -G wheel,qa alex`             |
+| `-m`       | Creates the home directory (default behavior)           | `useradd -m alex`                      |
+| `-M`       | Does **not** create a home directory                    | `useradd -M alex`                      |
+| `-n`       | Avoids creating a user-specific group                   | `useradd -n alex`                      |
+| `-r`       | Creates a **system account** (usually for services)     | `useradd -r nginx`                     |
+| `-s`       | Specifies the user's default shell                      | `useradd -s /bin/zsh alex`             |
+| `-u`       | Specifies a custom user ID (UID)                        | `useradd -u 1050 alex`                 |
+| `-D`       | Displays or sets default `useradd` configuration        | `useradd -D` (shows defaults)          |
+
+### **Practical Examples**
+
+1.  **Standard User Creation**
+
+    ```bash
+
+    # Create a user 'alex' with a home directory, comment, and default shell.
+    sudo useradd -m -c "Alex the Developer" -s /bin/bash alex
+    ```
+
+    **_Set a password_**
+
+    ```bash
+    sudo passwd alex
+    ```
+
+2.  **User with Specific Groups**
+
+    Create a user 'jen' with primary group 'developers' and secondary group 'wheel'.
+
+    ```bash
+    sudo useradd -m -g developers -G wheel -s /bin/bash jen
+    sudo passwd jen
+    ```
+
+3.  **User with Expiration Date**
+
+    Create a user 'tempuser' who can only login until Dec 31, 2024.
+
+    ```bash
+    sudo useradd -m -e 2024-12-31 tempuser
+    sudo passwd tempuser
+    ```
+
+---
+
+## **Bringing It All Together**
+
+1.  **User Creation**
+
+    - Create accounts as needed with `useradd`, specifying home directories and default shells.
+    - Set passwords with `passwd`.
+    - Add users to the wheel (or equivalent) group if they require administrative privileges.
+
+2.  **Wheel Group**
+
+    - Grants elevated privileges to users without giving out the root password.
+    - Minimizes risk by letting you track and audit privileged actions via `sudo`.
+
+3.  **Polkit**
+
+    - Offers a more fine-grained permission system for graphical and system services.
+    - Commands like `pkexec` are helpful in non-interactive or scripting scenarios where you need just enough privilege to perform a task.
+
+4.  **Security Best Practices**
+
+    - **Least Privilege**: Only grant administrative or wheel group membership to those who truly need it.
+    - **Regular Audits**: Periodically review `/etc/passwd`, `/etc/group`, and Polkit configs to ensure you haven't left any security holes.
+    - **Use Groups**: Organize users into functional groups for simpler file permission management (e.g., `developers`, `designers`, `admin`).
+
+---
+
+## **User Management Commands**
+
+### **1\. `useradd`**
+
+- **Create a new user**\
+  `bash sudo useradd <username> `
+- **`-m <username>`: Create a user **with** a home directory**\
+  `bash sudo useradd -m <username> `
+  - Creates `/home/<username>` if it doesn't exist.
+
+#### **Other useful options**
+
+- **`-s <shell>`**: Specify a login shell (e.g. `-s /bin/zsh`).
+- **`-c <comment>`**: Add a comment (usually full name).
+- **`-g <group>` / `-G <group1,group2,...>`**: Set primary group / additional (secondary) groups.
+- **`-d <home_directory>`**: Manually specify the user's home directory location.
+
+> **Note**: `useradd` does not set a password by default; after creating the user, you must run: `bash sudo passwd <username> `
+
+### **2\. `usermod`**
+
+- **Modify an existing user**. `bash sudo usermod [options] <username> `
+- **`-aG <group> <username>`**: Append the user to a supplementary group.
+  - _If you omit the "-a" (append) flag while using "-G," you'll overwrite the user's other group memberships._
+
+#### **Other useful options**
+
+- **`-l <new_name>`**: Rename the user from `<old_name>` to `<new_name>`.
+- **`-d <new_home>`**: Change home directory path. Use `-m` with this to move existing files.
+- **`-s <shell>`**: Change the user's login shell.
+
+### **3\. `userdel`**
+
+- **Delete a user account**. `bash sudo userdel <username> `
+- **`-r <username>`**: Delete the user **and** their home directory.
+  - _Without "-r," the user is removed but the home directory remains._
+
+### **4\. `passwd`**
+
+- **Change or manage a user's password**. `bash sudo passwd <username> `
+- **`-e <username>`**: Expire the user's password (forces them to reset upon next login).
+- **`-l <username>`**: Lock a user's password.
+- **`-u <username>`**: Unlock a user's password.
+
+### **5\. `chfn`**
+
+- **Change a user's "finger" (GECOS) information**, like full name, office number, phone, etc.\
+  `bash chfn -f "Alex The Great" <username> `
+  - `-f`: Full name
+  - `-o`: Office/Other info (depending on distro)
+  - `-h`: Home phone
+  - `-p` or `-w`: Work phone (varies by distribution)
+
+> **Note**: Some of the options like `-r <room_number>` or `-L <username>` (to "lock" the full name) may be **distro-specific** or might not exist in every Linux distribution. Always check `man chfn` to see which flags are supported.
+
+### **6\. `chsh`**
+
+- **Change a user's login shell**.\
+  `bash sudo chsh -s /bin/zsh <username> `
+- Displays the user's current shell and asks for a new one if run interactively.
+
+### **7\. `chage`**
+
+- **Change or view a user's password expiration policies**.\
+
+  ````bash
+
+  View current password expiration settings:
+  ==========================================
+
+  chage -l <username>
+
+  Force password change on next login:
+  ====================================
+
+  sudo chage -d 0 <username> ```
+
+  ````
+
+- Common flags:
+
+  - `-E <YYYY-MM-DD>`: Set an expiration date for the account.
+  - `-M <days>`: Set the maximum number of days the password is valid.
+  - `-m <days>`: Minimum number of days between password changes.
+
+---
+
+## **Group Management Commands**
+
+### **Standard Usage**
+
+1.  **`groupadd`** `bash sudo groupadd <groupname> `
+
+    - **`-g <GID>`**: Specify a group ID.
+    - **`-r`**: Create a system group (GID typically <1000).
+    - **`-f`**: Exit silently if the group already exists.
+    - **`-K <KEY=VAL>`**: Override default values in `/etc/login.defs` (rarely used).
+    - **`-o`**: Allow a non-unique GID (uncommon).
+    - **`-p <PASSWORD>`**: Set a (rarely used) group password.
+
+2.  **`groupmod`** `bash sudo groupmod [options] <groupname> `
+
+    - **`-g <GID>`**: Change the group's GID.
+    - **`-n <newname>`**: Rename the group.
+    - **`-o`**: Allow duplicate GID.
+    - **`-p <PASSWORD>`**: Change group password (again, rarely used).
+
+3.  **`groupdel`** `bash sudo groupdel <groupname> `
+
+    - Removes a group **but** does **not** remove any user accounts.
+    - Typically, there is **no** standard `-r` or `-f` option on most distros (unlike `userdel -r`). You must remove or reassign any user references to that group first.
+
+> **Important**:
+>
+> - Many flags listed like `-U`, `-A`, `-M`, `-S`, `-T`, `-Z`, `-r`, `-f` on `groupadd`, `groupmod`, or `groupdel` are **non-standard** and not part of the typical shadow-utils found on most Linux distributions. They may exist in specialized or older/unusual distributions, but **are not** universally supported.
+> - Always check `man groupadd`, `man groupmod`, or `man groupdel` on your specific system.
+
+### **Managing Group Membership**
+
+- **Add a user to a group**: `bash sudo usermod -aG <groupname> <username> ` (_The `-a` is critical to append rather than overwrite existing group memberships._)
+
+- **Remove a user from a group**:\
+  There's no direct "remove user from group" flag in `usermod`; you must re-specify all groups you want the user to keep. Alternatively, you can use: `bash sudo gpasswd -d <username> <groupname> ` which removes `<username>` from `<groupname>`.
+
+---
+
+## **Additional Useful Commands**
+
+1.  **`id <username>`**
+
+    - Displays a user's UID, GID, and groups.
+
+2.  **`groups <username>`**
+
+    - Shows the groups a user is a member of.
+
+3.  **`gpasswd`**
+
+    - Manage group passwords and memberships:
+      - `gpasswd -a <username> <groupname>`: Add a user to a group.
+      - `gpasswd -d <username> <groupname>`: Remove a user from a group.
+
+4.  **`finger`** / **`getent passwd <username>`**
+
+    - Display extended user info (if `finger` is installed) or query user info via Name Service Switch.
+
+5.  **`vipw`** and **`vigr`**
+
+    - Safely edit `/etc/passwd` or `/etc/group` with locking to prevent corruption.
+
+6.  **`pwconv` / `pwunconv`**, **`grpconv` / `grpunconv`**
+
+    - Convert between shadowed and unshadowed `/etc/passwd` and `/etc/group` files.
 
 ### Viewing Users and Groups
 
@@ -2147,6 +2823,12 @@
     - **SIGCONT (19)**: Continue signal. Sent to a process to resume it.
     - **SIGUSR1 (30)**: User-defined signal 1.
     - **SIGUSR2 (31)**: User-defined signal 2.
+
+- **KILLALL**: Kill processes by name.
+
+  - **example**: killall -u user1: Kill all processes owned by user1.
+  - **example**: killall -r process1: Kill all processes with the name process1.
+  - **example**: killall -s signal process1: Send a signal to all processes with the name process1.
 
     - **sleep**: Pause for a specified amount of time.
     - **Commands**:
@@ -4801,3 +5483,38 @@ Secure Shell (SSH) is a cryptographic network protocol for secure communication 
   - **salt-unity-ssh-key-manager-ssh-key-manager-ssh-runner**: Salt Unity SSH key manager SSH key manager SSH runner.
   - **salt-unity-ssh-key-manager-ssh-key-manager-ssh-key**: Salt Unity SSH key manager SSH key manager SSH key manager.
   - **salt-unity-ssh-key-manager-ssh-key-manager-ssh-key-runner**: Salt Unity SSH key manager SSH key manager SSH
+
+---
+
+1.  **iproute2 (or "ip" suite)**
+
+    - **What It Is**: A collection of utilities that manage and monitor IP addresses, network interfaces, routing tables, tunnels, and more in Linux systems. It replaces the older `net-tools` (if you've seen `ifconfig`, `netstat`, etc.).
+    - **Key Capabilities**:
+      - Configure interfaces and IP addresses (`ip addr`)
+      - Manage routing tables (`ip route`)
+      - Set up tunnels like GRE or VXLAN (`ip tunnel`)
+      - Manipulate neighbor ARP tables (`ip neigh`)
+    - **Why It's Useful**: Offers a more modern, unified, and extensible approach to network configuration compared to older tools.
+
+2.  **Traffic Control (tc)**
+
+    - **What It Is**: A utility (part of the iproute2 package) that enables you to shape, schedule, police, and prioritize network traffic on Linux.
+    - **Key Capabilities**:
+      - Rate-limiting or bandwidth throttling (e.g., capping an interface at 10 Mbps)
+      - Implementing QoS (Quality of Service) policies and priority queues
+      - Policing (dropping packets that exceed a set threshold)
+    - **Why It's Useful**: Helps in network performance tuning. For instance, if you're on a server that needs to give priority to certain traffic (like VoIP), `tc` can enforce those rules so everything runs smoothly.
+
+3.  **Devlink**
+
+    - **What It Is**: A newer framework for interfacing with and configuring certain network devices, primarily high-speed networking or specialized hardware (like some NICs and switches).
+    - **Key Capabilities**:
+      - Exposes hardware or driver parameters that aren't available through the standard Linux network stack.
+      - Can configure advanced networking features or firmware-level settings that the usual `ip` or `ethtool` commands might not touch.
+    - **Why It's Useful**: Allows more granular control and insights into specialized NICs (such as those with offloading capabilities). Great if you're working at scale or with high-performance networks.
+
+Together, these tools give you powerful control over how your Linux system handles networking---from basic interface management all the way up to fine-grained control of network traffic and specialized device settings. If you want to dig deeper:
+
+- Start with `iproute2`: Learn how to configure interfaces and routes using the `ip` commands.
+- Experiment with `tc`: Try simple traffic shaping scenarios, like rate-limiting an interface, to see how it affects traffic flow.
+- Move on to `devlink`: If you're working with advanced or specialized hardware, `devlink` can give you extra performance knobs to turn.
