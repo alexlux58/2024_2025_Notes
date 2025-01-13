@@ -347,4 +347,208 @@
   - netbios-name-servers: This defaults to AmazonProvidedNetBIOS.
   - netbios-node-type: This defaults to 2.
 
+#### DHCP Option Set (default)
+
+1. Sets the hostname of the instance to the private DNS name.
+
+- ip-<private-ipv4-address>.<region>.compute.internal
+
+2. Sets the resolve.conf
+
+- `cat /etc/resolv.conf`
+- `search ap-south-1.compute.internal`
+- `nameserver 10.10.0.2 (VPC DNS Server)`
+
+#### AWS assigned domain name for EC2
+
+- Internal DNS
+
+  - ip-<private-ipv4-address>.ec2.internal (for the us-east-1 region)
+  - ip-<private-ipv4-address>.region.compute.internal (for other regions)
+
+- External DNS (if instance has Public IP)
+  - ec2-<public-ipv4-address>.compute-1.amazonaws.com (for the us-east-1 region)
+  - ec2-<public-ipv4-address>.region.amazonaws.com (for other regions)
+
+**VPC DNS Attributes**
+
+- **enableDnsSupport:** (= DNS Resolution setting)
+
+  - Default: True
+  - Helps decide if DNS resolution is supported for the VPC
+  - If True, queries the AWS DNS server at 169.254.169.253 (=> VPC+2)
+
+- **enableDnsHostname:** (= DNS Hostname setting)
+
+  - False by default for newly created VPC, True by default for Default VPC
+  - Won't do anything unless enableDnsSupport=True
+  - If True, assigns public hostname to EC2 instance if it has a public IP
+
+**If you use custom DNS domain names in a Route 53 Private hosted zone, you must set both these attributes to True.**
+
+#### DHCP Option Sets Good to Know
+
+- Once created you can not modify the DHCP option set. However you can create a new one and associate it with the VPC.
+- You can only associate a single DHCP option set with a VPC.
+- VPC can also be setup without DHCP option set. In that case the instances in
+  the VPC can't access the internet as there is no access to a DNS server.
+- After DHCP option set is associated with VPC, the instances automatically use new option set, but this may take a few hours.
+- You can also refresh the DHCP option parameters using an operating system command:
+  - `sudo dhclient -r eth0`
+
+---
+
+**Network Performance - Basics**
+
+- **Bandwidth** -- Maximum rate of transfer over the network
+- **Latency** -- Delay between two points in a network
+  - Delays include propagation delays for signals to travel across medium
+  - Also includes the processing delays by network devices
+- **Jitter** -- Variation in inter-packet delays.
+- **Throughput** -- Rate of successful data transfer (measured in bits per sec)
+  - Bandwidth, Latency, and Packet loss directly affect the throughput
+- **Packet Per Second (PPS)** -- How many packets processed per second
+- **Maximum Transmission Unit (MTU)** -- Largest packet that can be sent over the network
+
+- **Jumbo Frames** -- Ethernet frames with more than 1500 bytes of payload
+
+**Jumbo Frames**
+
+- **9001 MTU**
+- Reduces overhead and increases throughput
+- Requires all devices in the network to support Jumbo Frames
+- Jumbo frames are enabled in a VPC by default
+- AWS supports Jumbo frame within VPC; however, traffic leaving VPC over IGW or VPC peering does not support Jumbo frames (Limited to 1500 byte)
+- Jumbo frames are also supported between VPC and on-premises network using AWS Direct Connect
+- Using Jumbo frames inside EC2 cluster placement groups provides maximum network throughput
+- Jumbo frames should be used with caution for traffic leaving the VPC. If packets are over 1500 bytes, they are fragmented, or they are dropped if the "Don't Fragment" flag is set in the IP header
+
+**Defining MTU on EC2 instances**
+
+- MTU also depends on Instance Type
+- Defined at the ENI level
+- You can check the path MTU between your device and target endpoint using the tracepath command:
+
+  `tracepath amazon.com`
+
+- To check the MTU on your interface:
+
+  `ip link show eth0`
+
+- To set MTU value on Linux:
+
+  `sudo ip link set dev eth0 mtu 9001`
+
+You can use third-party tools or scripts to determine the MTU on macOS.
+Alternatively, you can use `ping` with the "Do Not Fragment" flag to test MTU manually.
+
+Example:
+
+`ping -D -s 1472 amazon.com`
+
+- Replace `1472` with smaller or larger values until you find the MTU limit (1472 is used here because it's 1500 minus 28 bytes for headers).
+
+**MTU**
+
+**Within AWS:**
+
+- Within VPC: Supports Jumbo frames (9001 bytes)
+- Over the VPC Endpoint: MTU 8500 bytes
+- Over the Internet Gateway: MTU 1500 bytes
+- Intra-region VPC Peering: MTU 9001 bytes
+- Inter-region VPC Peering: MTU 1500 bytes
+
+**On-premise network:**
+
+- Over the VPN using VGW: MTU 1500 bytes
+- Over the VPN via Transit Gateway: MTU 1500 for traffic for Site-to-Site VPN
+- Over the DirectConnect (DX): Supports Jumbo frames (9001 bytes)
+- Over the DX via Transit Gateway: MTU 8500 for VPC attachments connected over the Direct Connect
+
+---
+
+**Placement Groups - Cluster**
+
+- A logical grouping of instances within a single Availability Zone.
+- Ideal for distributed applications that need low network latency, high network throughput, or both.
+
+**EBS Optimized Instances**
+
+- EBS is a network drive that can be attached to EC2 instances. (not physically attached)
+  - It uses the network to communicate with the instance, which means there might be a bit of latency.
+- EBS input/output will affect network performance.
+- Amazon EBS-optimized instances enable EC2 instances to fully use the IOPS provisioned on an EBS volume. (Dedicated throughput between EC2 and EBS)
+- This minimizes contention between EBS I/O and other traffic from your instance.
+
+---
+
+## Enhanced Networking
+
+- Enhanced Networking provides higher bandwidth, higher packet per second (PPS) performance, and consistently lower inter-instance latencies.
+- Over IM PPS performance
+- SR-IOV (Single Root I/O Virtualization) with PCI passthrough, to get the hypervisor out of the way and for consistent performance. Method of device virtualization that provide higher I/O performance and lower CPU utilization.
+- SR-IOV allows a single physical NIC to present itself as multiple vNICs
+- PCI passthrough enables PCI devices such as ENI to appear as if they are physically attached to the guest operating system bypassing hypervisor.
+- Ultimately in combination this allows low latency, high rate data transfer (> 1 M PPS)
+- Depending on Instance Type, Enhanced Networking can be enabled using one of the following Network drivers
+  - option 1: Intel 82599 VF interface up to 10Gbps (VF uses ixgbevf driver)
+  - option 2: Elastic Network Adapter (ENA) up to 100Gbps
+- The eligible EC2 instance families support either of the above two drivers
+
+**Supported Instance Types**
+
+- Instances supporting `Elastic Network Adapter (ENA)` for speed upto 100 Gbps
+  - C5, C5d, C5n, I3en, M5, M5a, M5n, M5zn, R5, R5a, R5n, R5dn, Z1d, H1, I3, M5d, R5ad, R5d, z1d
+- Instances supporting `Intel 82599 VF` interface for speed upto 10 Gbps
+  - C3, C4, D2, I2, M4 (excluding m4.16xlarge), and R3.
+
+**Additional Tuning and Optimization - DPDK**
+
+- Intel Data Plane Development Kit (DPDK) is a set of libraries and drivers for fast packet processing.
+- While Enhanced Networking and SR-IOV reduce overhead of packet processing between instance and hypervisor, DPDK reduces overhead of packet processing inside the Operating System.
+- DPDK provides
+  - Lower CPU overhead
+  - Low latency due to Kernel bypass
+  - Predictable packet processing
+  - High throughput
+
+**Elastic Fabric Adapter (EFA)**
+
+- EFA is an ENA with added capabilities for HPC workloads.
+- HPC means High Performance Computing.
+- Provides lower latency and higher throughput for tightly coupled HPC applications.
+- Provides OS bypass functionality (Linux)
+- For windows instance, it acts just as ENA
+- With an EFA, HPC applications use MPI to interface with the Libfabric API which bypasses OS kernel and communicates directly with the EFA
+  device to put packet on the network.
+
+---
+
+## Bandwidth Limits
+
+- No VPC specific limits on bandwidth.
+- No limit for any Internet Gateway
+- No limit for VPC peering
+- Each NAT gateway can provide up to 45 Gbps. Use multiple NAT gateways to scale beyond 45 Gbps.
+
+**EC2 Instance Bandwidth Limits**
+
+- With Intel 82599 VF interface
+  - 10 Gbps aggregate and 5 Gbps flow-based bandwidth limit
+- With AWS ENA driver
+  - 10 Gbps flow limit inside a placement group
+  - 5 Gbps flow limit outside of a placement group
+  - Aggregate bandwidth of 100 Gbps with multiple flows within a VPC or a peered VPC or to S3 (using VPC endpoint) in the same region.
+
+## **Note**: AWS P4d instances deployed in UltraClusters supercomputer provides 400 Gbps networking.
+
+---
+
+# Network Credits
+
+- Instance families such as R4 and C5 use a network I/O credit mechanism.
+- Most applications do not consistently need a high network performance.
+- These instances perform well above baseline network performance during peak requirement.
+- Make sure that you consider the accumulated network credits before doing performance benchmark for instances supporting network I/O credits mechanism.
+
 ---

@@ -85,3 +85,67 @@ write memory`
   [IPSpace Blog](https://blog.ipspace.net/2022/10/arista-route-reflector-woes/)
 
 - **Monitoring and Maintenance:** Regularly monitor BGP sessions and routes using commands like `show ip bgp summary` and `show ip bgp neighbors`.
+
+---
+
+## BGP Peering via Loopback Addresses (NX-OS)
+
+switch(config)# feature bgp
+switch(config)# router bgp AS-NUMBER
+switch(config-router)# router-id A.B.C.D
+switch(config-router)# address-family ipv4 unicast
+switch(config-router)# neighbor IP-ADDRESS
+switch(config-router-neighbor)# remote-as AS-NUMBER
+switch(config-router-neighbor)# update-source INT_NAME
+switch(config-router-neighbor)# ebgp-multihop [TTL-VALUE]
+switch(config-router-neighbor)# address-family AFI SAFI
+switch# show bgp ipv4 unicast summary
+switch# show bgp ipv4 unicast neighbors
+
+**Explanation**
+
+- `feature bgp`: Enables BGP routing.
+- `router bgp AS-NUMBER`: Enters BGP configuration mode and specifies the AS number.
+- `router-id A.B.C.D`: Sets the router ID to the specified IP address.
+- `address-family ipv4 unicast`: Activates the IPv4 unicast address family.
+- `neighbor IP-ADDRESS`: Specifies the IP address of the BGP neighbor.
+- `remote-as AS-NUMBER`: Defines the remote AS number of the BGP neighbor.
+- `update-source INT_NAME`: Specifies the interface name for the BGP neighbor update source.
+- `ebgp-multihop [TTL-VALUE]`: Configures eBGP multihop with the specified TTL value.
+- `address-family AFI SAFI`: Activates the specified address family and subsequent address family identifier (SAFI).
+- `show bgp ipv4 unicast summary`: Displays a summary of BGP IPv4 unicast routes.
+- `show bgp ipv4 unicast neighbors`: Shows detailed information about BGP IPv4 unicast neighbors.
+
+---
+
+## BGP Keep Alive and Hold Time
+
+BGP uses keep-alive and hold-time parameters to maintain the BGP session between peers.
+The keep-alive timer determines how often BGP peers exchange keep-alive messages, while the hold-time timer specifies
+the maximum time a BGP peer can remain silent before the session is considered down.
+
+**Keep-Alive Timer:**
+
+- Default value: 60 seconds
+- BGP peers exchange keep-alive messages to confirm the session is active.
+- If a BGP peer does not receive a keep-alive message within the hold-time interval, it considers the session down.
+
+**Hold-Time Timer:**
+
+- Default value: 180 seconds
+- Specifies the maximum time a BGP peer can remain silent before the session is considered down.
+- The hold-time value should be less than the product of 3 and the keep-alive timer value.
+
+**Adjusting Timers:**
+
+- To adjust the keep-alive and hold-time timers, use the following commands:
+  - `neighbor [Neighbor_IP_Address] timers keepalive holdtime`
+  - `neighbor [Neighbor_IP_Address] timers keepalive [Keepalive_Time] holdtime [Holdtime_Time]`
+
+**Example Configuration:**
+
+```
+router bgp 65001
+   timers bgp 30 90 (global timers)
+   neighbor Neighbor_IP_Address timers keepalive 30 holdtime 90 (per neighbor )
+```

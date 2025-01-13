@@ -632,88 +632,154 @@ Here's a rundown of the most common `useradd` options and some practical example
 
 ## **User Management Commands**
 
-### **1\. `useradd`**
+Below are several essential commands for creating, modifying, and managing user accounts in Linux.
 
-- **Create a new user**\
-  `bash sudo useradd <username> `
-- **`-m <username>`: Create a user **with** a home directory**\
-  `bash sudo useradd -m <username> `
-  - Creates `/home/<username>` if it doesn't exist.
+### **1. `usermod`**
 
-#### **Other useful options**
+**Purpose**: Modify an existing user account.
+**Basic Syntax**:
 
-- **`-s <shell>`**: Specify a login shell (e.g. `-s /bin/zsh`).
-- **`-c <comment>`**: Add a comment (usually full name).
-- **`-g <group>` / `-G <group1,group2,...>`**: Set primary group / additional (secondary) groups.
-- **`-d <home_directory>`**: Manually specify the user's home directory location.
+`sudo usermod [options] <username>`
 
-> **Note**: `useradd` does not set a password by default; after creating the user, you must run: `bash sudo passwd <username> `
+**Common Options**:
 
-### **2\. `usermod`**
+| Option                                                 | Description                                                                   |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| **`-aG <group>`**                                      | Append (`-a`) the user to a supplementary group (`-G`).\                      |
+| _Omitting `-a` overwrites existing group memberships._ |
+| **`-l <new_name>`**                                    | Rename the user from `<old_name>` to `<new_name>`.                            |
+| **`-d <new_home>`**                                    | Specify a new home directory path. Use `-m` alongside to move existing files. |
+| **`-s <shell>`**                                       | Change the user's default login shell.                                        |
 
-- **Modify an existing user**. `bash sudo usermod [options] <username> `
-- **`-aG <group> <username>`**: Append the user to a supplementary group.
-  - _If you omit the "-a" (append) flag while using "-G," you'll overwrite the user's other group memberships._
+**Example**:
 
-#### **Other useful options**
+```bash
+# Add user "alex" to group "sudo" without overwriting other groups
+sudo usermod -aG sudo alex
+```
 
-- **`-l <new_name>`**: Rename the user from `<old_name>` to `<new_name>`.
-- **`-d <new_home>`**: Change home directory path. Use `-m` with this to move existing files.
-- **`-s <shell>`**: Change the user's login shell.
+---
 
-### **3\. `userdel`**
+### **2. `userdel`**
 
-- **Delete a user account**. `bash sudo userdel <username> `
+**Purpose**: Delete a user account.
+**Basic Syntax**:
+
+`sudo userdel <username>`
+
+**Common Option**:
+
 - **`-r <username>`**: Delete the user **and** their home directory.
-  - _Without "-r," the user is removed but the home directory remains._
+  - _Without `-r`, the home directory remains even after the user is removed._
 
-### **4\. `passwd`**
+**Example**:
 
-- **Change or manage a user's password**. `bash sudo passwd <username> `
-- **`-e <username>`**: Expire the user's password (forces them to reset upon next login).
-- **`-l <username>`**: Lock a user's password.
-- **`-u <username>`**: Unlock a user's password.
+```bash
+# Remove user "alex" and their home directory
+sudo userdel -r alex
+```
 
-### **5\. `chfn`**
+---
 
-- **Change a user's "finger" (GECOS) information**, like full name, office number, phone, etc.\
-  `bash chfn -f "Alex The Great" <username> `
-  - `-f`: Full name
-  - `-o`: Office/Other info (depending on distro)
-  - `-h`: Home phone
-  - `-p` or `-w`: Work phone (varies by distribution)
+### **3. `passwd`**
 
-> **Note**: Some of the options like `-r <room_number>` or `-L <username>` (to "lock" the full name) may be **distro-specific** or might not exist in every Linux distribution. Always check `man chfn` to see which flags are supported.
+**Purpose**: Change or manage a user's password.\
+**Basic Syntax**:
 
-### **6\. `chsh`**
+`sudo passwd <username>`
 
-- **Change a user's login shell**.\
-  `bash sudo chsh -s /bin/zsh <username> `
-- Displays the user's current shell and asks for a new one if run interactively.
+**Common Options**:
 
-### **7\. `chage`**
+| Option              | Description                                            |
+| ------------------- | ------------------------------------------------------ |
+| **`-e <username>`** | Expire a user's password (forces reset on next login). |
+| **`-l <username>`** | Lock a user's password (prevents login).               |
+| **`-u <username>`** | Unlock a user's password (reverses the lock).          |
 
-- **Change or view a user's password expiration policies**.\
+**Example**:
 
-  ````bash
+```bash
+# Force user "alex" to change password at next login
+sudo passwd -e alex
+```
 
-  View current password expiration settings:
-  ==========================================
+---
 
-  chage -l <username>
+### **4. `chfn`**
 
-  Force password change on next login:
-  ====================================
+**Purpose**: Change a user's "finger" (GECOS) information (full name, office, phone, etc.).
+**Basic Syntax**:
 
-  sudo chage -d 0 <username> ```
+`chfn [options] <username>`
 
-  ````
+**Common Options**:
 
-- Common flags:
+| Option               | Description                                 |
+| -------------------- | ------------------------------------------- |
+| **`-f`**             | Full name                                   |
+| **`-o`**             | Office/Other information (varies by distro) |
+| **`-h`**             | Home phone                                  |
+| **`-p`** or **`-w`** | Work phone (varies by distribution)         |
 
-  - `-E <YYYY-MM-DD>`: Set an expiration date for the account.
-  - `-M <days>`: Set the maximum number of days the password is valid.
-  - `-m <days>`: Minimum number of days between password changes.
+**Example**:
+
+```bash
+# Update the full name of user "alex" to "Alex The Great"
+chfn -f "Alex The Great" alex
+```
+
+> **Note**: Some options like `-r <room_number>` or `-L <username>` (lock the GECOS info) are **distro-specific**. Always check `man chfn` for availability in your environment.
+
+---
+
+### **5. `chsh`**
+
+**Purpose**: Change a user's login shell.
+**Basic Syntax**:
+
+`sudo chsh -s /bin/zsh <username>`
+
+- If run interactively (without specifying options), it displays the current shell and prompts for a new shell.
+
+---
+
+### **6. `chage`**
+
+**Purpose**: Change or view a user's password expiration policies.\
+**Basic Syntax**:
+
+`sudo chage [options] <username>`
+
+**Viewing Current Settings**:
+
+`chage -l <username>`
+
+**Force Password Change on Next Login**:
+
+`sudo chage -d 0 <username>`
+
+**Common Options**:
+
+| Option                | Description                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| **`-E <YYYY-MM-DD>`** | Set an account expiration date (after which the user cannot log in).                |
+| **`-M <days>`**       | Maximum number of days before a password must be changed.                           |
+| **`-m <days>`**       | Minimum number of days between password changes (e.g., to prevent same-day resets). |
+
+---
+
+### **Tips & Reminders**
+
+1.  **Always Check the Man Pages**\
+    Each distribution may implement slightly different flags or behaviors. Use `man <command>` to see the exact options available to you.
+
+2.  **`-a` vs `-G` in `usermod`**\
+    Remember to use `-a` (append) whenever adding a user to a group with `-G`. Otherwise, you risk overwriting existing group memberships.
+
+3.  **Security Considerations**
+
+    - Locking (`-l`) an account with `passwd` or setting password expiration (`-e`) are quick ways to enforce security policies.
+    - Using `chage` to define regular password rotation helps maintain good security hygiene.
 
 ---
 
@@ -758,67 +824,243 @@ Here's a rundown of the most common `useradd` options and some practical example
 
 ## **Additional Useful Commands**
 
-1.  **`id <username>`**
+### **1\. `id <username>`**
 
-    - Displays a user's UID, GID, and groups.
+- **Purpose**: Displays a user's UID (User ID), GID (Group ID), and all the groups they belong to.
+- **Sysadmin Example**:
 
-2.  **`groups <username>`**
+  - If you suspect a permissions issue for user "alex," run:
 
-    - Shows the groups a user is a member of.
+    `id alex`
 
-3.  **`gpasswd`**
+    to confirm the correct groups are assigned.
 
-    - Manage group passwords and memberships:
-      - `gpasswd -a <username> <groupname>`: Add a user to a group.
-      - `gpasswd -d <username> <groupname>`: Remove a user from a group.
+---
 
-4.  **`finger`** / **`getent passwd <username>`**
+### **2\. `groups <username>`**
 
-    - Display extended user info (if `finger` is installed) or query user info via Name Service Switch.
+- **Purpose**: Shows which groups a user is a member of.
+- **Sysadmin Example**:
 
-5.  **`vipw`** and **`vigr`**
+  - You need to verify if "alex" belongs to the `sudo` group before granting administrative privileges:
 
-    - Safely edit `/etc/passwd` or `/etc/group` with locking to prevent corruption.
+    `groups alex`
 
-6.  **`pwconv` / `pwunconv`**, **`grpconv` / `grpunconv`**
+    If "sudo" doesn't appear, you'll add them to the group.
 
-    - Convert between shadowed and unshadowed `/etc/passwd` and `/etc/group` files.
+---
 
-### Viewing Users and Groups
+### **3\. `gpasswd`**
 
-- `cat /etc/passwd`: View all user accounts.
-  - `cat /etc/passwd | grep <username>`: View a specific user account.
-  - `cat /etc/shadow`: View user account passwords.
-  - `cat /etc/shadow | grep <username>`: View a specific user's password.
-  - `cat /etc/shadow | grep <username> | cut -d: -f2`: View a specific user's password hash.
-  - `cat /etc/shadow | grep <username> | cut -d: -f3`: View a specific user's last password change date.
-  - `cat /etc/shadow | grep <username> | cut -d: -f4`: View a specific user's minimum password age.
-  - `cat /etc/shadow | grep <username> | cut -d: -f5`: View a specific user's maximum password age.
-  - `cat /etc/shadow | grep <username> | cut -d: -f6`: View a specific user's password warning period.
-  - `cat /etc/shadow | grep <username> | cut -d: -f7`: View a specific user's password inactivity period.
-- `cat /etc/group`: View group accounts.
-- `groups <username>`: View a user's groups.
-- `id <username>`: View a user's UID and GID.
-- `getent passwd`: View all user accounts.
-- `getent group`: View all group accounts.
-- `whoami`: View the current user.
-- `who`: View all logged-in users.
-  - `who -u`: View all logged-in users and their activities.
-  - `who -b`: View the last system boot time.
-  - `who -r`: View the current runlevel.
-- `w`: View all logged-in users and their activities.
-- `last`: View the last logged-in users.
-  - `last -n <number>`: View the last `<number>` logged-in users.
-  - `last -f <file>`: View the last logged-in users from a specific file.
-  - `last -t <time>`: View the last logged-in users since a specific time.
-  - `last -s <time>`: View the last logged-in users until a specific time.
-  - `last -y`: View the last logged-in users from yesterday.
-  - `last -b`: View the last logged-in users from the beginning of time.
-  - `last -x`: View the last logged-in users from the end of time.
-  - `last -R`: View the last logged-in users in reverse order.
-  - `last -F`: View the last logged-in users in full format.
-- `lastlog`: View the last login times of users.
-- `finger`: View user information.
+- **Purpose**: Manage group passwords and memberships in `/etc/group`.
+- **Common Subcommands**:
+  - **`gpasswd -a <username> <groupname>`**: Add a user to a group.
+  - **`gpasswd -d <username> <groupname>`**: Remove a user from a group.
+- **Sysadmin Example**:
+
+  - Adding a developer to the `docker` group, so they can run Docker commands:
+
+    `sudo gpasswd -a devuser docker`
+
+  - Removing a resigned employee from the `devops` group:
+
+    `sudo gpasswd -d oldemployee devops`
+
+---
+
+### **4. `finger` \ `getent passwd <username>`**
+
+- **Purpose**:
+  - **`finger <username>`**: Display extended user information (if `finger` is installed).
+  - **`getent passwd <username>`**: Retrieve user info from the Name Service Switch (NSS) databases (like `/etc/passwd`, LDAP, or NIS).
+- **Sysadmin Example**:
+
+  - Quickly check if your organization's LDAP server has synchronized user "alex":
+
+    `getent passwd alex`
+
+    If nothing returns, "alex" might not be in LDAP yet.
+
+---
+
+### **5\. `vipw` and `vigr`**
+
+- **Purpose**: Safely edit `/etc/passwd` or `/etc/group` using file locking to avoid corruption.
+- **Real-Life Tip**:
+
+  - If you need to manually fix a user's shell path in `/etc/passwd`, use:
+
+    `sudo vipw`
+
+    to avoid accidental writes by another admin or process at the same time.
+
+---
+
+### **6\. `pwconv` / `pwunconv`** and **`grpconv` / `grpunconv`**
+
+- **Purpose**: Convert between shadowed and unshadowed password and group files (`/etc/passwd`, `/etc/group`, `/etc/shadow`, `/etc/gshadow`).
+  - **`pwconv`**: Creates `/etc/shadow` from `/etc/passwd`.
+  - **`pwunconv`**: Merges `/etc/shadow` back into `/etc/passwd`.
+  - **`grpconv`**: Creates `/etc/gshadow` from `/etc/group`.
+  - **`grpunconv`**: Merges `/etc/gshadow` back into `/etc/group`.
+- **Sysadmin Example**:
+  - You might run `pwconv` right after migrating users from an older system that didn't use shadow passwords for enhanced security.
+
+---
+
+## **Viewing Users and Groups**
+
+Below are various commands to view user and group information, along with some practical usage scenarios.
+
+### **1\. Basic `/etc/passwd` and `/etc/shadow` Commands**
+
+- `cat /etc/passwd`
+
+  - **Purpose**: View all user accounts (username, UID, GID, home directory, login shell).
+  - **Real-Life**: Quickly see if a newly created user is present.
+
+- `cat /etc/passwd | grep <username>`
+
+  - **Purpose**: Find details about a specific user.
+  - **Real-Life**: Confirm if "alex" has the correct shell path.
+
+- `cat /etc/shadow`
+
+  - **Purpose**: View hashed passwords and password aging info.
+  - **Note**: Usually only accessible by root for security reasons.
+
+- `cat /etc/shadow | grep <username>`
+
+  - **Purpose**: View a specific user's password and expiration data.
+  - **Real-Life**: Check if "alex" has an expired password or if their account is locked.
+
+- The following `cut -d: -fN` commands narrow down specific fields in `/etc/shadow`:
+
+  - **`-f2`**: Password hash
+  - **`-f3`**: Last password change date
+  - **`-f4`**: Minimum password age (days)
+  - **`-f5`**: Maximum password age (days)
+  - **`-f6`**: Password warning period (days)
+  - **`-f7`**: Password inactivity period (days)
+
+  **Real-Life**:
+
+  `cat /etc/shadow | grep alex | cut -d: -f5`
+
+  This could reveal if an upcoming forced password reset is too short or too long for your company's security policy.
+
+- `cat /etc/group`
+
+  - **Purpose**: View group accounts and GIDs.
+
+---
+
+### **2\. `getent passwd` / `getent group`**
+
+- **Purpose**: View all user or group accounts as recognized by the system (including LDAP, NIS, etc.).
+- **Real-Life**:
+
+  `getent passwd | grep alex`
+
+  If you manage centralized user accounts across multiple servers, this ensures "alex" is recognized on each server.
+
+---
+
+### **3\. `whoami`, `who`, `w`**
+
+- **Purpose**: Identify the current user and all logged-in users.
+  - `whoami`: Displays your effective username.
+  - `who`: Shows who is currently logged in.
+    - `who -u`: Shows login time, idle times, and process IDs.
+    - `who -b`: Displays the last system boot time.
+    - `who -r`: Shows the current runlevel (useful on SysV-like init systems).
+  - `w`: Displays logged-in users along with running processes and system load.
+- **Sysadmin Example**:
+
+  - You suspect high load on the system. Run:
+
+    `w`
+
+    to see which user processes might be causing the spike.
+
+---
+
+### **4\. `last`**
+
+- **Purpose**: View a list of the last logged-in users.
+- **Common Options**:
+
+  | Option            | Description                                       |
+  | ----------------- | ------------------------------------------------- |
+  | **`-n <number>`** | Show the last `<number>` logins.                  |
+  | **`-f <file>`**   | Use a specific file instead of `/var/log/wtmp`.   |
+  | **`-t <time>`**   | Show users who logged in before a specified time. |
+  | **`-s <time>`**   | Show users who logged in after a specified time.  |
+  | **`-y`**          | Show logins from yesterday only.                  |
+  | **`-b`**          | Show from the beginning of recorded login data.   |
+  | **`-x`**          | Show system shutdowns, runlevel changes, etc.     |
+  | **`-R`**          | Reverse order of the output.                      |
+  | **`-F`**          | Full format (dates, times, hostnames).            |
+
+- **Real-Life**:
+
+  `last -n 10`
+
+  This helps you quickly check recent logins to investigate unauthorized access or confirm if a user logged in after hours.
+
+---
+
+### **5\. `lastlog`**
+
+- **Purpose**: Shows the most recent login for every user on the system.
+- **Real-Life**:
+
+  - If you're auditing inactive accounts, run:
+
+    `lastlog`
+
+    and look for users who haven't logged in for an extended period (e.g., 90 days) and might be safe to disable.
+
+---
+
+### **6\. `finger`**
+
+- **Purpose**: View extended user information (full name, home directory, last login, etc.).
+- **Real-Life**:
+
+  - If you store real names and contact info for each user, running:
+
+    `finger alex`
+
+    can help quickly find personal or office contact details.
+
+---
+
+## **Tips & Reminders**
+
+1.  **Security First**
+
+    - Always be mindful when viewing or editing `/etc/shadow` and `/etc/passwd`. These files contain sensitive information.
+    - Commands like `vipw` and `vigr` prevent multiple concurrent edits, which keeps your system from corruption.
+
+2.  **Centralized Management**
+
+    - In larger environments (e.g., LDAP, Active Directory, NIS), local commands like `usermod` and `groupmod` might not apply; you'll need to manage users in your directory service.
+    - Use `getent passwd` and `getent group` to confirm whether user/group info is recognized on your local system.
+
+3.  **Common Sysadmin Workflow**
+
+    - **Create** a new user → **Assign** to groups → **Set** password/expiration → **Confirm** with `id`, `groups`, `finger`, and `last`.
+    - **Review** usage → **Archive** or **Remove** inactive users → **Document** changes.
+
+4.  **Automation**
+
+    - Automate repetitive tasks (like password aging checks) using cron jobs or Ansible scripts. This ensures consistent policy enforcement across all servers.
+
+5.  **Documentation**
+
+    - Keep notes on group naming conventions, especially in larger teams.
+    - Document any manual changes to `/etc/passwd` and `/etc/shadow`---this helps future admins understand the system's history.
 
 ### /etc/login.defs: Default Settings for User Accounts
 
@@ -2009,6 +2251,75 @@ Here's a rundown of the most common `useradd` options and some practical example
 - `:set spell`: Enable spell checking.
 - `:set nospell`: Disable spell checking.
 - `:set spelllang=en_us`: Set the spell checking language to US English.
+
+Vim has a built-in mechanism to run external commands and get right back to editing. Here are a few approaches:
+
+---
+
+## 1. Using the `:!` Command
+
+- **Write and Save** your file (e.g., `my_script.py`) using `:w`.
+- Then run the script without exiting Vim using:
+
+  `:! python %`
+
+  - `:%` is shorthand for "the current file."
+  - You can replace `python` with any other interpreter or command relevant to your script (e.g., `bash %` for a Bash script, `node %` for a Node.js script, etc.).
+
+**Tip:** If your script is executable (e.g., with a `#!/usr/bin/env python` shebang and the executable bit set), then you can do:
+
+`:! ./%`
+
+to run the current file directly.
+
+---
+
+## 2. Using Key Mappings
+
+You can simplify the above step by creating a key mapping in your Vim configuration (`~/.vimrc` or `init.vim` in Neovim). For example:
+
+`nnoremap <leader>r :w \| !python %<CR>`
+
+- Now you can press `<leader>r` (usually `\r` by default if `<leader>` is `\`) to save your file and immediately run your Python script.
+
+To adapt it for other languages, just change the command to whatever suits you (like `!node %` or `!bash %`).
+
+---
+
+## 3. Using the Quickfix Window with `:make`
+
+If you have a Makefile or want to integrate with your build system:
+
+1.  Add a rule in your Makefile that runs your script, or set `makeprg` accordingly:
+
+    `:set makeprg=python\ %`
+
+2.  Then just run:
+
+    `:make`
+
+3.  Vim will open the Quickfix window with any errors or warnings.
+
+This approach is useful if you're working on larger projects or want a more advanced way to handle errors.
+
+---
+
+## 4. Using Integrated Terminals (Neovim or Plugins)
+
+- If you use **Neovim** or a plugin like [vim-terminal](https://github.com/kassio/neoterm), you can open a terminal inside Vim:
+
+  `:terminal`
+
+- Now you can run your script in an integrated shell without leaving Vim.
+
+---
+
+### Summary
+
+1.  **`:! python %`** -- The quickest way: saves your file, runs your script, and returns you to Vim.
+2.  **Key mappings** -- A custom shortcut to automate saving and running.
+3.  **`:make`** -- Advanced integration with the Quickfix list if you have a build process.
+4.  **Integrated Terminals** -- Keep everything in one window for a more modern workflow.
 
 **Search Files**
 
@@ -3288,7 +3599,7 @@ examples:
 - **ss**: Show socket statistics.
 - **ping**: Send ICMP ECHO_REQUEST packets to network hosts.
 - **traceroute**: Print the route packets take to network host.
-- **tracepath**: Traceroute utility that determines the path packets take to a destination.
+- **tracepath**: Traceroute utility that determines the path packets take to a destination (MTU).
 - **mtr**: Network diagnostic tool that combines ping and traceroute.
 - **dig**: DNS lookup utility.
 - **host**: DNS lookup utility.
@@ -5518,3 +5829,48 @@ Together, these tools give you powerful control over how your Linux system handl
 - Start with `iproute2`: Learn how to configure interfaces and routes using the `ip` commands.
 - Experiment with `tc`: Try simple traffic shaping scenarios, like rate-limiting an interface, to see how it affects traffic flow.
 - Move on to `devlink`: If you're working with advanced or specialized hardware, `devlink` can give you extra performance knobs to turn.
+
+---
+
+## Monit
+
+Monit is a small utility for managing and monitoring Unix systems. It can start, stop, and restart services and programs, monitor system resources, and send alerts when things go wrong. Monit is often used to ensure that critical services are running and to take action if they're not.
+
+Here are some common tasks you can do with Monit:
+
+1. **Monitoring Services**: Monit can check if a service is running and restart it if it's not. For example, you can monitor your web server, database, or mail server.
+
+2. **Monitoring System Resources**: Monit can monitor system resources like CPU usage, memory, and disk space. You can set thresholds and receive alerts if they're exceeded.
+
+3. **Automatic Restart**: Monit can automatically restart services that have stopped unexpectedly. This can help ensure that critical services are always available.
+
+4. **Alerting**: Monit can send alerts via email or other methods when a service or resource exceeds a threshold or when an action is taken.
+
+5. **Configuration**: Monit is configured using a simple configuration file. You can define the services you want to monitor, set thresholds, and configure actions to take.
+
+6. **Web Interface**: Monit comes with a web interface that allows you to monitor and manage your services from a browser.
+
+To get started with Monit, you'll need to install it on your system and create a configuration file. Here's a basic example of a Monit configuration file:
+
+```bash
+check process apache with pidfile /var/run/apache2.pid
+  start program = "/etc/init.d/apache2 start"
+  stop program  = "/etc/init.d/apache2 stop"
+  if failed host
+    www.example.com port 80 protocol http
+    and request "/test.html"
+    then restart
+```
+
+This configuration file monitors the Apache web server process and restarts it if it fails to respond to an HTTP request. You can create similar configurations for other services and resources on your system.
+
+Monit is a powerful tool for managing and monitoring Unix systems. It can help you ensure that critical services are running, monitor system resources, and take action when things go wrong. If you're looking for a simple and reliable way to manage your servers, Monit is worth checking out.
+
+---
+
+## Inodes
+
+- `ls -i`: List files with inode numbers.
+- `df -i`: Show inode usage.
+- `stat <file>`: Show file information.
+- `find . -inum <inode>`: Find a file by inode number.
