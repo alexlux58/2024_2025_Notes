@@ -1,0 +1,69 @@
+# Performing a TCP Traceroute on an Arista Switch Running EOS
+
+## Overview
+
+In certain network environments, ICMP traffic used by standard traceroute may be blocked or filtered. To overcome this, you can perform a TCP-based traceroute directly from an Arista switch running EOS. This method utilizes the underlying Linux shell to execute a TCP traceroute, providing insights into the route taken by TCP packets.
+
+## Steps to Perform TCP Traceroute
+
+1. **Access the Bash Shell on the Arista Switch**
+
+   Enter the Bash shell from the EOS CLI:
+
+   ```bash
+   bash
+   ```
+
+1. Execute the TCP Traceroute
+
+   Use the `traceroute` command with the `-T` option to specify TCP mode. For example, to trace the route to `console.signiant.com` over TCP port 80:
+
+   ```bash
+   sudo traceroute -T console.signiant.com
+   ```
+
+   The `-T` flag indicates the use of TCP SYN packets for tracerouting, with the default destination port being 80.
+
+   [Arista](https://arista.my.site.com/AristaCommunity/s/article/Network-Diagnostic-Utilities)
+
+1. Specify a Different TCP Port (Optional)
+
+   If you need to trace to a different TCP port, use the `-p` option followed by the desired port number. For instance, to use port 443:
+
+   ```bash
+   sudo traceroute -T -p 443 console.signiant.com
+   ```
+
+## Important Notes
+
+- Ensure you have the necessary permissions to execute these commands on the Arista switch.
+- Be cautious when using `sudo` to avoid unintended system changes.
+- This method is particularly useful when ICMP traffic is blocked or filtered in the network path, as TCP traceroute can provide alternative insights.
+
+## Using UDP Traceroute
+
+In addition to TCP traceroute, you can also perform a UDP-based traceroute. This can be useful in scenarios where both ICMP and TCP traffic are filtered or blocked.
+
+1. **Execute the UDP Traceroute**
+
+   Use the `traceroute` command with the default settings to perform a UDP traceroute. For example, to trace the route to `console.signiant.com`:
+
+   ```bash
+   sudo traceroute console.signiant.com
+   ```
+
+   By default, the `traceroute` command sends UDP packets.
+
+1. Specify a Different UDP Port (Optional)
+
+   If you need to trace to a specific UDP port, use the `-p` option followed by the desired port number. For instance, to use port 33434:
+
+   ```bash
+   sudo traceroute -p 33434 console.signiant.com
+   ```
+
+## Important Notes for UDP Traceroute
+
+- Ensure you have the necessary permissions to execute these commands on the Arista switch.
+- Be cautious when using `sudo` to avoid unintended system changes.
+- UDP traceroute can be useful when both ICMP and TCP traffic are blocked or filtered, providing another method to trace the network path.

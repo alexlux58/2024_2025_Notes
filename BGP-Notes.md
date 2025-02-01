@@ -149,3 +149,54 @@ router bgp 65001
    timers bgp 30 90 (global timers)
    neighbor Neighbor_IP_Address timers keepalive 30 holdtime 90 (per neighbor )
 ```
+
+---
+
+### General Commands
+
+1.  **`show ip bgp`**\
+    Displays general BGP information, such as neighbors and routes.
+
+2.  **`show ip bgp vrf <VRF_NAME>`**\
+    Provides BGP details for a specific VPN Routing/Forwarding instance (VRF). Options include:
+
+    - **`routes`**: View BGP route information.
+    - **`summary`**: Display BGP neighbor status.
+    - **`neighbors`**: Details on BGP neighbor connections.
+
+3.  **`show ip bgp vrf <VRF_NAME> neighbors`**\
+    Shows detailed information about neighbors in the specified VRF, including:
+
+    - **State**: Indicates if the connection is ESTABLISHED.
+    - **Timers**: KeepAlive and Hold timers.
+    - **Message statistics**: Sent/received BGP updates, notifications, etc.
+    - **Prefix-lists**: Policies for inbound and outbound prefixes.
+
+4.  **`show ip bgp vrf <VRF_NAME> neighbors <NEIGHBOR_IP>`**\
+    Provides detailed information about a specific neighbor.
+
+5.  **`show ip bgp vrf <VRF_NAME> neighbors <NEIGHBOR_IP> received-routes`**\
+    Lists all routes received from a neighbor, with details such as:
+
+    - **Prefix**: IP prefix of the route.
+    - **Next Hop**: Next-hop IP address.
+    - **AS_PATH**: Path of Autonomous Systems the route traversed.
+    - **Status**: Indicates route properties (e.g., Best, External, Aggregate).
+
+6.  **`show ip route vrf <VRF_NAME>`**\
+    Displays all routes in the specified VRF, with details like:
+
+    - **Type**: Origin of the route (BGP, OSPF, etc.).
+    - **Gateway**: Next-hop IP address.
+    - **Port**: Interface associated with the route.
+
+### Example Use Cases
+
+- **Check BGP Neighbors**:\
+  Use `show ip bgp vrf <VRF_NAME> neighbors` to verify if peers are connected and exchanging routes.
+
+- **List Received Routes**:\
+  Use `show ip bgp vrf <VRF_NAME> neighbors <NEIGHBOR_IP> received-routes` to verify which routes are received from a peer.
+
+- **Inspect Route Table**:\
+  Use `show ip route vrf <VRF_NAME>` to confirm installed routes and their sources.

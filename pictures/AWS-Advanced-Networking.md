@@ -552,3 +552,13 @@ Example:
 - Make sure that you consider the accumulated network credits before doing performance benchmark for instances supporting network I/O credits mechanism.
 
 ---
+
+# VPC Flow Logs
+
+- Capture information about IP traffic going in/out of your ENIs:
+  - VPC Flow Logs
+  - Subnet Flow Logs
+  - Elastic Network Interface Flow Logs
+- Data is stored in CloudWatch Logs or S3
+- Helps to monitor and troubleshoot connectivity issues
+- Flow logs data can go to S3 / CloudWatch Logs / Kinesis Data Firehose

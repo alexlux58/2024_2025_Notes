@@ -5874,3 +5874,33 @@ Monit is a powerful tool for managing and monitoring Unix systems. It can help y
 - `df -i`: Show inode usage.
 - `stat <file>`: Show file information.
 - `find . -inum <inode>`: Find a file by inode number.
+
+---
+
+# Linux vs. Windows Commands
+
+| Command Description                       | Windows    | Linux       |
+| ----------------------------------------- | ---------- | ----------- |
+| Listing of a directory                    | dir        | ls -l       |
+| Rename a file                             | ren        | mv          |
+| Copy a file                               | copy       | cp          |
+| Move file                                 | move       | mv          |
+| Clear screen                              | cls        | clear       |
+| Delete file                               | del        | rm          |
+| Compare contents of files                 | fc         | diff        |
+| Search for a word/string in a file        | find       | grep        |
+| Display command help                      | command /? | man command |
+| Displays your location in the file system | chdir      | pwd         |
+| Displays the time                         | time       | date        |
+| Displays the date                         | date       | date        |
+| Displays the contents of a file           | type       | cat         |
+| Displays the contents of a file           | more       | more        |
+| Displays the contents of a file           | notepad    | nano        |
+| Displays the contents of a file           | wordpad    | vim         |
+| Displays the contents of a file           | edit       | vim         |
+| Displays the contents of a file           | write      | vim         |
+| Displays the contents of a file           | excel      | libreoffice |
+| Displays the contents of a file           | calc       | libreoffice |
+| Displays the contents of a file           | powerpoint | libreoffice |
+
+---

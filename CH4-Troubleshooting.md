@@ -4876,3 +4876,721 @@ noop deadline [cfq]
 
 You would like to efficiently manage firewall rules such that you can define a group of IP addresses to which a single rule can be
 applied. Which command enables you to create a group of IP addresses?
+
+A. ipgroup
+B. iptables -group
+C. addgroup
+D. ipset
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. ipset
+
+**Explanation:**
+The ipset command can be used for the purpose described. It's worth noting that you could
+create iptables rule for each IP address and rule, but doing so would be less efficient than using an ipset group
+and having a single rule applied to that group. The other options shown are not valid commands.
+
+**Example:**
+
+```bash
+sudo ipset create myset hash:ip hashsize 4096 family inet
+
+# myset: The name of your set.
+# hash:ip: The type of set—optimized for individual IPv4 addresses.
+# hashsize 4096: The initial size of the hash table.
+# family inet: Indicates we’re handling IPv4 addresses (use family inet6 for IPv6).
+
+# Add IPs to the set
+sudo ipset add myset 203.0.113.5
+sudo ipset add myset 203.0.113.6
+sudo ipset add myset 198.51.100.1
+
+# You can also add subnets if you define the set as hash:net
+
+# Reference the set in an iptables rule
+iptables -A INPUT -m set --match-set myset src -j DROP
+
+# -A INPUT: Appends a new rule to the INPUT chain.
+# -m set: Loads the ipset matching module.
+# --match-set myset src: Matches the source IP address against our set myset.
+# -j DROP: Drops packets from any source IP in myset.
+
+sudo ipset list myset
+sudo iptables -S
+
+```
+
+</details>
+
+---
+
+### Question 138
+
+You are receiving reports of timeouts from users attempting to SSH between servers. Which command should be used to help troubleshoot these reports?
+
+A. tcptraceroute
+B. ping
+C. telnet
+D. ps
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. tcptraceroute
+
+**Explanation:**
+The tcptraceroute command should be used for this purpose. This command attempts to connect to the destination on the TCP port specified.
+This method is preferred over a simple ping because ICMP may be filtered, thus giving an inaccurate diagnosis. The other
+commands would not be used for this purpose.
+
+**Example:**
+
+```bash
+└─$ sudo tcptraceroute google.com 22
+[sudo] password for alexlux:
+Running:
+	traceroute -T -O info -p 22 google.com
+traceroute to google.com (142.250.68.14), 30 hops max, 60 byte packets
+ 1  _gateway (192.168.4.1)  2.378 ms  4.464 ms  4.455 ms
+ 2  syn-142-254-237-053.inf.spectrum.com (142.254.237.53)  16.288 ms  16.281 ms  9.744 ms
+ 3  lag-61.wlvgcabn02h.netops.charter.com (24.30.172.101)  19.365 ms  19.356 ms  19.350 ms
+ 4  * * lag-22.vnnycajz02r.netops.charter.com (72.129.14.168)  19.281 ms
+ 5  lag-29.rcr01tustcaft.netops.charter.com (72.129.13.2)  19.250 ms  19.204 ms  19.189 ms
+ 6  * * 72.14.221.250 (72.14.221.250)  17.920 ms
+ 7  * * *
+ 8  * * *
+ 9  * * *
+10  * * *
+11  * * *
+```
+
+</details>
+
+---
+
+### Question 139
+
+Which command can be used to capture network traffic in pcap format for later analysis by a tool like Wireshark?
+
+A. tcpcap
+B. pdump
+C. tshark
+D. pcapr
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. tshark
+
+**Explanation:**
+The tshark command enables capture of network traffic into a file. The other options shown are not valid commands.
+
+**Example:**
+
+```bash
+tshark -i eth0 -w capture.pcap
+```
+
+</details>
+
+---
+
+### Question 140
+
+You need to determine the owner of an IP address. You have attempted to use nslookup to determine the hostname, but there was no PTR record for the IP.
+Which command can be used to determine who owns the IP address?
+
+A. iplookup
+B. ipowner
+C. whois
+D. bg
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. whois
+
+**Explanation:**
+The whois command is used for lookups of domains and IP addresses, among other things, and would be used for this purpose. The other commands are not valid for this purpose.
+
+**Example:**
+
+```bash
+whois example.com
+
+Domain Name: EXAMPLE.COM
+Registry Domain ID: 2336799_DOMAIN_COM-VRSN
+Registrar WHOIS Server: whois.iana.org
+Registrar URL: http://res-dom.iana.org
+Updated Date: 2021-08-14T07:07:45Z
+Creation Date: 1995-08-14T04:00:00Z
+Registry Expiry Date: 2026-08-13T04:00:00Z
+Registrar: RESERVED-Internet Assigned Numbers Authority
+Registrar IANA ID: 376
+Domain Status: serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited
+Domain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited
+Domain Status: serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited
+Name Server: A.IANA-SERVERS.NET
+Name Server: B.IANA-SERVERS.NET
+DNSSEC: unsigned
+URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/
+>>> Last update of whois database: 2025-01-10T17:10:26Z <<<
+
+For more information on Whois status codes, please visit https://icann.org/epp
+```
+
+</details>
+
+---
+
+### Question 141
+
+Which command can be used to help diagnose latency issues with a disk?
+
+A. diskstat
+B. statd
+C. fdisk
+D. ioping
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. ioping
+
+**Explanation:**
+The ioping command sends requests to a given disk and records the time taken for the request.
+Of the other commands, fdisk is valid but would not be used to determine performance-related issues.
+The other commands are not valid.
+
+**Example:**
+
+```bash
+└─$ sudo ioping -c 10 /dev/sda
+4 KiB <<< /dev/sda (block device 32 GiB): request=1 time=676.9 us (warmup)
+4 KiB <<< /dev/sda (block device 32 GiB): request=2 time=1.04 ms
+4 KiB <<< /dev/sda (block device 32 GiB): request=3 time=165.1 us
+4 KiB <<< /dev/sda (block device 32 GiB): request=4 time=1.02 ms
+4 KiB <<< /dev/sda (block device 32 GiB): request=5 time=1.06 ms
+4 KiB <<< /dev/sda (block device 32 GiB): request=6 time=956.1 us
+^C
+--- /dev/sda (block device 32 GiB) ioping statistics ---
+5 requests completed in 4.25 ms, 20 KiB read, 1.18 k iops, 4.60 MiB/s
+generated 6 requests in 5.22 s, 24 KiB, 1 iops, 4.60 KiB/s
+min/avg/max/mdev = 165.1 us / 849.1 us / 1.06 ms / 343.8 us
+```
+
+</details>
+
+---
+
+### Question 142
+
+Which command can be used to trigger the kernel to update the partition table?
+
+A. ifdisk
+B. partup
+C. partprobe
+D. uppart
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. partprobe
+
+**Explanation:**
+The partprobe command causes a partition update for the kernel. The other options are not valid commands.
+
+**Example:**
+
+```bash
+partprobe /dev/sda
+```
+
+</details>
+
+---
+
+### Question 143
+
+Which of the following commands can be used to display historical performance data across serveral different parameters?
+
+A. sar
+B. kernperf
+C. pkern
+D. perfshow
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. sar
+
+**Explanation:**
+The sar command can be used to display a wide variety of performance-related information, including that captured over time. The other commands are not valid.
+
+**Example:**
+
+```bash
+sar -u 1 3
+
+Linux 5.4.0-87-generic (kali-red) 	01/10/2025 	_x86_64_	(4 CPU)
+05:10:01 PM	CPU	%user	%nice	%system	%iowait	%steal	%idle
+05:10:02 PM	all	0.00	0.00	0.00	0.00	0.00	100.00
+05:10:03 PM	all	0.00	0.00	0.00	0.00	0.00	100.00
+```
+
+</details>
+
+---
+
+### Question 144
+
+Which option to sysctl displays all of the available parameters?
+
+A. -a
+B. -b
+C. -c
+D. -d
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. -a
+
+**Explanation:**
+The -a option shows all available parameters. The other options shown are not valid with sysctl.
+
+**Example:**
+
+```bash
+sysctl -a
+
+# Output
+kernel.domainname = (none)
+kernel.hostname = kali-red
+kernel.osrelease = 5.4.0-87-generic
+kernel.ostype = Linux
+kernel.version = #1 SMP Mon Dec 13 17:21:11 UTC 2021
+kernel.printk = 7 4 1 7
+kernel.printk_ratelimit = 5
+kernel.printk_ratelimit_burst = 10
+kernel.printk_devkmsg = 1
+kernel.printk_delay = 0
+kernel.printk_time = 0
+kernel.printk_timestamp = 0
+kernel.printk_nolog = 0
+kernel.printk_nolog_buf = 0
+kernel.printk_nolog_buf_size = 1024
+```
+
+</details>
+
+---
+
+### Question 145
+
+When examining output from the state column of the ps command, there is a process with a state of D. What state is that process currently in?
+
+A. Debug
+B. Interruptible sleep
+C. Uninterruptible sleep
+D. Dead
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. Uninterruptible sleep
+
+**Explanation:**
+A state of D means uninterruptible sleep. There is no state for debug or dead processes, and interruptible sleep has a state of S.
+
+**Example:**
+
+```bash
+ps aux | grep D
+
+# Output
+root      4382  0.0  0.0      0     0 ?        D    Jan10   0:00 [kworker/1:2]
+```
+
+</details>
+
+---
+
+### Question 146
+
+You are troubleshooting a system startup problem that prevents the system from fully booting in to a graphical user interface (GUI).
+Which stystemd target could be used to further troubleshoot the issue?
+
+A. Poweroff
+B. Multiuser
+C. Reboot
+D. SafeMode
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. Multiuser
+
+**Explanation:**
+The multiuser target is bellow/before the graphical target and therefore could be used for
+further troubleshooting. The rescue target, no listed as an option, could also be used.
+The power off and reboot targets are valid systemd targets but will not help with troubleshooting.
+There is no SafeMode target.
+
+**Example:**
+
+```bash
+systemctl isolate multi-user.target
+```
+
+</details>
+
+---
+
+### Question 147
+
+You are troubleshooting printer access on a Linux system. On which port does the CUPS printing daemon listen by default?
+
+A. 25
+B. 342
+C. 631
+D. 316
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. 631
+
+**Explanation:**
+The default port is 631. The other options are not valid.
+
+**Example:**
+
+```bash
+ss -tuln | grep 631 | grep cupsd
+
+# Output
+tcp    LISTEN     0      128
+```
+
+</details>
+
+---
+
+### Question 148
+
+What is the required extension for systemd mount files?
+
+A. .mount
+B. .service
+C. .fs
+D. .mountd
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. .mount
+
+**Explanation:**
+The .mount extension is required for systemd mount files. Sysyemd frequently requires specific filenaming conventions in order to work correctly, and knowing the filenames, extensions, and special locations will be helpful for the exam.
+
+**Example:**
+
+```bash
+cat /etc/systemd/system/mymount.mount
+
+# Output
+[Unit]
+Description=My Mount
+
+[Mount]
+What=/dev/sdb1
+Where=/mnt/mydata
+
+[Install]
+WantedBy=multi-user.target
+```
+
+</details>
+
+---
+
+### Question 149
+
+Which utility can be used to find SELinux context violations?
+
+A. sestat
+B. secv
+C. convio
+D. ausearch
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. ausearch
+
+**Explanation:**
+The ausearch command can be used to find recent violations of an SELinux policy. The other commands are not valid.
+
+**Example:**
+
+```bash
+ausearch -m avc
+
+# Output
+time->Wed Jan 12 14:10:01 2025
+type=AVC msg=audit(1641996601.123:123): avc:  denied  { read } for  pid=4382 comm="sshd" name="authorized_keys" dev="dm-0" ino=123456 scontext=system_u:system_r:sshd_t:s0-s0:c0.c1023 tcontext=unconfined_u:object_r:home_t:s0 tclass=file permissive=0
+```
+
+</details>
+
+---
+
+### Question 150
+
+You have added a new RAID adapter to the system. Which command can be used to ensure
+that the adapter was detected by the kernel?
+
+A. showraid
+B. lsadapt
+C. dmesg
+D. raidlist
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. dmesg
+
+**Explanation:**
+The dmesg command shows the kernel ring buffer and is a primary tool to determine
+whether the system has detected a new piece of hardware. The other options are not valid.
+
+**Example:**
+
+```bash
+dmesg | grep RAID
+
+# Output
+[    0.000000] RAID: 0 devices added, 0 removed, 0 changed
+```
+
+</details>
+
+---
+
+### Question 151
+
+Which option is used to send a signal to a process when using pkill?
+
+A. -<SIGNAL>
+B. -s
+C. -i
+D. -h
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. -<SIGNAL>
+
+**Explanation:**
+The signal number or symbolic name can be used and is prefaced with a signle dash (-)
+as shown in option A. The other options are not valid.
+
+**Example:**
+
+```bash
+pkill -9 sshd
+```
+
+</details>
+
+---
+
+### Question 152
+
+You are troubleshooting a directory permission issue. The directory and all subdirectories are owned by root. Whthin the top-level directory there is another directory that has 755 permissions on it. However, a non-root user cannot obtain a directory listing of that subdirectory. Which of the following might be the issue?
+
+A. Directory permissions from a higher-level directory do not allow a directory listing.
+B. Directory permissions need to be 777 on the subdirectory.
+C. The write permission is needed for the subdirectory.
+D. The other permission needs to be 7 for the subdirectory.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. Directory permissions from a higher-level directory do not allow a directory listing.
+
+**Explanation:**
+Execute permissions for directories must be present, so the top-level directory must not allow the "other" permission to execute, which is needed for a directory listing within a subdirectroy. The other options are not valid.
+
+</details>
+
+---
+
+### Question 153
+
+What is the default request size for ioping?
+
+A. 4 bytes
+B. 4 KB
+C. 512 KB
+D. 1024 KB
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. 4 KB
+
+**Explanation**
+The default size for ioping is 4KB. The other options are not valid.
+
+**Example**
+
+```bash
+ioping -c 10 /dev/sda
+
+# Output
+4 KiB <<< /dev/sda (block device 32 GiB): request=1 time=676.9 us (warmup)
+4 KiB <<< /dev/sda (block device 32 GiB): request=2 time=1.04 ms
+4 KiB <<< /dev/sda (block device 32 GiB): request=3 time=165.1 us
+```
+
+</details>
+
+---
+
+### Question 154
+
+Whithin which file can you determine the current I/O scheduler algorithm?
+
+A. /sys/block/<device>/queue/scheduler
+B. /sys/block/<device>/iosch
+C. /etc/iostat.cfg
+D. /etc/default/ioscheduler
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. /sys/block/<device>/queue/scheduler
+
+**Explanation**
+The I/O scheduler in use is found in /sys/block/<device>/queue/scheduler. The other options are not valid in this scenario.
+
+</detials>
+
+---
+
+### Question 155
+
+Which option to iftop prevents hostname lookups from occurring?
+
+A. -d
+B. -a
+C. -t
+D. -n
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. -n
+
+**Explanation**
+The -n option prevents hostname lookups from occurring with iftop. This is helpful
+for recording the amount of noise or unnecessary information displayed within the iftop output. The other options do not accomplish this task.
+
+**Example**
+
+```bash
+iftop -n
+
+# Output
+12.5Kb           25.0Kb              37.5Kb               50.0Kb          62.5Kb
+```
+
+</details>
+
+---
+
+### Question 156
+
+Which command can be used within the nslookup CLI to change the server
+to which the query will be sent?
+
+A. dest
+B. server
+C. srv
+D. auth
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. server
+
+**Explanation**
+The server command, when run within the nslookup interface, will set the server to which the query will be sent.
+The other options are not valid.
+
+**Example**
+
+```bash
+nslookup
+> server
+Default server:
+Address:
+```
+
+</details>
+
+---
+
+### Question 157
+
+What are the minimum permissions needed for a user to write into a directory for which they are not the owner and are not in a group that owns the directory?
+
+A. Write
+B. Read/write/execute
+C. Read/execute
+D. Write/execute
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+**Explanation**
+
+**Example**
+
+</details>
+
+---
+
+### Question 158
+
+Which of the following protocols provides a means for authentication to occur external to the Linux system?
+
+A. SSL
+B. SSH
+C. LDAP
+D. AD
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+**Explanation**
+
+**Example**
+
+</details>
+
+---
+
+### Question 159
+
+When creating a file, a user is receiving an error. The file is very large. What command
+can the user execute in order to determine the file size limitation?
+
+A. limit
+B. ulimit
+C. filelimit
+D. flimit
