@@ -5557,9 +5557,10 @@ D. Write/execute
 <details>
 <summary style="color: red;">Answer</summary>
 
-**Explanation**
+D. Write/execute
 
-**Example**
+**Explanation**
+A user would need write and execute permissions in order to write into a directory for which they are not the owner and do not have group ownership. The other options are not valid.
 
 </details>
 
@@ -5577,9 +5578,24 @@ D. AD
 <details>
 <summary style="color: red;">Answer</summary>
 
+C. LDAP
+
 **Explanation**
+LDAP can be used for external authentication scenarios with Linux and is frequently used to provide authentication in an integrated environment with Microsoft Windows and Active Directory. Of the other options, neither SSL nor SSH provides the external authentication, although SSH may be able to integrate with other authentication means. AD is frequently used as an abbreviation for Active Directory. While Active Directory has LDAP capabilities, it is different and separate from LDAP.
 
 **Example**
+
+```bash
+ldapsearch -x -b "dc=example,dc=com" -H ldap://ldap.example.com
+
+# Output
+dn: dc=example,dc=com
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: Example
+dc: example
+```
 
 </details>
 
@@ -5594,3 +5610,244 @@ A. limit
 B. ulimit
 C. filelimit
 D. flimit
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. ulimit
+
+**Explanation**
+The ulimit command shows the various limits that apply to a given user, including file size limitations. The other options are not valid.
+
+**Example**
+
+```bash
+alexlux@ubuntuserver:~$ ulimit -a
+real-time non-blocking time  (microseconds, -R) unlimited
+core file size              (blocks, -c) 0
+data seg size               (kbytes, -d) unlimited
+scheduling priority                 (-e) 0
+file size                   (blocks, -f) unlimited
+pending signals                     (-i) 21589
+max locked memory           (kbytes, -l) 704756
+max memory size             (kbytes, -m) unlimited
+open files                          (-n) 1024
+pipe size                (512 bytes, -p) 8
+POSIX message queues         (bytes, -q) 819200
+real-time priority                  (-r) 0
+stack size                  (kbytes, -s) 8192
+cpu time                   (seconds, -t) unlimited
+max user processes                  (-u) 21589
+virtual memory              (kbytes, -v) unlimited
+file locks                          (-x) unlimited
+```
+
+</details>
+
+---
+
+### Question 160
+
+What are the minimum permissions for a Bash script so that it is executable by everyone without needing to
+prefix the command with the word bash?
+
+A. 755
+B. 644
+C. 777
+D. 222
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. 755
+
+**Explanation**
+The permissions should be 755 in order for a user to execute the script. The other options won't work for the purpose described or
+are too permissive.
+
+</details>
+
+---
+
+### Question 161
+
+Which option within a systemd timer unit file is used to specify when a job should run?
+
+A. OnCalendar=
+B. Time=
+C. RunAt=
+D. TimedEvent=
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. OnCalendar=
+
+**Explanation**
+The OnCalendar= configuration option is used to set the time when an event will run when using systemd timer unit files.
+The other options shown are not valid for use with systemd timer files.
+
+**Example**
+
+```bash
+cat /etc/systemd/system/mytimer.timer
+
+# Output
+[Unit]
+Description=My Timer
+
+[Timer]
+OnCalendar=*-*-* 12:00:00
+
+[Install]
+WantedBy=multi-user.target
+```
+
+</details>
+
+---
+
+### Question 162
+
+Which of the following abbreviations is used to signify time spent waiting for I/O in the output of the top command?
+
+A. wi
+B. io
+C. wa
+D. iotime%
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. wa
+
+**Explanation**
+The wa abbreviation in the output of top represents the percentage of time spent waiting for I/O operations such as disk or network.
+The other options are not valid for this scenario.
+
+**Example**
+
+```bash
+top
+
+# Output
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+```
+
+</details>
+
+---
+
+### Question 163
+
+Which of the following commands retrieves the current group membership list for a user?
+
+A. groupmem
+B. groups
+C. lsgr
+D. getgr
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. groups
+
+**Explanation**
+The groups command is used to retrieve a list of groups. The other options are not valid.
+
+**Example**
+
+```bash
+groups alexlux
+
+# Output
+alexlux : alexlux adm cdrom sudo dip plugdev lpadmin lxd sambashare
+```
+
+</details>
+
+---
+
+### Question 164
+
+You have added a swap disk to a Linux server and have executed mkswap. However, on examination of the output from the free command, you see
+that the swap space is not being used. Which command do you need to execute?
+
+A. swapon
+B. swap-en
+C. actswap
+D. swpact
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. swapon
+
+**Explanation**
+The swapon command activates the swap space for use. The other commands are not valid.
+
+**Example**
+
+```bash
+swapon /dev/sdb1
+```
+
+</details>
+
+---
+
+### Question 165
+
+Which option to ioping sets the size of the request?
+
+A. -m
+B. -n
+C. -f
+D. -s
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. -s
+
+**Explanation**
+The size of the request can be set using the -s option for ioping. The other options are not valid with ioping.
+
+**Example**
+
+```bash
+ioping -s 4096 /dev/sda
+```
+
+</details>
+
+---
+
+### Question 166
+
+Which option to the dumpe2fs command can be used to display blocks that are reserved becuase of being marked as bad?
+
+A. -v
+B. -f
+C. -b
+D. -m
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+C. -b
+
+**Explanation**
+The -b option prints known bad blocks. The -f option is used to force the display of inoformation, and the other options don't exist.
+
+**Example**
+
+```bash
+dumpe2fs -b /dev/sda1
+```
+
+</details>
+
+---
+
+### Question 167

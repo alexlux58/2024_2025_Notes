@@ -3651,6 +3651,8 @@ DNS information
 - **/etc/hostname.eth0**: File containing the hostname for the eth0 interface.
 - **/etc/hostname.wlan0**: File containing the hostname for the wlan0 interface.
 
+- /etc/syste
+
 **/etc/hosts.allow**: File containing hosts allowed to access services.
 **/etc/hosts.deny**: File containing hosts denied access to services.
 **/etc/hosts.equiv**: File containing hosts allowed to access services.
@@ -4908,6 +4910,9 @@ lldp information
 
   - **/etc/fail2ban**: Directory that contains fail2ban configuration files.
 
+  - **/etc/sysconfig/network**: Configuration file for network settings.
+  - **/etc/sysconfig/network-scripts/ifcfg-nic**: Configuration file for network interfaces.
+
 - **(LUKS) Linux Unified Key Setup**: Disk encryption.
 
   - `cryptsetup luksFormat /dev/sda1`: Encrypt a partition.
@@ -5904,3 +5909,278 @@ Monit is a powerful tool for managing and monitoring Unix systems. It can help y
 | Displays the contents of a file           | powerpoint | libreoffice |
 
 ---
+
+## 1\. Kernel Modules and lsmod
+
+### Overview
+
+The Linux kernel is modular, which means many features and drivers are loaded as modules. The **lsmod** command gives you a snapshot of all modules currently loaded into the kernel.
+
+### Key Commands and Concepts
+
+- **lsmod**\
+  - Usage: Simply run `lsmod` to display a list of modules.\
+  - It reads from **/proc/modules**, which is the virtual file listing all loaded modules.
+- **modinfo**\
+  - Provides detailed information (description, author, dependencies) about a module.\
+  - Usage: `modinfo <module_name>`
+- **modprobe, insmod, rmmod**\
+
+  - **modprobe**: Automatically loads (or removes) modules along with their dependencies.\
+
+- **NIC Bonding**
+
+  - `modprobe bonding`: Load the bonding module.
+  - `modinfo bonding`: Get information about the bonding module.
+  - Create `/etc/sysconfig/network-scripts/ifcfg-bond0` for the bonded interface.
+  - Edit `/etc/sysconfig/network-scripts/ethernet1`
+  - Edit `/etc/sysconfig/network-scripts/ethernet2`
+  - Restart network - systemctl restart netork
+
+  - **insmod**: Inserts a module into the kernel (less common because it doesn't resolve dependencies).\
+  - **rmmod**: Removes a module.
+
+_Tip:_ Always prefer modprobe for managing modules to ensure dependencies are handled correctly.
+
+---
+
+## 2\. SELinux (Security-Enhanced Linux)
+
+### Overview
+
+SELinux is an implementation of Mandatory Access Control (MAC) integrated into the Linux kernel. It restricts programs and users to a predefined set of operations based on policies rather than the traditional discretionary access control.
+
+### Modes of Operation
+
+- **Enforcing:** Policies are enforced, and violations are blocked (and logged).
+- **Permissive:** Violations are logged but not blocked (useful for troubleshooting).
+- **Disabled:** SELinux is not active.
+
+### Key Commands
+
+- **sestatus**\
+  - Shows SELinux status and current mode.\
+  - Usage: `sestatus`
+- **getenforce / setenforce**\
+  - `getenforce` shows the current mode.\
+  - `setenforce 1` switches to enforcing mode; `setenforce 0` makes SELinux permissive.
+- **Context Management:**\
+  - **ls -Z:** Lists files along with their SELinux security contexts.\
+  - **chcon:** Temporarily change the security context of a file (changes do not persist across relabeling).
+  - Usage: `chcon -t <new_type> <file_or_dir>` - **restorecon:** Resets file contexts to those defined by policy (reads from configuration files).
+  - Usage: `restorecon -Rv <file_or_dir>` - **semanage:** Used to make persistent changes to SELinux policy, such as modifying file contexts, booleans, or port contexts.
+  - Example: Set a custom file context rule with\
+    `semanage fcontext -a -t httpd_sys_content_t "/var/www/html(/.*)?"`\
+    then apply with `restorecon -Rv /var/www/html`.
+
+### Key Configuration Files
+
+- **/etc/selinux/config**\
+  - The primary configuration file where you define the SELinux mode and policy (e.g., targeted, mls).
+- **/etc/sysconfig/selinux**\
+  - Some distributions also use this file.
+
+_Additional Resources:_\
+For detailed explanations of SELinux concepts and commands, check out documentation such as the Red Hat SELinux guide
+
+[docs.redhat.com](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/sect-security-enhanced_linux-working_with_selinux-mounting_file_systems)
+
+and the Ishtiaque blog on SELinux and file permissions
+
+[ishtiaque.wordpress.com](https://ishtiaque.wordpress.com/2017/04/23/chmod-chown-chgrp-commands-in-linux/)
+
+.
+
+---
+
+## 3\. Mounting Filesystems and Storage Management
+
+### Mounting Overview
+
+Mounting makes a filesystem available at a certain point in your directory tree. It's fundamental for accessing storage devices.
+
+### Key Commands
+
+- **mount**\
+  - Usage: `mount <device> <mount_point>`\
+  - Options:
+  - **-o** for options (e.g., `-o remount`, `-o context=...` for overriding SELinux labels).
+  - **defcontext=...** can set a default SELinux context for files on file systems that lack extended attribute support.
+- **umount**\
+  - Unmounts a filesystem.\
+  - Usage: `umount <mount_point_or_device>`
+- **findmnt**\
+  - Displays mounted filesystems in a tree-like format.
+- **df and lsblk**\
+  - `df -h` shows disk space usage.\
+  - `lsblk` lists block devices and their mount points.
+- **/etc/fstab**\
+  - A persistent configuration file listing filesystems to mount at boot.\
+  - Syntax: Each line defines a device, its mount point, filesystem type, and mount options.
+
+### Storage Management Tools
+
+- **fdisk / parted**\
+  - Partitioning tools to create and manage disk partitions.
+- **blkid**\
+  - Displays block device attributes such as UUIDs and filesystem types.
+- **du**\
+  - Estimates file and directory space usage.
+
+_Note:_ When mounting filesystems that do not support extended attributes (like FAT or certain NFS setups), SELinux uses the context specified with the **mount -o context=...** or **defcontext=...** options. This is well documented in the Red Hat guides
+
+[docs.redhat.com](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/sect-security-enhanced_linux-working_with_selinux-mounting_file_systems)
+
+.
+
+---
+
+## 4\. Configuration Files ("Config Filex") and Their Locations
+
+Linux uses many configuration files stored in various directories. Here are some of the most critical ones you'll encounter:
+
+- **Kernel Configuration:**\
+  - Often stored in **/boot/config-$(uname -r)**.
+- **SELinux:**\
+  - Main config in **/etc/selinux/config** or **/etc/sysconfig/selinux**.
+- **Filesystem Mounts:**\
+  - **/etc/fstab** for persistent mount configurations.
+- **Service Configuration:**\
+  - Typically in **/etc/** (for example, **/etc/samba/smb.conf** for Samba, **/etc/apache2/** for Apache).
+- **User Environment:**\
+  - Files like **~/.bashrc**, **~/.profile**, and **/etc/profile** govern shell and environment settings.
+
+Understanding where these files live---and the syntax they use---is key to automating and troubleshooting your system.
+
+---
+
+## 5\. Linux File Permissions and Access Control
+
+### Standard UNIX Permissions
+
+Every file and directory has three sets of permissions: for the owner (user), group, and others. They are represented by read (r), write (w), and execute (x).
+
+- **chmod:**\
+  - Modify permissions using symbolic (e.g., `chmod u+x file`) or numeric (e.g., `chmod 755 file`) methods.
+- **chown and chgrp:**\
+  - Change the file's owner and group respectively (e.g., `chown alex:alex file`).
+
+### Extended Permissions and ACLs
+
+- **setfacl and getfacl:**\
+  - Provide finer-grained control than basic permissions by assigning permissions for specific users or groups. - Example:
+  - `setfacl -m u:username:rwx file` grants a specific user full rights.
+  - `getfacl file` displays current ACLs.
+
+### File Attributes
+
+- **lsattr and chattr:**\
+  - Manage extended attributes such as immutability.\
+  - For example, `chattr +i file` makes a file immutable.
+
+### Permissions in SELinux
+
+- Besides the standard UNIX permissions, SELinux adds a security context (visible with `ls -Z`) that governs access based on policies.
+- Tools like **audit2allow** can help diagnose SELinux denials and suggest policy adjustments.
+
+_For more details on Linux permissions (both traditional and extended), see resources like the Unix & Linux Stack Exchange discussions_
+
+_[unix.stackexchange.com](https://unix.stackexchange.com/questions/101263/what-are-the-different-ways-to-set-file-permissions-etc-on-gnu-linux)_
+
+_._
+
+---
+
+## 6\. Mastering the Commands: A Quick Reference List
+
+### Kernel Module Management
+
+- `lsmod`
+- `modinfo <module>`
+- `modprobe <module>`
+- `rmmod <module>`
+
+### SELinux Management
+
+- `sestatus`
+- `getenforce` / `setenforce [0|1]`
+- `ls -Z`
+- `chcon -t <type> <file>`
+- `restorecon -Rv <dir>`
+- `semanage fcontext -a -t <type> "<path>(/.*)?"`
+- `semanage boolean -l` / `setsebool -P <boolean> [on|off]`
+- `audit2allow`
+
+### Filesystem Mounting & Storage
+
+- `mount -o <options> <device> <mount_point>`
+- `umount <mount_point>`
+- `findmnt`
+- `df -h`
+- `lsblk`
+- `fdisk` / `parted`
+- `blkid`
+
+### Configuration Files
+
+- **Kernel:** `/boot/config-$(uname -r)`
+- **SELinux:** `/etc/selinux/config`, `/etc/sysconfig/selinux`
+- **Mounts:** `/etc/fstab`
+- **Services & Environment:** Various files under **/etc/** and user home directories.
+
+### File Permissions & ACLs
+
+- `chmod`
+- `chown`
+- `chgrp`
+- `setfacl` / `getfacl`
+- `lsattr` / `chattr`
+
+---
+
+System Run Levels
+
+init 0 - Halt the system
+init 1 - Single-user mode
+init 2 - Multi-user mode (without networking)
+init 3 - Multi-user mode (with networking)
+init 4 - Not used/User-definable
+init 5 - Start the system normally with GUI
+init 6 - Reboot the system
+
+check with `who -r` or `runlevel` command.
+
+### Linux Boot Process
+
+- **BIOS**: Basic Input/Output System executes MBR.
+- **MBR**: Master Boot Record executes GRUB.
+- **GRUB**: Grand Unified Bootloader executes Kernel
+  .- **Kernel**: Kernel executes `/sbin/init`.
+- **Init**: Init executes runlevel programs.
+- **Runlevel**: Runlevel programs are executed from `/etc/rc.d/rc*.d/`.
+
+**Linux Boot Process (Newer Versions)**:
+
+1.  **BIOS**: Basic Input and Output Setting (firmware interface)
+
+    - POST: Power-On Self-Test started
+
+2.  **MBR (Master Boot Record)**:
+
+    - Information saved in the first sector of a hard disk that indicates where GRUB2 is located so it can be loaded in computer RAM
+
+3.  **GRUB2 (Grand Unified Boot Loader v2)**:
+
+    - Loads Linux kernel
+    - `/boot/grub2/grub.cfg`
+
+4.  **Kernel (Core of Operating System)**:
+
+    - Loads required drivers from `initrd.img`
+    - Starts the first OS process (`systemd`)
+
+5.  **Systemd (System Daemon, PID #1)**:
+
+    - It then starts all the required processes
+    - Reads `/etc/systemd/system/default.target` to bring the system to the run-level
+    - Total of 7 run-levels (0 through 6)
