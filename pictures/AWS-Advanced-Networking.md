@@ -562,3 +562,210 @@ Example:
 - Data is stored in CloudWatch Logs or S3
 - Helps to monitor and troubleshoot connectivity issues
 - Flow logs data can go to S3 / CloudWatch Logs / Kinesis Data Firehose
+- Captures network information from AWS managed interfaces as well
+  - ELB, RDS, ElastiCache, Redshift, Amazon Workspaces, NAT Gateway, and VPN Gateway, Transit Gateway
+
+VPC Flow Logs custom format:
+
+- vpc-id
+- subnet-id
+- instance-id
+- type: IPv4 / IPv6
+- pkt-src: Source IP
+- pkt-dst: Destination IP
+- pkt-src-aws-service: Source AWS service
+- pkt-dst-aws-service: Destination AWS service
+- traffic-path
+- region
+- az-id
+- flow-direction: ingress or egress
+
+---
+
+# VPC Traffic Mirroring
+
+- Copy network traffic from an elastic network interface of Amazon EC2 instances
+- Send the traffic to out-of-band security and monitoring appliances for Content inspection or threat monitoring or for troubleshooting
+- How to set up Traffic Mirroring (via AWS VPC console)
+  - Create a traffic mirror session
+  - Specify the source and target
+  - Choose the traffic to mirror
+  - Start the session
+
+---
+
+# VPC Reachability Analyzer
+
+- Connectivity testing between the source resource and a destination resource
+- Produces hop-by-hop details of the virtual network path
+- Points out the blocking components when traffic is not reachable
+- Does not send a real packet, it uses network configurations to find out if network is reachable
+
+Use Cases:
+
+- Troubleshoot connectivity issues caused by network misconfiguration
+- Automate the verification of connectivity after network configuration changes
+
+- Supported Source and Destination:
+
+  - EC2 instances
+  - Network Load Balancers
+  - Network INterfaces
+  - NAT Gateways
+  - Internet Gateways
+  - VPC Peering Connections
+  - VPC endpoints
+  - Transit Gateways
+  - VPN Connections
+
+- Intermediate components:
+  - ALB and NLB
+  - NAT Gateway
+  - TGW, TGW attachment, VPC peering
+
+The source and destination resources:
+
+- Must be in the same VPC or VPCs connected through a VPC peering or Transit Gateway
+- Must be in the same Region
+- Can be across AWS accounts in the same AWS organization
+
+# VPC Network Access Analyzer
+
+- Identify un-intended network access to the AWS resources
+- Isolated network segments
+- No communication between production and development VPCs
+- Internet accessibility
+- Only required resources can be reached over the internet
+- Trusted network paths
+- NAT gateways or firewalls in the path
+- Trusted network access
+- Accessible only from specific resource, IP range, port, protocol etc.
+
+- Specify network access scope and analyze if it meets you compliance
+
+---
+
+# VPC Peering Limitations
+
+- Must not have overlapping CIDR
+- VPC Peering connection is not transitive (must be established for each VPC that need to communicate with one another)
+- You can setup only 1 VPC peering connection between 2 VPCs
+- Maximum 125 VPC peering connections per VPC
+
+---
+
+# VPC Endpoints
+
+- Endpoints allow you to connect to AWS Services using a private network instead of the public network
+- They remove the need of IGW, NAT Gateway to access AWS Services
+- Endpoint devices are horizontally scaled, redundant and highly available without any bandwidth constraints on your network traffic
+- **Gateway Endpoint**: provisions a target and must be used in a route table
+  - S3 and DynamoDB
+- **Interface Endpoint**: provisions an ENI (private IP) as an entry point - most other AWS services
+
+---
+
+# VPC Gateway Endpoint
+
+- Enables private connection between VPC and S3/DynamoDB
+- Need to modify the route tables and add an entry to route the traffic to S3 or DynamoDB through the gateway VPC endpoint
+- When we create an Amazon S3 endpoint, a prefix list is created in VPC
+- The prefix list is the collection of IP addresses that Amazon S3 uses.
+- The prefix list is formatted as pl-xxxxxxxx and becomes an available option in both subnet routing tables and security groups
+- Prefix list should be added in Security group Outbound rule (if Security group outbound rules do not have default "Allo All" rule)
+
+---
+
+# VPC Endpoint Security
+
+- Endpoint allows more granular access to VPC resources as compared to broad access through VPC peering connection
+- Access to S3 through VPC endpoint can be secured using bucket policies and endpoint policies
+- VPC Endpoint policy
+  - An IAM policy which is attached to VPC endpoint
+  - Default policy allows full control to the AWS service
+
+# VPC Endpoint Policy
+
+- **VPC Endpoint Policy to restrict access to a specific S3 bucket or a DynamoDB table**
+
+## Restrict access to S3 Bucket
+
+```json
+{
+  "Statement": [
+    {
+      "Sid": "Access-to-specific-bucket-only",
+      "Principal": "*",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::my_secure_bucket",
+        "arn:aws:s3:::my_secure_bucket/*"
+      ]
+    }
+  ]
+}
+```
+
+## Restrict access to DynamoDB Table
+
+```json
+{
+  "Statement": [
+    {
+      "Sid": "AccessToSpecificTable",
+      "Principal": "*",
+      "Action": [
+        "dynamodb:Batch*",
+        "dynamodb:Delete*",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Update*"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/StockTable"
+    }
+  ]
+}
+```
+
+## S3 Bucket policy to restrict access to a specific VPC endpoint
+
+```json
+{
+  "Version": "2012-10-17",
+  "Id": "Qolicy1415115909152",
+  "Statement": [
+    {
+      "Sid": "Access-to-specific-VPCE-only",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Effect": "Deny",
+      "Resource": [
+        "arn:aws:s3:::my_secure_bucket",
+        "arn:aws:s3:::my_secure_bucket/*"
+      ],
+      "Condition": {
+        "StringNotEquals": {
+          "aws:sourceVpce": "vpce-1a2b3c4d"
+        }
+      }
+    }
+  ]
+}
+```
+
+---
+
+## VPC Endpoint Policy & S3 Bucket Policy
+
+- S3 bucket policy may have
+
+  - Condition: "aws:sourceVpce": "vpce-la2b3c4d" to Deny any traffic that doesn't come from a specific VPC endpoint (more secure)
+  - Condition: "aws:sourceVpc": "vpc-111bbb22" for a specific VPC
+
+- The aws:sourceVpc condition only works for VPC Endpoints, in case you have multiple endpoints and want to manage access to your S3 bucket for all your endpoints
+- The S3 bucket policies can restrict access only from a specific public IP address or an elastic IP address. You can't restrict based on private IP.
+
+---
