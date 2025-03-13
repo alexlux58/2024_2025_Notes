@@ -935,3 +935,110 @@ The source and destination resources:
 - Igmpv2Support attribute determines how group members join or leave a multicast group. When this attribute is enabled, members can send JOIN or LEAVE messages to join or leave a multicast group.
 - StaticSourcesSupport multicast domain attributes determine whether there are static multicast sources for the group.
 - A non-Nitro instance cannot be a multicast sender. If you use a non-Nitro instance as a receiver, you must disable the Source/Destination check
+- Multicast routing is not supported over AWS Direct Connect, Site-to-Site VPN, TGW peering attachments, or transit gateway Connect attachments.
+- Security group configuration on the IGMP hosts (instances), and any ACLs configuration on the host subnets must allow these IGMP protocol messages.
+- You can share multicast domain with AWS accounts or OU inside its organization or across organizations. Multicast domain sharing also integrates with AWS Resource Access Manager (RAM).
+
+---
+
+# TGW Architecture: Centralized Egress internet
+
+- Use NAT gateway's in each AZ for high availability and for saving inter-AZ data transfer cost
+- If one AZ entirely fails, all traffic will flow via the Transit Gateway and NAT gateway endpoints in the other AZ.
+- A NAT gateway can support up to 55,000 simultaneous connections to each unique destination.
+- NAT gateway can scale from 5 Gbps to 100 Gbps.
+- Black hole routes in the Transit Gateway route tables to restrict inter-VPC traffic
+- This architecture doesn't necessarily save the cost because instead of per VPC NAT Gateway charge (e.g. ~$0.045/hr + ~$0.045/GB) it adds TG attachment & data processing charge (~$0.05/hr per VPC attachment + ~$0.02/GB)
+
+---
+
+# Centralized inspection with AWS GWLB
+
+- Using AWS PrivateLink, GWLB Endpoint routes traffic to GWLB. Traffic is routed securely over Amazon network without any additional configuration.
+- GWLB encapsulates the original IP traffic with a <u>GENEVE</u> header and forward it to the network appliance over UDP port 6081.
+- GWLB uses 5-tuples or 3-tuples of an IP packet to pick an appliance for the life of that flow. This creates session stickiness to an appliance for the life of a flow required for stateful appliances like firewalls.
+- This combined with Transit Gateway Appliance mode, provides session stickiness irrespective of source and destination AZ.
+
+---
+
+# Centralized VPC interface endpoints
+
+- VPC interface endpoints provide the regional and AZ level DNS endpoints
+- The regional DNS endpoint will return the IP addresses for all the AZ endpoints
+- In order to save the inter-AZ data transfer cost from Spoke VPC to Hub VPC, you can use the AZ specific DNS endpoints. Selection has to be done by the client.
+
+---
+
+### **VPC Peering vs Transit Gateway**
+
+| **Category**                              | **VPC Peering**                                                                                                   | **Transit Gateway**                                                                       |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Architecture**                          | One-One connection -- Full Mesh                                                                                   | Hub and Spoke with multiple attachments                                                   |
+| **Hybrid Connectivity**                   | Not supported                                                                                                     | Supported hybrid connectivity via VPN and DX                                              |
+| **Complexity**                            | Simple for fewer VPCs, complex as the number of VPCs increases                                                    | Simple for any number of VPCs and hybrid network connectivity                             |
+| **Scale**                                 | 125 peering / VPC                                                                                                 | 5000 attachments / TGW                                                                    |
+| **Latency**                               | Lowest                                                                                                            | Additional hop                                                                            |
+| **Bandwidth**                             | No limit                                                                                                          | 50 Gbps / attachment                                                                      |
+| **Ref Security Group**                    | Supported                                                                                                         | Not supported                                                                             |
+| **Subnet Connectivity**                   | For all subnets across AZs                                                                                        | Only subnets within the same AZ in which TGW attachment is created                        |
+| **Transitive Routing (e.g., IGW access)** | Not supported                                                                                                     | Supported                                                                                 |
+| **TCO (Total Cost of Ownership)**         | Lowest -- Only data transfer cost (free within same AZ, $0.01 across AZs in each direction, $0.02 across regions) | Per attachment cost + data transfer cost (e.g., N. Virginia: $0.05 per hour + $0.02 / GB) |
+
+---
+
+# Sharing Transit Gateway
+
+- Use AWS Resource Access Manager (RAM) to share a transit gateway for VPC attachments across accounts or across your organization in AWS Organizations.
+- An AWS site-to-site VPN attachment must be created in the same AWS account that owns the transit gateway.
+- An attachment to a Direct Connect gateway can be in the same AWS account as the Direct Connect Gateway, or a different account from the Direct Connect gateway.
+- When a transit gateway is shared with the AWS account, that AWS account cannot create, modify, or delete transit gateway route tables, or route table propagations and associations.
+- When the transit gateway and the attachment entities are in different accounts, use the Availability Zone ID to uniquely and consistently identify the Availability Zone.
+  For example, use 1 -az 1 is an AZ ID for the us-east-1 region and maps to the same location in every AWS account.
+
+---
+
+# AS - Autonomous System
+
+- Routers controlled by one entity in a network
+- Assigned by IANA for Public ASN (1 - 64495)
+- Private ASN (64512-65534)
+
+---
+
+# BGP - Border Gateway Protocol
+
+- Dynamic Routing using Path-Vector protocol where it exchanges the best path to a destination between peers or AS (ASPATH)
+- iBGP - Routing within AS
+- eBGP - Routing between AS
+- Routing decision is influenced by
+  - Weight (Cisco routers specific - works within AS)
+  - ASPATH - Series of AS's to traverse the path (Works between AS)
+  - Local Preference LOCAL_PREF (Works within AS), highest is proffered, default value 100
+  - MED - Multi-Exit Discriminator (Works between AS), used when there are multiple paths between two AS's
+
+---
+
+# VPN Basics
+
+- VPN allows hosts to communicate privately over an untrusted intermediary network like internet, in encrypted form
+- AWS supports Layer 3 VPN (not layer 2)
+- VPN has 2 forms - site to site VPN and Client to site VPN
+  - Site to site VPN connects 2 different networks
+  - client to site VPN connect the client device like laptop to the private network
+- VPN types
+  - IPSec (IP security) VPN which is supported by AWS managed VPN
+  - Other VPNs like GRE and DMVPN are not supported by AWS managed VPN
+
+## How site-to-site VPN works in AWS
+
+- VPN connection terminated at Virtual Private Gateway (VGW) on AWS end
+- VGW creates 2 tunnel endpoints in different AZs for high availability
+
+### Virtual private gateway (VGW)
+
+- Managed gateway endpoint for the VPC
+- Only one VGW can be attached to VPC at a time
+- VGW supports both Static Routing and Dynamic routing using Border gateway protocol (BGP)
+- For BGP, you can assign the private ASN (Autonomous System Number) to VGW in the range of 64512 to 65534
+- If you don't define ASN, AWS assigns default ASN. ASN can not be modified once assigned (default 64512)
+- VGW Supports AES-256 and SHA-2 for encryption and data integrity
