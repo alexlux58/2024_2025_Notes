@@ -294,3 +294,306 @@ Finding type: UnauthorizedAccess:EC2/SSHBruteForce Instance tag value: devops (a
 - Must setup OS user and password
 - Only one active session per EC2 instance
 - Disabled by default (enabled at AWS account level)
+
+---
+
+# Connect to Linux EC2 Instance with a lost SSH Key Pair - Using EC2 user data
+
+- Create a new Key Pair, then copy the public key
+- Stop the instance, update the EC2 User data (cloud-config format)
+- Start the instance and connect with the private key
+- Note: This method override the existing public keys
+- Delete the EC2 User data
+
+# Connect to Linux EC2 Instance with a lost SSH Key Pair - Using Systems Manager
+
+- Use AWSSupport-ResetAccess Automation Document
+- Will create and apply a new key pair (/ec2rl/openssh/instance_id/key)
+- Works for both Linux and Windows
+- The private key stored encrypted in SSM Parameter Store /ec2rl/openssh/instance_id/key
+
+# Connect to Linux EC2 Instance with a lost SSH Key Pair - Using EC2 Instance Connect
+
+- EC2 Instance Connect agent must be installed (already installed on Amazon Linux 2 and Ubuntu 16.04 or later)
+- Connect using EC2 Instance Connect temporary session
+- Store permanent new public SSH key into ~/.ssh/authorized_keys
+
+# Connect to Linux EC2 Instance with a lost SSH Key Pair - Using EC2 serial console
+
+- Connect to your instance without a working network connection
+- Used with supported Nitro-based instances
+- Must be enabled at the AWS account level
+
+# Connect to Linux EC2 Instance with a lost SSH Key Pair - Using EBS Volume Swap
+
+- Create a new key pair
+- stop the original EC2 instance
+- Detach the EBS root volume
+- Attach the EBS volume to a temporary EC2 instance as a secondary volume
+- Add the new public key to ~/.ssh/authorized_keys on the volume
+- Re-attach the volume to the original instance, then restart the instance
+
+# Connect to Windows EC2 instance with a lost password - Using EC2Launch v2
+
+- Verify EC2Launch v2 service is running (Windows AMIs with the EC2Launch v2 service)
+- Detach the EBS root volume
+- Attach the volume to a temporary instance as a secondary volume
+- Delete file %ProgramData%/Amazon/EC2Launch/state/.run-once
+- Re-attach the volume to the original instance, then restart the instance, you will be able to set a new password
+
+# Connect to Windows EC2 instance with a lost password - Using EC2Config
+
+- Verify EC2Config service is running
+- Windows AMIs before Windows Server 2016
+- Detach the EBS root volume
+- Attach the volume to a temporary instance as a secondary volume
+- Modify file \ProgramFiles\Amazon\Ec2ConfigService\Settings\Config.xml
+- Set EC2SetPassword to Enabled
+- Reattach the volume to the original instance, then restart the instance
+
+# Connect to Windows EC2 instance with a lost password - Using EC2Launch
+
+- Windows Server 2016 and later AMIs that doesn't include EC2Launch v2
+- Detach the EBS root volume
+- Download and install EC2Rescue Tool for Windows Server
+- Select Offline instance option -> Diagnose and Rescue -> Reset Administrator password
+- Reattach the volume to the original instance, then restart the instance
+
+# Connect to Windows EC2 instance with a lost password - Using Systems Manager
+
+- Must have SSM Agent installed
+- Method 1:
+  - Use AWSSupport-RunEc2RescueForWindowsTool Run Command Document
+  - Install and run EC2Rescue Tool for Windows Server
+  - Command is set to ResetAccess
+- Method 2:
+  - use AWSSupport-ResetAccess Automation Document
+  - Works for both Linux and Windows
+- Method 3:
+  - Manually AWS-RunPowerShellScript Run Command Document
+  - Command: net user Administrator Password@123
+
+# EC2Rescue Tool for Linux
+
+- Diagnose and troubleshoot common issues
+- Gather syslog logs, diagnose problematic kernel parameters, diagnose common OpenSSH issues, ...
+- Supports over 100 modules
+- Amazon Linux 2, Ubuntu, RHEL, SUSE Linux
+- Install manually or using AWSSupport-TroubleshootSSH Automation Document
+  - Installs the tool and tries to fix issues with SSH connections to the instance
+- Upload the results directly to AWS Support or an S3 bucket
+
+# Use Cases
+
+- Collect System Utilization Reports
+  - vmstate, iostat, mpstat, ...
+- Collect Logs and Details
+  - syslog, dmesg, application error logs, and SSM logs
+- Detect System Problems
+  - Asymmetric routing or duplicate root device labels
+- Automatically Remediate System Problems
+  - Correcting OpenSSH file permissions
+  - Disabling known problematic kernel problems
+- You can create your own custom module
+
+# EC2Rescue Tool for Windows Server
+
+- Diagnose and troubleshoot common issues
+- Collect log files, troubleshoot issues, provide suggestions, ...
+- Supports 2 modules (data collector, analyzer)
+- Windows Server 2008 R2 or later
+- Install manually or using AWSSupport-AWSSupport-RunEC2RescueForWindowsTool Run Command Document
+  - Commands: CollectLogs, FixAll, ResetAccess
+- Use AWSSupport-ExecuteEC2Rescue Automation Document to troubleshoot connectivity issues
+- Upload the results directly to an S3 bucket
+
+# Use Cases
+
+- Instance Connectivity Issues
+  - Firewall, RDP, or network interface configuration
+- OS Boot Issues
+  - Blue screen or stop error, a boot loop, or a corrupted registry
+- Gather OS logs and Configuration Files
+  - If you need advanced log analysis and troubleshooting
+- Common OS issues
+  - Disk signature collision, missing drivers, or incorrect registry settings
+- ## Perform a restore
+
+---
+
+# AWS Acceptable Use Policy (AUP)
+
+- Governs your use of the services offered by AWS
+- You may not use for:
+  - Illegal activities
+  - Harmful activities
+  - Activities that interfere with the services
+  - Activities that infringe on the rights of others
+  - Activities that may expose AWS to legal liability
+- https://aws.amazon.com/aup/
+
+# Abuse Report - AWS
+
+- When you suspect that AWS resources are used for abusive or illegal activities
+- You can create an AWS Abuse Report
+- Examples: spam, port scanning, DDoS attacks, intrusion attempts, hosting prohibited content, distributing malware, phishing, copyright infringement
+- Contact AWS Trust and Safety team with details (e.g., logs, email headers)
+- If you receive an email that your AWS resources are used for illegal activity:
+  - Respond to the email and explain how you're preventing this
+  - If you don't respond within 24 hours, AWS might suspend your AWS account
+
+# IAM Security Tools
+
+- IAM Credentials Report (account-level)
+  - A report that lists all your account's users and the status of their various credentials
+- IAM Access Advisor (user-level)
+  - Access advisor shows the service permissions granted to a user and when those services were last accessed
+  - You can use this information to revise your policies
+
+# IM Access Analyzer
+
+- Find out which resources are shared with external entities
+
+  - S3 buckets
+  - IAM Roles
+  - KMS keys
+  - SQS Queues
+  - Secrets Manager secrets
+  - Lambda functions and Layers
+
+- Define Zone of Trust (trusted accounts) = AWS Account or AWS Organization
+- Access outside zone of trusts => findings
+
+- IAM Access Analyzer Policy Validation
+
+  - Validates your policy against IAM policy grammar and best practices
+  - General warnings, security warnings, errors, suggestions
+  - Provides actionable recommendations
+
+- IAM Access Analyzer Policy Generation
+  - Generates IAM policy based on access activity
+  - CloudTrail logs is reviewed to generate the policy with the fine-grained permissions and the appropriate Actions and Services
+  - Reviews CloudTrail logs for up to 90 days
+
+---
+
+# Amazon Inspector
+
+- Automated Security Assessments
+- For EC2 instances
+  - Leveraging the AWS System Manager (SSM) agent
+  - Analyze against unintended network accessability, vulnerabilities, deviations from best practices
+  - Analyze the running OS against known vulnerabilities
+- For container Images push to Amazon ECR
+  - Assessment of Container Images as they are pushed
+- For Lambda Functions
+
+  - Identifies software vulnerabilities in function code and package dependencies
+  - Assessment of functions as they are deployed
+
+- Reporting and Integration with AWS Security Hub
+- Send findings to Amazon Event Bridge
+- Remember: Only for EC2 instances, Container Images and Lambda Functions
+- Continuous scanning of the infrastructure, only when needed
+- Package vulnerabilities (Ec2, ECR and Lambda) database of CVE
+- Network reachability (Ec2) - unintended network accessibility
+- A risk score is associated with all vulnerabilities for prioritization
+
+---
+
+# Logging in AWS for security and compliance
+
+- To help compliance requirements, AWS provides many service-specific security and audit logs
+- Service Logs include:
+  - CloudTrail trails - trace all API calls
+  - Config Rules - for config and compliance over time
+  - CloudWatch logs - for full data retention
+  - VPC Flow Logs - IP traffic within your VPC
+  - ELB Access Logs - metadata of requests made to your load balancers
+  - CloudFront Logs - web distribution access logs
+  - WAF Logs - full logging of all requests analyzed by the service
+- Logs can be analyzed using AWS Athena if they're stored in S3
+- You should encrypt logs in S3, control access using IAM and Bucket policies, MFA
+- Move Logs to Glacier for cost savings on long term storage
+
+- AWS security at scale logging whitepaper (https://d0.awsstatic.com/whitepapers/compliance/AWS_Security_at_Scale_Logging_in_AWS_Whitepaper.pdf)
+
+---
+
+# AWS Systems Manager Overview
+
+- Helps you manage your EC2 and On-premises systems at scale
+- Get operational insights about the state of your infrastructure
+- Easily detect problems
+- Patching automation for enhanced compliance
+- Works for both Windows and Linux OS
+- Integrated with CloudWatch metrics / dashboards
+- Integrated with AWS Config
+- Free service
+
+# AWS Systems Manager - Features
+
+- Resource Groups
+- Operations Management
+  - Explorer
+  - OpsCenter
+  - CloudWatch Dashboard
+  - PHD
+  - Incident manager
+- Shared Resources
+  - Documents
+- Change Management
+  - Change Manager
+  - Automation
+  - Change Calendar
+  - Maintenance Windows
+- Application Management
+  - Application Manager
+  - Application Insights
+  - AppConfig
+  - Parameter Store
+- Node Management
+  - Fleet Manager
+  - Compliance
+  - Inventory
+  - Hybrid Activations
+  - Session Manager
+  - Run Command
+  - State Manager
+  - Patch Manager
+  - Distributor
+
+## How Systems Manager works
+
+- We need to install the SSM agent onto the systems we control
+- Installed by default on Amazon Linux 2 AMI and some Ubuntu AMI
+- If an instance can't be controlled with SSM, it's probably an issue with the SSM agent or IAM permissions
+- Make sure the EC2 instances have proper IAM role to allow SSM actions
+
+# AWS Tags
+
+- You can add text key-value pairs called Tags to many AWS resources
+- Commonly used in EC2
+- Free naming, common tags are Name, Environment, Team ...
+- They're used for
+  - Resource grouping
+  - Automation
+  - Cost allocation
+- Better to have too many tags than too few
+
+# Resource Groups
+
+- Create, view or manage logical group of resources thanks to tags
+- Allows creation of logical groups of resources such as
+  - Applications
+  - Different layers of an application stack
+  - Production versus development environments
+- Regional service
+- Works with EC2, S3, DynamoDB, Lambda, etc...
+
+# SSM - Documents
+
+- Documents can be in JSON or YAML
+- You define parameters
+- You define actions
+- Many documents already exist in AWS

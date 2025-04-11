@@ -244,3 +244,131 @@ Coinbase is also committed to providing reasonable accommodations to individuals
 
 Global Data Privacy Notice for Job Candidates and Applicants
 Depending on your location, the General Data Protection Regulation (GDPR) and California Consumer Privacy Act (CCPA) may regulate the way we manage the data of job applicants. Our full notice outlining how data will be processed as part of the application procedure for applicable locations is available here. By submitting your application, you are agreeing to our use and processing of your data as required. For US applicants only, by submitting your application you are agreeing to arbitration of disputes as outlined here.
+
+---
+
+Network/ IT Administrator
+
+WAN
+(Required)
+
+VoIP
+(Required)
+
+Enterprise software
+(Required)
+
+- show more
+
+Do you have experience in WAN?
+&nbsp;
+Job details
+Here’s how the job details align with your profile.
+Pay
+
+$70,000 - $120,000 a year
+Job type
+
+Full-time
+Shift and schedule
+
+8 hour shift
+
+Monday to Friday
+&nbsp;
+Benefits
+Pulled from the full job description
+401(k)
+Dental insurance
+Health insurance
+Life insurance
+Paid time off
+Vision insurance
+&nbsp;
+Full job description
+Job Title: Network / IT Administrator
+
+Location: Encino, CA
+
+Job Description:
+
+We are seeking an experienced Network/ IT Administrator to provide day-to-day technical support and maintenance of our computer systems and networks.
+
+The ideal candidate will have a strong background in networking, desktop support, and overall in-house IT administration, as well as a deep understanding of data backup, Microsoft 365, privacy, and security control setup. Must have the ability to multitask in a high-pressure environment.
+
+Responsibilities:
+
+Provide technical assistance and support for incoming queries and issues related to computer systems, and windows server 2012, 2016, 2019 and other business tools such as VoIP Avaya PBX.
+Install, configure, test, maintain, monitor, and troubleshoot hardware and software.
+Resolve technical problems with Local Area Networks (LAN), Wide Area Networks (WAN), and other systems.
+Install and configure server/PC hardware and software.
+Monitor system performance and provide timely responses to system outages.
+Perform regular system maintenance tasks.
+Maintain user accounts and access rights.
+Manage user PCs and ensure they are up to date with the latest security patches including managing active directory of the company.
+Recommend system improvements to enhance performance and reliability.
+Provide user training and support.
+Document technical issues and resolutions.
+
+Skills Required:
+
+Networking: In-depth knowledge of LAN/WAN technologies and protocols, especially enterprise Wi-Fi Management.
+
+Desktop Support: Proficient in configuring, installing, and troubleshooting PCs and laptops.
+
+System Maintenance: Experience in performing system maintenance tasks, such as patching and security updates and managing ESXI VMware.
+
+Microsoft 365: Experience in setting up, managing, and troubleshooting Microsoft
+365 applications.
+
+Data Backup: Experience in developing and implementing backup strategies to ensure data integrity.
+
+Security:
+Well-versed in security policies and procedures related to data protection.
+Deep understanding of IT infrastructure, operating systems, and networks of common protocols such as SSL, HTTP, DNS, SMTP, IPsec, and Thin Client
+Deployment – Wyse Terminal.
+
+Privacy Control:
+Experience in setting up privacy controls to ensure the security of data.
+A strong understanding of firewall technologies and proxy server such as Premise
+Exchange 2019.
+Intermediate to expert intrusion detection system/intrusion prevention system knowledge.
+
+Full job description
+Second Son Consulting, Inc. has an opening for a Service Coordinator supporting our focus in Apple-centric small to medium business environments. This is a long-term career opportunity for an experienced, intelligent, self-motivated, and customer service-oriented person who loves being involved in logistics and the operations side of business and has some curiosity about technology in general.
+
+As part of our team, you will be a primary point of contact with our clients, triaging new service requests, and assisting in maximizing our engineering team’s time through logistics, and monitoring dashboards for response time and urgent issues. You will be exposed to the array of technology systems we support for our clients, participating in weekly reviews and audits of multiple systems, assisting with shipping and receiving, and reviewing and analyzing internal metrics for efficiency and loose ends. The position requires a mix of hard and soft skills: an instinct for recognizing patterns and trends, but also an instinct for customer service and a knack for working with people across all levels, from end-users to CEOs, in a wide range of industries.
+
+Due to the nature of the role, this position is hybrid, working primarily in our Los Angeles area office, allowing for work-from-home 1 to 2 days per week, after training is completed.
+
+In this role, you will…
+
+Ensure account satisfaction and develop client relationships through personalized interactions, consistent follow-up, and stellar communication.
+Process service requests through phone, email, manual entry, or direct customer input, with the support of the Help Desk team.
+Track our SLA obligations and ensure we meet our SLA goals.
+Coordinate on-site appointments for maximum productivity of our engineers.
+Own the logistics of hardware shipping and receiving at our office and with remote clients.
+Become the subject-matter-expert (SME) of our dispatch processes and the service side of our ticketing system.
+Use our dashboard and reporting tools to prioritize and track service requests daily.
+Review client and company needs with Operations team weekly.
+Have the opportunity to learn new things on a daily basis, and cross-train with our engineers and leadership team.
+Learn to recognize support needs and trends, and work with our Operations Team to address the specific needs of the teams and environments we support.
+
+---
+
+Full job description
+Make Your Mark::
+We're looking for an experienced Systems Engineer to join our Cloud Engineering and operations team! In this role, the Systems Engineer will develop, maintain, and create new tools to help our internal teams. Collaborating across the company, the candidate will streamline processes, automate manual tasks, and develop innovative solutions for daily workflows.
+S/he will participate in operational processes, incident management, and disaster recovery activities, ensuring our cloud-based platforms' high availability and performance. This role requires strong critical thinking skills and experience supporting large-scale cloud infrastructures, automating manual tasks through scripting and infrastructure-as-code. The candidate will maintain 24x7 high-availability mission-critical, traffic-intensive web infrastructures, utilizing modern cloud technologies and best practices.
+You'll Get To::
+Ensure the high availability and performance of our cloud-based SaaS platform.
+Automate infrastructure provisioning and management using Terraform and Ansible.
+Develop and maintain automation scripts and tools using Python and Bash.
+Debug and resolve issues related to automation scripts, infrastructure, and applications.
+Collaborate with development and other technology teams on requirements gathering, capacity planning, and process improvement.
+Utilize monitoring and logging tools to continuously assess application performance, reliability, and security.
+Monitor industry trends and evaluate new technologies to enhance our cloud infrastructure.
+Contribute to a high-performing team of engineers, tackling complex challenges in a dynamic, high-traffic cloud environment.
+Participate in a 24/7 on-call rotation and provide support for major incidents.
+Manage and prioritize tasks within a ticketing system (JIRA), using daily work to identify and implement continuous improvements.
+Maintain comprehensive infrastructure documentation, operational knowledge bases, and training materials.

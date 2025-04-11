@@ -1,0 +1,12 @@
+sudo nmap -sC -sV -oA 10.10.11.203
+url: superpass.htb
+SSTI Payload: ${{<%[%'"}}%\. 
+https://www.cobalt.io/blog/a-pentesters-guide-to-server-side-template-injection-ssti
+
+
+
+
+
+
+
+
