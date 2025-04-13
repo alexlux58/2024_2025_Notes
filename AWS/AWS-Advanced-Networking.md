@@ -1880,3 +1880,226 @@ The source and destination resources:
 - Resource
 - Service Directory
 - Auth Policies
+
+# VPC Lattice - Service
+
+- An independently deployable unit of code that delivers a specific function or task
+- A service can run on EC2 instances, ALB, ECS/EKS/Fargate containers, Lambda functions or IP address
+- VPC Lattice service has target groups, listeners and rules
+- Target groups can have weights and Rules can have priorities and conditions like header match, method match or path match
+
+# VPC Lattice - Resource
+
+- A resource is an entity such as an Amazon RDS database, a cluster of nodes, an instance, an application endpoint, a domain-name target, or an IP address.
+- Resource gateway is a point of ingress in which resources reside
+
+# VPC Lattice Auth policies
+
+- Fine-grained authorization policies that can be used to define access to services
+- Auth policy can be attached to individual services or to the service network
+- Auth type can be None or AWS_IAM
+- By default, all requests are implicitly denied when auth is AWS_IAM
+- Authorization evaluation
+  - Collect all IAM identity-based policies and auth policies
+  - Requestor should have IAM allow permissions in their identity-based policy in their AWS account (IAM User, Role)
+  - VPC lattice service network auth policy and/or VPC lattice service auth policy should have explicit allow for the principal or None to allow the access
+
+# example auth policies
+
+## Allow access only from within AWS organization
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "vpc-lattice:Invoke",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:PrincipalOrgID": "<Your AWS Organization ID>"
+        }
+      }
+    }
+  ]
+}
+```
+
+## Allow only GET method access for a particular VPC lattice service to a particular IAM role
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "<IAM Role ARN>"
+      },
+      "Action": "vpc-lattice:Invoke",
+      "Resource": "<VPC Lattice Service ARN>",
+      "Condition": {
+        "StringEquals": {
+          "http:method": "GET"
+        }
+      }
+    }
+  ]
+}
+```
+
+---
+
+# VPC Lattice network associations
+
+- Service association
+- Resource Configuration association
+- VPC association
+- VPC endpoint association
+
+## Service association
+
+- Service is discoverable and reachable from VPC Lattice network when you associate a service with the VPC lattice network
+- Service can be in the same AWS account or can be shared using RAM from another account
+
+## Resource configuration association
+
+- Resource is discoverable and reachable from VPC Lattice network when you associate a resource configuration with the VPC lattice network
+- Resource configuration can be in the same AWS account or can be shared using RAM from another AWS account
+
+## VPC endpoint association
+
+- A VPC endpoint of type service network connects a VPC to a service network.
+- Client traffic that comes from outside the VPC over a VPC peering connection, Transit Gateway, Direct Connect, or VPN can use the VPC endpoint to reach lattice services
+- When you create a VPC endpoint in a VPC, IPs from the VPC (and not link local IPs) are used to establish connectivity to the service network.
+
+**Notes**
+If the VPC in which Service is hosted is not associated with the Service network over VPC association, then that Service can not initiate the request for other Service. It can only respond to the requests.
+
+---
+
+# VPC Lattice traffic flow
+
+## 1. DNS query
+
+- DNS query for VPC lattice service DNS or DNS query to Route53 for custom DNS
+- Returns link-local address 169.254.171.x (This address is only accessible from within the VPC)
+- VPC lattice service DNS is automatically registered in Route53 private hosted zone (serivcea.xxx.xxx.vpc-lattice-svcs.ap-south-1.on.aws)
+- Custom domain name: servicea.example.com
+
+## 2. Check security groups
+
+- Outbound security group for EC2 to allow traffic for VPC lattice prefix list or 0.0.0.0/0
+- Inbound security group for VPC lattice VPC association to allow traffic from EC2 instance Private IP
+
+## 3. Check VPC Lattice Auth policy for Service Network and Service
+
+- Validate if traffic is allowed based on service network auth policy and Service auth policy
+- If auth policy is disabled (None) then the traffic is allowed by default
+
+## 4. Follow the traffic rules and send traffic to the target group
+
+- Depending on the service listener port/protocol and rules configurations the traffic is routed to corresponding target group
+- Check security group for the target to allow the incoming traffic
+- If the target is EC2 instance, ALB (EKS/ECS) then inbound security group rule should allow the traffic from link local address (169.254.x.x) or VPC Lattice Managed Prefix list
+
+---
+
+# VPC Lattice features
+
+- Connectivity - Cross VPCs and Cross AWS accounts
+- Protocols - HTTP, HTTPS, gRPC for lattice services and TCP/TLS for VPC lattice resources
+- Request routing - Path based, Method, Weighted
+- Security - IAM authorization, Security groups
+- Targets - EC2 instances, Lambda functions, IP address, ALB/NLB
+  - EKS services can be registered with AWS Gateway API controller
+  - ECS services can be registered using ALB/NLB
+- VPC lattice service, resource and network sharing with RAM
+- NAT and NAT64 for supporting overlapping CIDR and IPv4 <-> IPv6 traffic
+
+## VPC lattice - Sharing with RAM
+
+- AWS Resource Access Manager (RAM): Share Service networks, services, and resource configurations
+
+## VPC Lattice - Overlapping CIDRs, IPv6
+
+- VPCs can have overlapping CIDRs
+- Supports IPv4 and IPv6 traffic
+- VPC lattice performs the NAT/NAT64 to allow
+  - Overlapping CIDRs
+  - IPv4 to IPv6 traffic
+  - IPv6 to IPv4 traffic
+
+---
+
+# AWS CloudFront
+
+- Content Delivery Network (CDN)
+- Improves read performance, content is cached at the edge
+- 225+ Point of Presence globally (215+ Edge Locations and 13 Regional Edge Caches)
+
+## Edge Locations and Regional Edge Caches
+
+### Edge Locations
+
+- Serve content quickly/directly to users
+- Cache more popular content
+
+### Regional Edge Caches
+
+- Serve content to Edge locations
+- Cache less popular content that might suddenly find popularity
+- Larger cache than Edge Location (objects remain longer)
+- Improve performance, reduce the load on your origins
+- Dynamic content doesn't pass through it (directly to origin)
+
+# CloudFront Components
+
+- Distribution
+  - Identified by a domain (e.g., d1111abcdef8.cloudfront.net)
+  - You can use this distribution domain name to access the website
+  - You can also use Route53 CNAME (non-root) or Alias (root and non-root) which points to distribution's domain name
+- Origin
+  - Where actual contents resides (S3 Bucket, ALB, HTTP Server, API Gateway, etc.)
+- Cache Behavior
+  - Cache configurations (e.g., Object Expiration, TTL, Cache invalidations)
+
+# CloudFront - Origins
+
+- S3 Bucket
+  - For distributing files
+  - For uploading files to S3 (using CloudFront as an ingress)
+  - Enhanced security with CloudFront Origin Access Control (OAC)
+- MediaStore Container and MediaPackage Endpoint
+  - To deliver Video On Demand (VOD) or live streaming video using AWS Media Services
+- VPC Origin
+  - For applications hosted in VPC private subnets
+  - Application Load Balancer / Network Load Balancer / EC2 instance
+- Custom Origin (HTTP)
+  - API Gateway (for more control... otherwise use API Gateway Edge)
+  - S3 Bucket configured as a website (enable Static Website hosting)
+  - Any HTTP backend you want
+
+# CloudFront - ALB or EC2 as an origin Using VPC Origins
+
+- Allows you to deliver content from your applications hosted in your VPC private subnets (no need to expose them on the internet)
+- Deliver traffic to private:
+  - Application Load Balancer (ALB)
+  - Network Load Balancer (NLB)
+  - EC2 instance
+
+# CloudFront - Multiple Origins
+
+- To route to different kind of origins based on the content type
+- Based on path pattern:
+  - /images/\*
+  - /api/\*
+  - /\*
+
+# CloudFront - Origin groups
+
+- To increase high-availability and do failover
+- Origin Group: one primary and one secondary origin
+- If the primary origin fails, the second one is used
