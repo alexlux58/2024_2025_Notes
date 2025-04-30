@@ -1,4 +1,4 @@
-#!/Users/alex.lux/Desktop/Notes_2025/Python/Django/testEnv/myenv/bin/python3.10
+#!/Users/alex.lux/Documents/Notes_2025/Python/Django/testEnv/myenv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys

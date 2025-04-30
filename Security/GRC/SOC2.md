@@ -175,3 +175,79 @@ Managed Programs: Consulting Firms
 - Good communicators?
 - Does their staff have available time?
 - Do they have the tools and resources to help you?
+
+# Audit Techniques
+
+- Walkthroughs
+- Inspection
+- Observation
+
+## Walkthroughs
+
+| Who                        | What                                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Main Project Manager       | Coordinate all walkthroughs, sit in on walkthroughs                                                    |
+| Leadership                 | Leadership and Governance                                                                              |
+| Information Technology     | Network Security, IT Operations, Change Control                                                        |
+| Engineering, DevOps        | SDLC, Application Security, Access Control, Product Overviews, Change Control, System Monitoring       |
+| Security                   | Security Operations, Security Policy, Incident response, penetration testing, vulnerability management |
+| Legal/HR                   | Employee Agreements, Customer Agreements, Employee onboarding/offboarding                              |
+| Facilities (if applicable) | Physical walkthrough of the facility (if applicable)                                                   |
+
+## Inspect Evidence
+
+- Policies
+- Configuration Settings
+- System Access Lists
+- Change Tickets
+
+## Observation
+
+- Facility Security
+- I.T. Equipment
+- Data Center
+- Key Processes (if applicable)
+
+# An Example
+
+| Control                                                                                                                                                      | Auditor's test procedure                                                                                                                                                                                                                                                                      | Evidence                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The company maintains security policies and procedures. Policies and procedures are made available to employees in the Company's policy document repository. | Inspected the company's security policies and procedures to determine if the policies are documented and up to date. Inspected the Company's policy document repository to determine if policies and procedures were made available to employees in the company's policy document repository. | Information security policy Screenshot of the company's policy document repository showing everyone has access to the information security policy |
+
+---
+
+# Governance and Risk Management
+
+- Org Chart
+- Policy and Procedure
+- Leadership meetings to govern security (Information Risk Council)
+- Risk Assessment and Risk Register
+- Penetration Tests and Vulnerability Scans
+- Incident Response and Business Continuity
+- Vendor Risk Assessments
+
+# Human Resources
+
+- Employee Roster
+- Onboarding documentation
+- Offboarding documentation
+- Background checks
+- Performance reviews
+- Employee Handbook
+- Security Awareness Training
+
+# Technical Controls
+
+- IT Asset Inventory
+- Network and Data Flow Diagrams
+- Access Lists (Network, Key Systems, etc.)
+- Configuration Settings (Hardening, Passwords, etc.)
+- Endpoints (Antivirus, endpoint protection)
+- SDLC Practices (Change Tickets, Stories, QA)
+- Monitoring and Alerts
+- Backups
+
+# Ask Your Auditor
+
+- How will we exchange audit evidence?
+- How wil you give me feedback on the accuracy of audit evidence?

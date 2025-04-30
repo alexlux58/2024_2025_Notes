@@ -91,3 +91,75 @@ R1 receives a packet destined for 192.168.1.35. The following routes are in its 
   - By default, it will drop the message.
 - Forwarding of directed broadcast messages can be enabled with the following command (on the interface the message will be broadcast out of):
   R1 (config-if)# ip directed-broadcast
+
+# ARP (Address Resolution Protocol)
+
+- Layer 2 and Layer 3 addressing provide different functions.
+
+  - Layer 2 addressing is used to identify devices on a local network segment (MAC address)
+    - The physical address of each NIC (Network Interface Card) assigned by the manufacturer
+    - Deals with directly connected devices
+  - Layer 3 addressing is used to identify devices on a network (IP address) from source to the destination host
+    - A logical address configured by a network admin
+    - Deals with indirectly (and directly) connected devices
+
+- The Layer 3 packet is destined for the end host, and Layer 2 addressing is used to pass the packet to the next hop in the path to the end host.
+
+- ARP is the bridge between L2 and L3; it is used to map a known L3 address to an unknown L2 address.
+- ARP was originally defined in RFC 826, and is now defined in RFC 9 03.
+- The ARP protocol was designed for Ethernet, but can be used with a variety of L2 and L3 address types
+- The sender will use ARP to learn the MAC address of the next hop (\*not necessarily Destination IP of the packet)
+- ARP information is stored in a cache so ARP doesn't have to be done for every single packet
+
+## ARP Message Format
+
+- ARP messages are encapsulated directly within an Ethernet header/trailer
+  - There is no IP header
+- The EtherType (Type field of the Ethernet header) will be 0x0806 to indicate ARP.
+- ARP messages are variable in length because it can be used for various L2 and L3 protocols.
+  - An IPv4 / Ethernet ARP message is 28 bytes in length.
+- Hardware ype (HTYPE)
+  - Layer 2 protocol type. Value of 1 indicates Ethernet.
+- Protocol type (PTYPE)
+  - Layer 3 protocol type. Value of 0x0800 (0d2048) indicates IPv4.
+- Hardware Address Length (HLEN)
+  - Length of L2 address in bytes. Value of 6 for MAC address.
+- Protocol Address Length (PLEN)
+  - Length of L3 address in bytes. Value of 4 for IPv4 address.
+- Operation (OPER)
+  - Indicates the type of ARP message. 1 for ARP request, 2 for ARP reply.
+- Sender Hardware Address (SHA)
+  - L2 Address of the message's sender
+- Sender Protocol Address (SPA)
+  - L3 Address of the message's sender
+- Target Hardware Address (THA)
+  - L2 Address of the message's intended recipient
+- Target Protocol Address (TPA)
+  - L3 Address of the message's intended recipient
+
+## Proxy ARP
+
+- Proxy ARP was originally defined in RFC 1027, and is now defined in RFC 9 03.
+- It allows a device (usually a router) to respond to ARP requests for IP addresses that are not its own.
+  - Read RFC 1027 for the original use case of Proxy ARP.
+- Modern use cases involve end hosts with incorrect subnet masks. 'directly connected' static routes, and some NAT scenarios.
+- Proxy ARP is enabled globally and on each router interface by default (in Cisco IOS).
+
+### Proxy ARP - Mismatched Subnet Masks
+
+- In the below network, PC1 believes that PC1, PC2, PC3, and PC4 are all in the same subnet (192.168.0.0/16).
+- When PC1 tries to communicate with PC3 (or PC4), it will send an ARP Request directly to the IP address of PC3 (not the default gateway, R1).
+- With Proxy ARP router will think, there is an ARP Request for 192.168.1.13 on my G0/0 interface, even though the 192.168.1.0/24 subnet is not connected to G0/0 (192.168.0.0/16) and is in a different subnet than the source. 192.168.1.13 is not my IP address, but I do have a route for 192.168.1.0/24 in my routing table. So I will reply to PC1's ARP Request on behalf of 192.168.1.13, using MAC address.
+
+## Gratutious ARP
+
+- A Gratuitous ARP message is an ARP Reply (Operation code 2) message sent without receiving an ARP Request.
+- There are a few reasons for sending Gratuitous ARP messages:
+
+  - Announcing when an interface comes up
+  - Announcing when an interface IP address changes (Failover)
+  - Announcing when a MAC address changes
+
+- It serves the purpose of update switches' MAC Address Tables and hosts ARP Tables
+  - Cisco IOS devices will refresh an existing ARP Table entry if they receive a Gratuitous ARP message (they will reset the timer to 0 and update the MAC address if it is different than the current entry)
+  - However, Cisco IOS devices will not create a new ARP Table entry if they receive a Gratuitous ARP.

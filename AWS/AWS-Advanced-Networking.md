@@ -2103,3 +2103,917 @@ If the VPC in which Service is hosted is not associated with the Service network
 - To increase high-availability and do failover
 - Origin Group: one primary and one secondary origin
 - If the primary origin fails, the second one is used
+
+# CloudFront - Origin Custom Headers
+
+- Add custom headers to requests CloudFront sends to your origin
+- Can be customized for each origin
+- Supports custom and S3 origins
+- Use cases:
+  - Identify which requests coming from CloudFront or a particular distribution
+  - Control access to content (configure origin to respond to requests only when they include a custom header)
+
+# CloudFront HTTP Headers
+
+- Specific HTTp headers added based on the viewer request
+- Viewer's Device Type Headers (based on User-Agent)
+  - CloudFront-Is-(Android/Desktop/IOS/Mobile/SmartTV/Tablet)-Viewer
+- Viewer's Location Headers (based on viewer's IP address)
+  - CloudFront-Viewer-(City/Country/Latitude/Longitude, ...)
+- Viewer's Request Protocol and HTTP Version
+  - CloudFront-Forwarded-Proto and CloudFront-Viewer-Http-Version
+- You can include them in the Cache Key (using Legacy Cache Settings or Cache Policies) or receive them at your origin (Using Origin Request Policies)
+
+# CloudFront - Restrict Access to S3 Bucket
+
+- Prevent direct access to files in your S3 bucket (only access through CloudFront)
+- First, create an Origin Access Control and associate it with your distribution (previously known as OAI)
+- Second, edit your S3 bucket policy so that only OAC has permission
+
+# CloudFront - Restrict Access to Application Load Balancers and Custom Origins
+
+- Prevent direct access to your ALB or Custom Origins (only access through CloudFront)
+- First, configure CLoudFront to add a Custom HTTP Header to requests it sends to the ALB
+- Second, configure the ALB to only forward requests that contain that Custom HTTP Header
+- Keep the custom header name value secret
+
+# CLoudFront and HTTPS
+
+- Viewer Protocol Policy:
+
+  - HTTP and HTTPS
+  - Redirect HTTP to HTTPS
+  - HTTPS only
+
+- Origin Protocol Policy (HTTP or S3):
+
+  - HTTP Only (default for S3 Static Website)
+  - HTTPS Only
+  - Or Match Viewer
+    (HTTP => HTTP and HTTPS => HTTPS)
+
+- Note:
+
+  - S3 bucket "static websites" don't support HTTPS
+  - You must use a valid SSL/TLS certificate between CloudFront and your origin (can't use self-signed certificates)
+
+- Alternate Domain Names
+  - Use your own domain name instead of the domain assigned by CloudFront to your distribution
+- Example:
+  - http://d111111abcdef8.cloudfront.net/cat.jpg
+    => http://www.example.com/cat.jpg
+- You must have a valid SSL/TLS Certificate from an authorized CA that covers:
+  - Your domain name
+  - All Alternate Domain Names you added to your distribution
+- You can use wildcards in Alternate Domain Names (e.g., \*.example.com)
+
+# CloudFront - SSL Certificates
+
+- Default CloudFront Certificate (\*.cloudfront.net)
+  - Used with default CloudFront domain names assigned to your distribution
+    - https://d111111abcdef8.cloudfront.net/cat.jpg
+- Custom SSL Certificate
+  - When using your own domain name - Alternate Domain Names (e.g., https://www.example.com)
+  - CloudFront can server HTTPS requests using:
+    - Server Name Indication (SNI) - Recommended
+      - For all custom domains
+      - No additional cost
+  - You can use
+    - Certificates provided by ACM
+    - 3rd party certificates uploaded to ACM or IAM Certificate Store (manually rotate when expired)
+  - Certificate must be created/imported in US East (N. Virginia) region
+
+# End-to-End Encryption: CloudFront, ALB, EC2
+
+- CloudFront
+  - Origin protocol policy: HTTPS Only
+  - Install an SSL / TLS certificate on your custom origin
+  - The origin certificate must include either the Origin domain field (configured in CloudFront) or the domain in the "Host" header if it's forwarded to the origin
+- Application Load Balancer
+  - Use a certificate provided by AWS Certificate Manager or imported into ACM
+- EC2 instance
+  - ACM is not supported on EC2
+  - Can use a third-party SSL certificate (any domain name)
+  - Can use a self-signed certificate (ALB does not verify the certificate itself)
+
+# CloudFront - Restrict Content Geographically
+
+- Prevent users in specific locations from accessing your content/distribution
+- CloudFront Geo Restriction
+  - Restrict access to content based on the country of the viewer
+  - You can allow or block specific countries
+  - You can also use AWS WAF to restrict access based on IP address or other criteria
+- Use Case: Copyright Laws to control access to content
+
+# CloudFront - Customization At The Edge
+
+- Many modern applications execute some form of the logic at the edge
+- Edge Function:
+  - A code that you write and attach to CloudFront distributions
+  - Runs close to your users to minimize latency
+  - Doesn't have any cache, only to change requests/responses
+  - CloudFront provides two types: CloudFront Functions and Lambda@Edge
+- Use cases:
+  - Manipulate HTTP requests and responses
+  - Implement request filtering before reaching your application
+  - User authentication and authorization
+  - Generate HTTP responses at the edge
+  - A/B Testing
+  - Bot mitigation at the edge
+- You don't
+
+# CloudFront - CloudFront Functions
+
+- Lightweight functions written in Javascript
+- For high-scale, latency-sensitive CDN customizations
+- Sub-ms startup times, millions of requests/second
+- RuN at Edge Locations
+- Process-based isolation
+- Used to change Viewer requests and responses:
+  - Viewer Request: after CloudFront receives a request from a viewer
+  - Viewer Response: before CloudFront forwards the response to the viewer
+- Native feature of CloudFront (manage code entirely within CloudFront)
+
+# CloudFront - Lambda@Edge
+
+- Lambda functions written in NodeJS or Python
+- Scales to 1000s of requests/second
+- Runs at the nearest Regional Edge Cache
+- VM-based isolation
+- Used to change CloudFront requests and responses:
+  - Viewer Request: after CloudFront receives a request from a viewer
+  - Origin Request: before CloudFront forwards the request to the origin
+  - Origin Response: after CloudFront receives the response from the origin
+  - Viewer Response: before CloudFront forwards the response to the viewer
+- Author your functions in one AWS Region (us-east-1), then CloudFront replicates to its locations
+
+## **CloudFront Functions vs. Lambda@Edge**
+
+| Feature                                | **CloudFront Functions**                  | **Lambda@Edge**                              |
+| -------------------------------------- | ----------------------------------------- | -------------------------------------------- |
+| **Runtime Support**                    | JavaScript                                | Node.js, Python                              |
+| **Execution Location**                 | Edge Locations                            | Regional Edge Caches                         |
+| **CloudFront Triggers**                | - Viewer Request/Response                 | - Viewer Request/Response\                   |
+| - Origin Request/Response              |
+| **Isolation**                          | Process-based                             | VM-based                                     |
+| **Max. Execution Time**                | < 1 ms                                    | - 5 seconds (viewer triggers)\               |
+| - 30 seconds (origin triggers)         |
+| **Max. Memory**                        | 2 MB                                      | - 128 MB (viewer triggers)\                  |
+| - 10 GB (origin triggers)              |
+| **Total Package Size**                 | 10 KB                                     | - 1 MB (viewer triggers)\                    |
+| - 50 MB (origin triggers)              |
+| **Network Access, File System Access** | No                                        | Yes                                          |
+| **Access to the Request Body**         | No                                        | Yes                                          |
+| **Pricing**                            | Free tier available, 1/6th price of @Edge | No free tier, charged per request & duration |
+
+# CloudFront Functions vs. Lambda@Edge - Use Cases
+
+## CloudFront Functions
+
+- Cache key normalization
+  - Transform request attributes (headers, cookies, query strings, URL) to create an optimal Cache Key
+- Header manipulation
+  - Insert/modify/delete HTTP headers in the request or response
+- URL rewrites or redirects
+- Request authentication and authorization
+  - Create and validate user-generated tokens (e.g., JWT) to allow/deny requests
+
+## Lambda@Edge
+
+- Longer execution time (several ms)
+- Adjustable CPU or memory
+- Your code depends on a 3rd libraries (e.g., AWS SDK to access other AWS services)
+- Network access to use external services for processing
+- File system access or access to the body of HTTP requests
+
+# Global users for our application
+
+- You have deployed an application and have global users who want to access it directly.
+- They go over the public internet, which can add a lot of latency due to many hops
+
+# Unicast IP vs Anycast IP
+
+- Unicast IP: A single IP address assigned to a single network interface on a server
+- Anycast IP: A single IP address assigned to multiple network interfaces (servers), the client is routed to the nearest one
+
+# AWS Global Accelerator
+
+- Leverage the AWS internal network to route to your application
+- 2 Anycast IP addresses are created for your application
+- The Anycast IP will send traffic directly to Edge Locations
+
+# AWS Global Accelerator
+
+- Works with Elastic IP, EC2 instances, ALB, NLB, public or private
+- Consistent Performance
+  - Intelligent routing to lowest latency and fast regional failover
+  - No issue with client cache (because the IP doesn't change)
+  - Internal AWS network
+- Health Checks
+  - Global Accelerator performs a health check of your applications
+  - Helps make your application global (failover less than 1 minute for unhealthy)
+  - Great for disaster recovery (thanks to the health checks)
+- Security
+  - only 2 external IP need to be whitelisted
+  - DDoS protection thanks to AWS Shield
+
+# AWS Global Accelerator vs CLoudFront
+
+- They both use the AWS global network and its edge locations around the world
+- Both services integrate with AWS Shield for DDoS protection.
+
+- CloudFront
+
+  - Improves performance for both cashable content (such as images and videos)
+  - Dynamic content (such as API acceleration and dynamic site delivery)
+  - Content is served at the edge
+
+- Global Accelerator
+  - Improves performance for TCP and UDP traffic
+  - No caching, only routing
+  - Content is served from the origin (ALB, EC2, etc.)
+  - Proxying packets at the edge to applications running in one or more AWS Regions
+  - Good fit for non-HTTP use cases, such as gaming (UDP), IoT (MQTT), or Voice over IP (VoIP)
+  - Good for HTTP use cases that require static IP addresses
+  - Good for HTTP use cases that required deterministic, fast regional failover
+
+# What is load balancing?
+
+- Load Balancers are servers that forward traffic to multiple servers (e.g., EC2 instances) downstream
+
+# Why use a load balancer?
+
+- Spread load across multiple downstream instances
+- Expose a single point of access (DNS) to your application
+- Seamlessly handle failures of downstream instances
+- Do regular health checks to your instances
+- Provide SSL termination (HTTPS) for your websites
+- Enforce stickiness with cookies
+- High availability across zones
+- Separate public traffic from private traffic
+
+# Why use an Elastic Load Balancer?
+
+- An Elastic Load Balancer is a managed load balancer
+
+  - AWS guarantees that it will be working
+  - AWS takes care of upgrades, maintenance, high availability
+  - AWS provides only a few configuration knobs
+
+- It costs less to setup your own load balancer but it wil be a lot more effort on your end
+- It is integrated with many AWS offerings / services
+  - EC2, EC2 Auto Scaling Groups, Amazon ECS
+  - AWS Certificate Manager (ACM), CloudWatch
+  - Route 53, AWS WAF, AWS Global Accelerator
+
+# Health Checks
+
+- Health Checks are crucial for Load Balancers
+- They enable the load balancer to know if instances it forwards traffic to are available to reply to requests
+- The health check is done on a port and a route (/health is common)
+- If the response is not 200 (OK), then the instance is unhealthy
+
+# Types of load balancer on AWS
+
+- AWS has 4 kinds of managed Load Balancers
+
+  - Classic Load Balancer (CLB) - v1 - old generation - 2009
+
+    - HTTP, HTTPS, TCP, SSL (secure TCP)
+    - Operates at layer 4 (TCP) and layer 7 (HTTP)
+    - EC2 instances registered directly with the CLB (no Target Groups)
+    - Health Checks can be HTTP, HTTPS, or TCP
+    - Supports EC2 - Classic networks
+
+  - Classic Load Balancer - SSL considerations
+
+    - Enabling HTTPS or SSL on EC2 instances is called "Backend Authentication" (between the CLB and the backend EC2 instances)
+    - TCP => TCP passes all the traffic to the EC2 instance (no termination):
+      - The only way to do 2-way Mutual SSL Authentication
+
+  - Application Load Balancer (ALB) - v2 - new generation - 2016
+
+    - HTTP, HTTPS, WebSocket
+    - Layer 7 (HTTP) load balancer
+    - Content-based routing
+    - Path-based routing
+    - Host-based routing
+    - HTTP/2 and gRPC support
+    - WebSocket support
+    - Load balancing to multiple HTTP applications across machines (Target Groups)
+    - Load balancing to multiple applications/ports on the same server (e.g., containers)
+    - Support for returning custom HTTP responses
+    - Supports redirects (e.g., from HTTP to HTTPS)
+    - Target Groups
+      - EC2 instances (can be managed by an ASG) - HTTP
+      - ECS Tasks (managed by ECS itself) - HTTP
+      - Lambda functions (managed by Lambda) - HTTP request is translated into a JSON event
+      - IP Addresses - must be private IP addresses (e.g., EC2 instances in peered VPC, on-premises servers over AWS Direct Connect or VPN connection)
+    - Supports Weighted Target Groups
+      - Example: multiple versions of your application, blue/green deployment
+    - Health Checks can be HTTP or HTTPS (WebSocket is not supported)
+    - Each subnet must have a min of /27 and 8 free IP addresses
+    - Across all subnets, a maximum of 100 IP addresses will be used per ALB
+    - Routing to different target groups
+      - Path-based routing (e.g., /api/_, /images/_)
+      - Host-based routing (e.g., api.example.com, images.example.com)
+      - Routing based on Query String parameters, HTTP Headers, Source IP address (e.g., ?id=123, ?name=abc), HTTP method (e.g., GET, POST), HTTP version (e.g., HTTP/1.1, HTTP/2)
+    - ALB are a great fit for micro services and container-based applications (e.g., Docker and Amazon ECS)
+    - Has a port mapping feature to redirect to a dynamic port in ECS
+    - Ability to authenticate users before routing requests to registered targets
+      - Amazon Cognito User Pools and Identity Providers
+      - Microsoft Active Directory, OIDC, SAML, LDAP, OpenID
+      - Social Identity Providers (e.g., Google, Facebook, Amazon)
+    - TLS Certificates (multiple listeners and SNI)
+      - You can use multiple TLS certificates on the same ALB
+      - You can use Server Name Indication (SNI) to route traffic to the right certificate
+      - You can use AWS Certificate Manager (ACM) to manage your TLS certificates
+    - Processed in order (last is Default Rule)
+    - Supported Actions (forward, redirect, fixed-response)
+    - Rule Conditions:
+
+      - host-header
+      - http-request-method
+      - path-pattern
+      - source-ip
+      - http-header
+      - query-string
+
+    - Target Group Weighting
+      - Specify weight for each Target Group on a single Rule
+      - Example: multiple versions of your app, blue/green deployment
+      - Allows you to control the distribution of the traffic to your applications
+
+  - Network Load Balancer (NLB) - v2 - new generation - 2017
+
+    - TCP, TLS (secure TCP), UDP
+    - Layer 4 (TCP) load balancer
+    - Static IP address support
+    - Can handle millions of requests per second
+    - Can handle sudden spikes in traffic
+    - NLB has one static IP per AZ, and supports assigning Elastic IP (Internet-facing NLB) (helpful for whitelisting specific IP addresses)
+    - Load balancing to multiple applications/ports on the same machine (e.g., containers, Amazon ECS)
+    - Less latency ~100ms (vs. 400 ms for ALB)
+    - Supports WebSocket protocol
+    - Network Load Balancers are mostly used:
+      - For extreme performance, TCP or UDP traffic
+      - With AWS PrivateLink: privately expose an internal service
+    - Target Groups
+      - EC2 instances - can be managed by an ASG
+      - ECS Tasks - (managed by ECS itself)
+      - IP addresses
+        - must be private IP addresses, TCP listeners only (on-premises servers over AWS DX or VPN)
+        - can be inter-region peered VPC
+    - You can't register EC2 instances by instance ID if these EC2 instances are in another VPC (even if peered with NLB VPC)
+
+      - Register by IP address instead
+
+    - Health Checks
+
+      - Supported protocols HTTP, HTTPS, and TCP
+      - Active Health Check - periodically sends a request to registered targets
+      - Passive Health Check - observer how targets respond to connections. Detect unhealthy targets before Active Health Checks (can't be disabled or configured)
+
+    - Client IP Preservation: client IP is forwarded to targets
+
+      - Targets by instance ID / ECS Task: Enabled
+      - Targets by IP address TCP and TLS: Disabled by default
+      - Targets by IP address UDP and TCP_UDP: Enabled by default
+
+    - When disabled, use Proxy Protocol v2 (will add headers)
+    - You must enable an AZ before traffic is sent to that AZ (can be added after NLB creation)
+    - You can not remove an AZ after it is enabled
+
+    - You must enable an AZ before traffic is sent to that AZ (can be added after NLB creation)
+    - You cannot remove an AZ after is is enabled
+    - Cross Zones Load Balancing only works for the availability zones that are enabled on the NLB
+
+    - Resolving Regional NLB DNS name returns the IP addresses for all NLB nodes in all enabled AZs
+
+      - my-nlb-1234567890abcdef.elb.us-east-1.amazonaws.com
+
+    - Zonal DNS Name
+
+      - NLB has DNS names for each of its nodes
+      - Use to determine the IP address of each node
+      - us-east-1a.my-nlb-1234567890abcdef.elb.amazonaws.com
+      - Use to minimize latency and data transfer costs
+      - You need to implement app specific logic
+
+    - You can't disable/remove an AZ after you create it
+    - You can't modify ENIs created for the NLB in each AZ (view only)
+    - You can't change EIPs and private IPv4 addresses attached to the ENIs after you create the load balancer
+    - Supports 440,000 simultaneous connections/minute per target
+
+      - If exceeded, you'll receive port allocation errors
+      - Solution: add more targets to the target group
+
+    - For internet-facing load balancers, the subnets that you specify must have at least 8 available IP addresses (e.g. min /28). For internal load balancers, this is only required if you let AWS select a private IPv4 address from the subnet.
+
+  - Gateway Load Balancer (GWLB) - v2 - new generation - 2020
+
+    - Transparent network gateway
+    - Layer 3 (IP) load balancer
+    - Used to deploy, scale, and manage third-party virtual appliances (firewalls, intrusion detection and prevention systems, deep packet inspection systems)
+    - Works with AWS Marketplace partners
+
+# Connection Idle Timeout
+
+- Idle Timeout period for ELB's connections (client-ELB connection and ELB-target connection)
+  - Connection closed if no data has been sent/received during that period
+  - Opened if at least 1 byte is sent before that timeout period elapses
+- Supported for CLB, ALB, NLB
+- Can be configured for CLB and ALB (default 60 seconds)
+- Can't be configured for NLB (350 sec. for TCP, 120 sec. for UDP)
+- Usage: avoid timeouts while uploading files
+
+Recommended to enable HTTP keep-alive in the web server settings for your EC2 instances, thus making the ELB reuse the backend connections until the keep-alive timeout expires
+
+## Request Routing Algorithms - Least Outstanding Requests
+
+- Chooses the next instance to receive the request by selecting the instance that has the lowest number of pending/unfinished requests
+- Works with Application Load Balancer and Classic Load Balancer (HTTP/HTTPS)
+
+## Request Routing Algorithms - Round Robin
+
+- Equally distributes requests across all registered instances
+
+## Request Routing Algorithms - Flow Hash
+
+- Selects a target based on the protocol, source/destination IP address, source/destination port, and TCP sequence number
+- Each TCP/UDP connection is routed to a single target for the life of the connection
+- Works with Network Load Balancer and Gateway Load Balancer
+
+# Sticky Sessions (Session Affinity)
+
+- It is possible to implement stickiness so that the same client is always redirected to the same instance behind a load balancer
+- This works for classic load balancers and application load balancers and network load balancers
+- The "cookie" used for stickiness has an expiration date you control
+- Use case: make sure the user doesn't lose his session data
+- Enabling stickiness may bring imbalance to the load over the backend EC2 instances
+
+# Sticky Sessions - Cookie Names
+
+- Application-based Cookies
+  - Custom cookie
+    - Generated by the target
+    - Can include any custom attributes required by the application
+    - Cookie name must be specified individually for each target group
+    - Don't use AWSALB, AWSALBAPP, or AWSALBTG (reserved for use by the ELB)
+  - Application cookie
+    - Generated by the load balancer
+    - AWSALBAPP
+  - Duration-based Cookies
+    - Cookie generated by the load balancer
+    - Cookie name is AWSALB for ALB, AWSELB for CLB
+
+## Cross-Zone Load Balancing
+
+### With Cross Zone Load Balancing
+
+- Each load balancer instance distributes evenly across all registered instances in all AZ
+
+### Without Cross Zone Load Balancing:
+
+- Requests are distributed in the instances of the node of the Elastic Load Balancer
+
+- Application Load Balancer
+  - Enabled by default (can be disabled at the Target Group level)
+  - No charges for inter AZ data
+- Network Load Balancer and Gateway Load Balancer
+  - Disabled by default
+  - You pay charges ($) for inter AZ data if enabled
+- Classic Load Balancer
+  - Disabled by default
+  - No charges for inter AZ data if enabled
+
+# Elastic Load Balancer - SSL Certificates
+
+- The load balancer uses an X.509 certificate (SSL/TLS server certificate)
+- You can manage certificates using ACM (AWS Certificate Manager)
+- You can create and upload your own certificates alternatively
+- HTTPS listener:
+  - You must specify a default certificate
+  - You can add an optional list of certs to support multiple domains
+  - Clients can use SNI (Server Name Indication) to specify the hostname they reach
+  - Ability to specify a Security Policy (for compliance, features, compatibility or security)
+
+## SSL - Server Name Indication (SNI)
+
+- SNI solves the problem of loading multiple SSL certificates onto one web server (to serve multiple websites)
+- It's a "newer" protocol, and requires the client to indicate the hostname of the target hostname in the initial SSL handshake
+- Only works for ALB and NLB
+
+## Elastic Load Balancers - SSL Certificates
+
+- Classic Load Balancer
+
+  - Supports only one SSL certificate
+  - The SSL certificate can have many Subject Alternate Name (SAN), but the SSL certificate must be changed anytime a SAN is added / edited / removed
+  - Must use multiple CLB for multiple hostname's with multiple SSL certificates
+  - Better to use ALB with Server Name Indication (SNI) if possible
+
+- Application Load Balancer
+
+  - Supports multiple listeners with multiple SSL certificates
+
+- Network Load Balancer
+  - Supports multiple listeners with multiple SSL certificates
+  - Supports Server Name Indication (SNI)
+  - Can use multiple SSL certificates on the same listener
+  - Can use multiple SSL certificates on the same NLB
+  - Can use multiple SSL certificates on the same target group
+
+### HTTPS/SSL Listener - Security Policy
+
+- A combination of SSL protocols, SSL ciphers, and server order preference option supported during SSL negotiations
+- Predefined Security Policies (e.g., ELBSecurityPolicy-2016-08)
+- For ALB and NLB
+  - Frontend connections, you can use a predefined Security Policy
+  - Backend connections, ELBSecurityPolicy-2016-08 Security Policy is always used
+- Use ELBSecurityPolicy-TLS policies
+  - To meet compliance and security standards that require certain TLS protocol version
+  - To support older versions of SSL/TLS (legacy clients)
+- Use ELBSecurityPolicy-FS policies, if you require Forward Secrecy
+  - Provides additional safeguards against the eavesdropping of encrypted data
+  - Using a unique random session key
+- Connection Draining
+
+  - Feature naming
+
+    - Connection Draining - for CLB
+    - Deregistration Delay - for ALB and NLB
+
+  - Time to complete "in-flight requests" while the instance is de-registering or unhealthy
+  - Stops sending new requests to the EC2 instance which is de-registering
+  - Between 1 to 3600 seconds (default 300 seconds)
+
+- Can be disabled (set value to 0)
+- Set to a low value if your requests are short
+
+### X-Forwarded Headers (HTTP)
+
+- Non-standard HTTP headers that have an X-Forwarded prefix
+- Used by ELB to forward client information to the targets (e.g, client IP address)
+- You can use to log client requests on your server
+- Supported by Classic Load Balancer (HTTP/HTTPS) and Application Load Balancer
+- X-Forwarded-For
+  - Contains the IP address of the client
+  - May contain comma-separated list of multiple IP addresses, such as proxies (left-most is the client IP address)
+- X-Forwarded-Proto
+  - The protocol used between client and the ELB (HTTP or HTTPS)
+
+### Proxy Protocol
+
+- An internet protocol used to carry information from the source (requesting the connection) to the destination (where connection was requested)
+- If the LB terminates the connection, the source IP address of the client cannot be preserved
+- We use the Proxy Protocol to pass the source/destination IP address and port numbers
+- The load balancer prepends a proxy protocol header to the TCP data
+- Available for both Classic Load Balancer (TCP/SSL) and Network Load Balancer (TCP/UDP)
+- CLB uses Proxy Protocol v1 and NLB uses Proxy Protocol v2
+- For Network Load Balancer
+  - Target with Instance ID and ECS Tasks: the source IP of the client is preserved
+  - Target with IP address:
+    - TCP and TLS: the source IP of the client isn't preserved, enable Proxy Protocol
+    - UDP and TCP_UDP: the source IP of the client is preserved, Proxy Protocol is enabled by default
+- Load balancer should not be behind proxy server; otherwise backend may receive duplicate configuration resulting in error
+- Proxy protocol is not needed when using an Application Load Balancer, as ALB already inserts HTTP X-Forwarded-For headers
+
+#### Application Load Balancer and gRPC
+
+- gRPC is a popular choice for microservices interactions using HTTP/2
+- The Application Load Balancer supports gRPC
+  - Supports gRPC health checks from target group
+  - Content based routing feature to route to the appropriate service
+  - Supports all kind of gRPC communication (including bidirectional streaming)
+  - Listener protocol is HTTPS
+- Note: gRPC would work with NLB but you wouldn't have any "HTTP-specific" features (e.g., content-based routing, health checks, etc.)
+
+# Route53 - DNS
+
+- Domain Registrar: Amazon Route 53, GoDaddy, Namecheap, etc.
+- DNS Records
+
+  - A record: IPv4 address
+  - AAAA record: IPv6 address
+  - CNAME record: Canonical Name (alias)
+  - MX record: Mail Exchange (email)
+  - TXT record: Text (SPF, DKIM, DMARC)
+  - SRV record: Service (SRV records are used to identify the location of services)
+  - PTR record: Pointer (reverse DNS lookup)
+  - NS record: Name Server (delegation)
+  - SOA record: Start of Authority (zone information)
+  - DS record: Delegation Signer (DNSSEC)
+  - NAPTR record: Naming Authority Pointer (used for SIP, ENUM, and other applications)
+  - DNSKEY record: DNS Key (DNSSEC)
+  - RRSIG record: DNS Signature (DNSSEC)
+  - CAA record: Certification Authority Authorization (DNSSEC)
+  - TLSA record: TLS Authentication (DNSSEC)
+  - SSHFP record: SSH Fingerprint (DNSSEC)
+  - URI record: Uniform Resource Identifier (DNSSEC)
+  - DNAME record: Delegation Name (DNSSEC)
+  - NSEC record: Next Secure (DNSSEC)
+  - DKIM record: DomainKeys Identified Mail (email)
+  - DMARC record: Domain-based Message Authentication, Reporting & Conformance (email)
+  - SPF record: Sender Policy Framework (email)
+
+- Zone File: A file that contains DNS records for a domain
+- Name Server: A server that stores DNS records for a domain, resolves DNS queries, and returns the IP address of the requested domain (Authoritative vs. Non-authoratative DNS server)
+- Top Level Domain (TLD): The last part of a domain name (e.g., .com, .org, .net, .edu, .gov, .mil, .int)
+- Second Level Domain (SLD): The part of a domain name that comes before the TLD (e.g., example.com, example.org, example.net)
+- Subdomain: A domain that is part of a larger domain (e.g., www.example.com, mail.example.com, blog.example.com)
+- Fully Qualified Domain Name (FQDN): A domain name that includes the hostname and the domain name (e.g., www.example.com, mail.example.com)
+- Reverse DNS Lookup: A process of resolving an IP address to a domain name
+- Forward DNS Lookup: A process of resolving a domain name to an IP address
+- DNS Caching: A process of storing DNS records in memory to speed up DNS resolution
+- DNS TTL (Time to Live): The amount of time a DNS record is cached before it expires and needs to be refreshed
+- DNS Propagation: The time it takes for DNS changes to be reflected across the internet
+- DNSSEC (Domain Name System Security Extensions): A set of security extensions to DNS that provide data integrity and authenticity
+- DNS Failover: A process of redirecting traffic to a backup site in case the primary site is unavailable
+- DNS Latency: The time it takes for a DNS query to be resolved
+- DNS Query: A request for information from a DNS server
+- DNS Response: A reply from a DNS server containing the requested information
+- DNS Resolver: A server that resolves DNS queries and returns the IP address of the requested domain
+- DNS Root Server: A server that stores the root zone file and provides information about TLD name servers
+- DNS Root Zone: The top-level zone in the DNS hierarchy that contains information about TLD name servers
+- DNS Root Hints: A list of IP addresses of root name servers used by DNS resolvers to start the DNS resolution process
+- DNS Root Zone File: A file that contains information about TLD name servers and their IP addresses
+- DNS Root Zone Management: A process of managing the root zone file and TLD name servers
+
+## Amazon Route 53
+
+- A highly available, scalable, fully managed and Authoritative DNS service
+  - Authoritative DNS: A DNS server that has the authority to answer queries for a specific domain name (can update DNS records)
+- Route 53 is also a Domain Registrar
+- Ability to check the health of your resources (e.g., EC2 instances, ELB, S3 buckets, etc.)
+- THe only AWS service which provides 100% availability SLA
+
+### Route 53 - Records
+
+- How you want to route traffic for a domain
+- Each record contains:
+  - Domain/subdomain Name - e.g., www.example.com
+  - Record Type - e.g., A record, AAAA record, CNAME record, etc.
+  - Value - e.g., IP address, domain name, etc.
+  - Routing Policy - e.g., Simple, Weighted, Latency-based, Failover, Geolocation, Geoproximity, Multi-Value Answer
+  - TTL - amount of time the record cached at DNS Resolvers
+- Route 53 supports the following DNS record types:
+  - (must know) A / AAAA / CNAME / NS
+  - (advanced) CAA / DS / MX / NAPTR / PTR / SOA / TXT / SPF / SRV
+
+### Route 53 - Records TTL (Time to Live)
+
+- High TTL - e.g., 24 hr
+  - Less traffic on Route 53
+  - Possibly outdated records
+- Low TTL - e.g., 60 sec
+  - More traffic on Route 53 ($$)
+  - Records are outdated for less time
+  - Easy to change records
+- Except for Alias records, TTL is mandatory for each DNS record
+
+#### CNAME vs Alias
+
+- AWS Resources (Load Balancer, CloudFront...) expose an AWS hostname:
+
+  - lbl-1234.us-east-2.elb.amazonaws.com and you want myapp.mydomain.com
+
+- CNAME:
+  - Points a hostname to any other hostname. (app.mydomain.com => blabla.anything.com)
+  - ONLY FOR NON ROOT DOMAIN (aka. something.mydomain.com)
+- Alias:
+  - Points a hostname to an AWS Resource (app.mydomain.com => blabla.amazonaws.com)
+  - Works for ROOT DOMAIN and NON ROOT DOMIN (aka mydomain.com)
+  - Free of charge
+  - Native health check
+
+##### Route 53 - Alias Records
+
+- Maps a hostname to an AWS resource (e.g., ELB, CloudFront, S3 bucket, etc.)
+- An extension to DNS functionality
+- Automatically recognizes changes in the resource's IP addresses
+- Unlike CNAME, it can be used for the top node of a DNS namespace (Zone Apex), e.g., example.com
+- Alias Record is always of type A/AAAA for AWS resources (IPv4 / IPv6)
+- You can't set the TTL
+
+##### Route 53 - Alias Records Targets
+
+- Elastic Load Balancers
+- CloudFront distributions
+- API Gateway
+- Elastic Beanstalk environments
+- S3 websites
+- VPC interface endpoints
+- Global Accelerator
+- Route 53 record in the same hosted zone
+- You CAN NOT set an ALIAS record for an EC2 DNS name
+
+##### Route 53 - Routing Policies
+
+- Define how Route 53 responds to DNS queries
+- Don't get confused by the word "Routing"
+  - It's not the same as Load balancer routing which routes the traffic
+  - DNS does not route any traffic, it only responds to the DNS queries
+- Route 53 Supports the following Routing Policies
+  - Simple Routing Policy
+  - Weighted Routing Policy
+  - Latency-based Routing Policy
+  - Failover Routing Policy
+  - Geolocation Routing Policy
+  - Geoproximity Routing Policy (Traffic Flow only)
+  - Multi-Value Answer Routing Policy
+
+###### Routing Policies - Simple
+
+- Typically, route traffic to a single resource
+- Can specify multiple values in the same record
+- If multiple values are returned, a random one is chosen by the client
+- When Alias enabled, specify only one AWS resource
+- Can't be associated with Health Checks
+
+##### Routing Policies - Weighted
+
+- Control the % of the requests that go to each specific resource
+- Assign each record a relative weight:
+  - traffic % = weight / sum of all weights
+  - weights don't need to sum to 100
+- DNS records must have the same name and type
+- Can be associated with Health Checks
+- Use cases: load balancing between regions, testing new application versions...
+- Assign a weight of 0 to a record to stop sending traffic to a resource
+- If all records have a weight of 0, then all records will be returned equally
+
+##### Routing Policies - Latency-based
+
+- Redirect to the resources that has the least latency close to us
+- Super helpful when latency for users is a priority
+- Latency is based on traffic between users and AWS regions
+- Germany users may be directed to the US (if that's the lowest latency)
+- Can be associated with Health Checks (has a failover capability)
+
+##### Route 53 - Health Checks
+
+- HTTP Health Checks are only for public resources
+- Health Check => Automated DNS failover
+  1. Health checks that monitor an endpoint (application, server, other AWS resource)
+  2. Health checks that monitor other health checks (Calculated Health Checks)
+  3. Health checks that monitor CloudWatch Alarms (full control) - e.g., thorttles of DynamoDB, alarms on RDS,
+     custom metrics, ...(helpful for private resources)
+- Health Checks are integrated with CW metrics
+
+##### Health Checks - Monitor an Endpoint
+
+- About 15 global health checkers will check the endpoint health
+  - Healthy/Unhealthy Threshold - 3 (default)
+  - Interval - 30 sec (default, can set to 10 sec - higher cost)
+  - Supported protocol: HTTP, HTTPS and TCP
+  - If > 18% of health checkers report the endpoint is healthy, Route 53 considers it Healthy. Otherwise, it's unhealthy
+  - Ability to choose which locations you want Route 53 to use
+- Health Checks pass only when the endpoint responds with the 2xx and 3xx status codes
+- Health Checks can be setup to pass / fail based on the text in the first 5120 bytes of the response
+- Configure your router/firewall to allow incoming Requests from Route 53 Health Checkers
+
+##### Route 53 - Calculated Health Checks
+
+- Combine the results of multiple Health Checks into a single Health Check
+- You can use OR, AND, or NOT
+- Can monitor up to 256 Child Health Checks
+- Specify how many of the health checks need to pass to make the parent pass
+- Usage: perform maintenance to your website without causing all health checks to fail
+
+##### Health Checks - Private Hosted Zones
+
+- Route 53 health checkers are outside the VPC
+- They can't access private endpoints (priavte VPC or on-premises resource)
+- You can create a CloudWatch Metric and associate a CloudWatch Alarms, then create a Health Check that checks the alarm itself.
+
+# Routing Policies - Failover (Active-Passive)
+
+DNS Records / health checks
+
+# Routing Policies - Geolocation
+
+- Different from Latency-based
+- This routing is based on user location
+- Specify location by Continent, Country or by US State (if there's overlapping, most precise location selected)
+- Should create a "Default" record (in case there's no match on location)
+- Use cases: website localization, restrict content distribution, compliance with laws, load balancing
+- Can be associated with Health Checks
+
+# Geoproximity Routing Policy
+
+- Route traffic to your resources based on the geographic location of users and resources
+- Ability to shift more traffic to resrouces based on the defined bias
+- To change the size of the geographic region, specify bias values:
+  - To expand (1 to 99) - more traffic to the resource
+  - To shrink (-1 to -99) - less traffic to the resource
+- Resources can be:
+  - AWS resources (specify AWS region)
+  - Non-AWS resources (specify Latitude and Longitude)
+- You must use Route 53 Traffic Flow (advanced) to use this feature
+
+# Route 53 - Traffic Flow
+
+- Simplify the process of creating and maintaining records in large and complex configurations
+- Visual editor to manage complex routing decision trees
+- Configurations can be saved as Traffic Flow Policy
+  - Can be applied to different Route 53 Hosted Zones (different domain names)
+  - Supports versioning
+
+# Routing Policies - IP based Routing
+
+- Routing is based on client's IP addresses
+- You provide a list of CIDRs for your clients and the corresponding endpoints/locations (user-IP-to-endpoint mapping)
+- Use cases: Optimize performance, reduce network costs...
+- Example: route end users from a particular ISP to a specific endpoint
+
+# Routing Policies - Multi Value
+
+- Use when routing traffic to multiple resources
+- Route 53 return multiple values/resources
+- Can be associated with Health Checks (return only values for healthy resources)
+- Up to 8 healthy records are returned for each Multi-Value query
+- Multi-Value is not a substitute for having an ELB
+
+# Domain Registar vs DNS Service
+
+- You buy or register your domain name with a Domain Registrar typically by paying annual charges (e.g., GoDaddy, Namecheap, etc.)
+- The Domain Registrar usually provides you with a DNS service to manage your DNS records
+- But you can use another DNS service to manage your DNS records
+- Example: purchase the domain from GoDaddy and use Route 53 to manage your DNS records
+
+# Making Route 53 the DNS service for a domain that is in use (users are accessing it)
+
+1. Get the current DNS configuration (records to duplicate)
+2. Create a public hosted zone in Route 53
+3. Create all records in the newly created zone
+4. Lower TTL settings of NS record to 15 minutes (to roll back in case)
+5. Wait two days to ensure the new NS record TTL has propagated
+6. Update the NS record to use the Route 53 name servers
+7. Monitor traffic for the domain
+8. Change NS record TTL on Route 53 to a higher value (two days)
+9. Transfer domain registration to Amazon Route 53 (optional)
+
+# Route 53 Scenarios - EC2 Instance
+
+- Your domain points to an EC2 instances with public or Elastic IP
+- Example:
+  - exmaple.com => 54.55.56.57 (A)
+
+# Route 53 Scnarios - EC2 DNS name
+
+- Example:
+  - app.example.com => ec2-54-55-56-57.compute.amazonaws.com (CNAME)
+
+# Route 53 Scenarios - Application Load Balancer
+
+- You domain points to AWS provided ALB DNS name
+- Example:
+  - example.com => my-load-balancer-1234567890abcdef.elb.amazonaws.com (Alias)
+  - lb.example.com => my-load-balancer-1234567890abcdef.elb.amazonaws.com (Alias or CNAME)
+
+# Route 53 Scenarios - CloudFront Distribution
+
+- Example:
+  - example.com => d1234567890abcdef.cloudfront.net (Alias)
+  - cdn.example.com => d1234567890abcdef.cloudfront.net (Alias or CNAME)
+
+# Route 53 Scenarios - API Gateway
+
+- Points to API Gateway Regional/Edge Optimized DNS name
+- Example:
+  - example.com => b1234567890abcdef.execute-api.us-east-1.amazonaws.com (Alias)
+
+# Route 53 Scenarios - RDS DB Instance
+
+- Your domain name points to RDS DB instance DNS name
+- You must create a CNAME record (other record types are not supported)
+- Example:
+  - db.example.com => mydbinstance.123456789012.us-east-1.rds.amazonaws.com (CNAME)
+
+# Route 53 Scenarios - S3 Bucket
+
+- Your domain name points to S3 website endpoint
+- You must create an Alias record for S3 endpoints
+- Bucket name must be the same as domain name
+- Example:
+  - example.com => example.com.s3-website-us-east-1.amazonaws.com (Alias)
+
+# Route 53 Scenarios - VPC Interface Endpoint
+
+- Your domain name points to a VPC Interface Endpoint (AWS PrivateLink)
+
+# Route 53 - Hosted Zones
+
+- Route 53 automatically creates NS and SOA records
+- For public/private and private Hosted Zones that have overlapping namespaces, Route 53 Resolvers routes traffic to the most specific match
+
+## Route 53 - Routing Traffic For Subdomains
+
+- Create a Hosted Zone for the Subdomain
+- Known as, either:
+  - Delegation Responsibility for a Subdomain to a Hosted Zone
+  - Delegating a Subdomain to Another Name Servers
+- Use cases:
+  - different subdomains managed by different teams
+  - Restrict access using IAM Permissions (you can't use IAM to control access to Route 53 records)
