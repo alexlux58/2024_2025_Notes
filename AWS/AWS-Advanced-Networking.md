@@ -3017,3 +3017,79 @@ DNS Records / health checks
 - Use cases:
   - different subdomains managed by different teams
   - Restrict access using IAM Permissions (you can't use IAM to control access to Route 53 records)
+
+## Route 53 - DNS Security Extensions (DNSSEC)
+
+- A protocol for scuring DNS traffic, verifies DNS data integrity and origin
+- Works only with Public Hosted Zones
+- Route 53 supports both DNSSEC for Domain Registration and Signing
+- DNSSEC Signing
+  - Validate that a DNS response came from Route 53 and has not been tampered with
+  - Route 53 cryptographically signs each record in the Hosted Zone
+  - Two Keys:
+    - Managed by us: Key-Signing Key (KSK) - based on an asymmetric CMK in AWS KMS
+    - Managed by AWS: Zone-signing Key (ZSK)
+- When enabled, Route 53 enforces a TTL of one week for all records in the Hosted Zone (records that have TTL less than one week are not affected)
+
+## Route 53 - Enable DNSSEC on a hosted zone
+
+1. Prepare for DNSSEC signing
+
+- Monitor zone availability (through customer feedback)
+- Lower TTL for records (recommended 1 hour)
+- Lower SOA minimum for 5 minutes
+
+2. Enable DNSSEC signing and create a KSK
+
+- Enable DNSSEC in Route 53 for your hosted zone (Console or CLI)
+- Make Route 53 create a KSK in the console and link it to a Customer managed CMK
+
+3. Establish chain of trust
+
+- Create a chain of trust between the hosted zone and the parent hosted zone
+- Creating a Delegation Signer (DS) record in the parent zone
+- It contains a hash of the public key used to sign DNS records
+- Your registrar can be Route 53 or a 3rd party registrar
+
+4. (good to have) Monitor for errors using CloudWatch Alarms
+
+- Create CloudWatch alarms for DNSSECInternalFailure and DNSSECKevSigningKeysNeedingAction
+
+# Route 53 - Hybrid DNS
+
+- By default, Route 53 Resolver automatically answers DNS queries for:
+
+  - Local domain names for EC2 instances
+  - Records in Private Hosted Zones
+
+- Hybrid DNS
+  - Resolving DNS queries between VPC (Route 53 Resolver) and your networks (other DNS Resolvers)
+- Networks can be:
+  - VPC itself / Peered VPC
+  - On-premises Network (connected through Direct Connect or VPN)
+
+# Route 53 - Resolver Endpoints
+
+- Inbound Endpoint
+  - DNS Resolvers on your network can forward DNS queries to Route 53 Resolver
+  - Allows your DNS Resolvers to resolve domain names for AWS resources (e.g., EC2 instances) and records in Route 53 Private Hosted Zones
+- Outbound Endpoint
+  - Route 53 Resolver conditionally forwards DNS queries to your DNS Resolvers
+  - Use Resolver Rules to forward DNS queries to your DNS Resolvers
+- Associated with one or more VPCs in the same AWS Region
+- Create in two AZs for high availability
+- Each Endpoint supports 10,000 queries per second per IP address
+
+# Route 53 - Resolver Rules
+
+- Control which DNS queries are forwarded to DNS Resolvers on your network
+- Conditional Forwarding Rules (Forwarding Rules)
+  - Forward DNS queries for a spcified domain and all its subdomains to target IP addresses
+- System Rules
+  - Selectively overriding the behavior defined in Forwarding Rules (e.g, don't forward DNS queries for a subdomain acme.exmaple.com)
+- Auto-defined System Rules
+  - Defines how DNS queries for selected domains are resolved (e.g., AWS internal domain names, Private Hosted Zones)
+- If multiple rules matched, Route 53 Resolver chooses the most specific match
+- Resolver Rules can be shared across accounts using AWS RAM
+  - Manage them centrally in one account
+  - Send DNS queries from multiple VPC to the target IP defined in the rule
