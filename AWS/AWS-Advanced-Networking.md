@@ -3061,6 +3061,7 @@ DNS Records / health checks
 
   - Local domain names for EC2 instances
   - Records in Private Hosted Zones
+  - Records in public name servers (e.g., Google, OpenDNS, etc.)
 
 - Hybrid DNS
   - Resolving DNS queries between VPC (Route 53 Resolver) and your networks (other DNS Resolvers)
@@ -3093,3 +3094,288 @@ DNS Records / health checks
 - Resolver Rules can be shared across accounts using AWS RAM
   - Manage them centrally in one account
   - Send DNS queries from multiple VPC to the target IP defined in the rule
+
+# Route 53 - DNS Query Logging
+
+- Log information about public DNS queries Route 53 Resolver receives
+- Only for public hosted zones
+- Can send logs to CloudWatch logs (can export to S3)
+
+# Route 53 - Resolver DNS Firewall
+
+- A managed firewall enables you to filter outbound DNS requests going out through Route 53 Resolver from your VPC
+- Blacklist malicious domains or Whitelist trusted domains
+- This is to prevent a comprimised application within your VPC to send data out through DNS (to a malicious domain) - also called DNS exfiltration
+- Can be managed/configured from AWs Firewall Manager
+- Integratd with CloudWatch Logs and Route 53 Resolver Query Logs
+- Fail-close vs Fail-open (DNS Firewall Configuration)
+  - Fail-close: blocks DNS queries that don't match the rules
+  - Fail-open: allows DNS queries that don't match the rules
+
+# Route 53 Solution Architecture Split View DNS (Split-Horizon DNS)
+
+- Use the same domain for internal and external uses
+- Public and Private hosted zones will have the same name (e.g., example.com)
+- Uses case: serve different content, require different authentication for internal and external users,...
+
+# Security Group and NACL recap
+
+- Security Groups
+  - Attached to ENI (Elastic Network Interfaces) - EC2, RDS, Lambda in VPC, etc
+  - Are stateful (any traffic in is allowed to go out, any traffic out can go back in)
+  - Can reference by CIDR and security group id
+  - Supports security group references for VPC peering
+  - Default: inbound denied, outbound all allowed
+- NACL (Network ACL):
+  - Attached at the subnet level
+  - Are stateless (inobound and outbound rules apply for all traffic)
+  - Can only reference a CIDR range (no hostname)
+  - Default: denies all inbound, denies all outbound
+
+# AWS Web Application Firewall (WAF)
+
+- Protects web applications from common web exploits (Layer 7)
+- Deploy on Application Load Balancer, API Gateway or AppSync GraphQL APIs and CloudFront (rules running globally on edge locations)
+- Define Web ACL (Web Access Control List) with which you can allow, block or monitor web requests by inspecting IP addresses, HTTP headers, HTTP body, or URI strings, Size constrains, Geo match, String match etc.
+- Web ACLs also support Rate-based rules (to count occurences of events)
+- When you evaluate the body of a requet, only the first 8,192 bytes (8KB) are inspected
+- On blocking the malicious traffic WAF returns HTTP 403 status code (Forbidden)
+- It takes less than a minute for the WAF rules to propagate worldwide
+
+**Web ACL regular rules support following conditions**
+
+1. Cross-site Scripting (XSS): Searched in HTTP method, header, query string, Uniform Resource Identifier (URI), and body
+2. IP addresses: Allows you to match IPv4 and IPv6 addresses
+3. Size: Allows you to match IPv4 and IPv6 addresses
+4. SQL Injection (SQLi): Can be applied on common parts of request data.
+5. Geographic Match: Allow or block requests based on the country from which the request originates
+6. String/Regex match: Allows to match common parts of request data based on string content including regular expressions
+
+# Common DDoS attacks
+
+| #   | Layer        | Unit     | Description                              | Vecotr examples                                                                                    |
+| --- | ------------ | -------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 7   | Applications | Data     | Network process to application           | HTTP floods, DNS query floods, Slowloris                                                           |
+| 6   | Presentation | Data     | Data representation and encryption       | Transpor layer security (TLS) abuse                                                                |
+| 5   | Session      | Data     | Interhost communication                  | N/A                                                                                                |
+| 4   | Transport    | Segments | End-to-end connections and reliablity    | Synchorinize (SYN) floods, UDP floods, TCP SYN floods, TCP ACK floods, TCP RST floods, ICMP floods |
+| 3   | Network      | Packets  | Routing of packets / Physical addressing | IP floods, ICMP floods, Use Datagram Protocol (UDP) reflection attacks                             |
+| 2   | Data Link    | Frames   | Physical addressing                      | MAC floods                                                                                         |
+| 1   | Physical     | Bits     | Physical transmission of data            | N/A                                                                                                |
+
+# Common DDoS attacks
+
+- SYN Flood attack: Too many half open TCP connections
+- UDP Flood attack: Too many UDP requests
+- UDP Reflection attack: Spoof the victim server IP as a source for UDP packet. Victim serer receives the unexpected responses.
+- DNS Flood attack: Overwhelm the DNS so legitimate users can't find the site
+- Slow Loris attack (Layer 7): A lot of HTTP connections are opened and maintained open for a long time
+
+# AWS Shield and AWS Shield Advanced
+
+- AWS Shield Standard (Free Service)
+  - Free Service that is activated for every AWS customer
+  - Provides protection from attacks such as SYN/UDP Floods, Reflection attacks and other layer 3 / layer 4 attacks
+  - Enabled automatically for ELB, CloudFront and Route53
+- AWS Shield Advanced (Paid Service)
+  - Optional DDoS mitigation service ($3,000/month per organization)
+  - Protect against more sophisticated attack on Amazon EC2, Elastic Load Balancing (ELB), Amazon CloudFront, AWS Gloabl Accelerator, and Route 53
+  - 24/7 access to AWS Shield Response Team (SRT). The SRT will help triage the incidents, identify root causes, and apply mitigations on your behalf.
+  - Protection against higher Service usage fees during usage spikes due to DDoS.
+  - Provides protection against large and more sophisticated DDoS attacks
+  - Supports AWS resources AWS Route53, CloudFront, ELB, Global Accelerator and resources attached to Elastic IPs like EC2, NAT
+  - Customers subscribed to Business or Enterprise support plan can engage 24/7 with Shield Response Team (SRT)
+  - SRT team also helps to identify layer 7 attacks/patterns and deploys Web ACL rules on WAF (you must grant IAM role to SRT team)
+  - Customer receives attack forensic report from SRT
+  - Get AWS credits\* against Route53, CloudFront, ELB and EC2 in case of billing spike due to DDoS
+
+# AWS Network Firewall
+
+- Filters traffic at the perimeter of the VPC such as traffic going to or coming from internet gateway, NAT gateway, over a VPN or Direct Connect
+- Uses the Suricata for stateful inspection
+- Suricata is an open source-based intrusion detection system and intrusion prevention system developed by the Open Information Security Foundation (OISF)
+- Allows domain name filtering e.g only AWS service endpoints
+- Block access to bad domains
+- Deep packet inspection on traffic entering or leaving your VPC
+- Stateful protocol detection to filter protocols like HTTPS (independent of the port used)
+- You can also import rules you've already written in common open source rule formats.
+- Integrate feeds source by AWS partner firewall solutions
+
+## Stateful vs Stateless firewalls
+
+- Stateful firewalls
+
+  - Keep track of the state of active connections and make decisions based on the context of the traffic
+  - Context invloves metadata of the packet including IP addresses, ports, packet length, information about reassembly and defragmentation flags, TCP sequence number etc.
+  - State refers to the state of the connection e.g for TCP connection the state of connection is SYN,ACK,FIN and RST
+  - Can inspect the entire packet and maintain a state table to track the connection state
+  - More complex and resource-intensive than stateless firewalls
+
+- Stateless firewalls
+  - Inspects each packet in isolation
+
+|                       | Security Group                             | Network ACL                              | WAF                                                        | AWS Network Firewall                                                                                                        |
+| --------------------- | ------------------------------------------ | ---------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Protection at         | EC2 instance level                         | Subnet level                             | Endpoint level (ALB, CloudFront etc)                       | VPC level based on routes                                                                                                   |
+| Stateful or Stateless | Stateful                                   | Stateless                                | Stateless                                                  | Both                                                                                                                        |
+| OSI Layer             | Layer 3 and Layer 4                        | Layer 3 and Layer 4                      | Layer 7                                                    | Layer 3, Layer 4 and Layer 7                                                                                                |
+| Features              | IP, Port, Protocol filtering               | IP, Port, Protocol filtering             | Application layer filtering                                | Stateless/ACL L3 rules, stateful/L4 rules, IPS-IDS/L7 rules, FQDN filtering, Protocol detection, Large IP block/allow lists |
+| Flows                 | All ingress/egress flows at instance level | All ingress/egress flows at subnet level | Ingress only from internet to API Gateway, ALB, CloudFront | All ingress/egress flows at perimeter of VPC (e.g. IGW, VGW, DX, VPN, VPC-VPC)                                              |
+
+# AWS Network Firewall componenets
+
+- Firewall
+  - A firewall connects the VPC that you want to protect to the protection behavior that's defined in a firewall policy.
+- Firewall policy
+  - Defines the behavior of the firewall in a collection of stateless and stateful rule groups and other settings.
+  - You can associate each firewall with only one firewall policy, but you can use a firewall policy for more than one firewall.
+- Rule group
+  - A rule group is a collection of stateless or stateful rules that define how to inspect and handle network traffic.
+
+# Stateless Rule Groups
+
+- Inspects each packet in isolation
+- Does not take into consideration factors such as the direction of traffic, or whether the packet is part of an existing, approved connection
+- Standard 5-touple connection criteria - Protocol, Source IP range, Source port range, destination IP range, destination port range
+- Process rules in the order that you prioritize them and stops processing when it find a match
+- Actions: pass, drop, and forward to stateless (or allows custom action)
+- Similar in behavior and use to Amazon VPC network ACLs
+
+# Stateless Rules - 5 tuple
+
+- Priority - Lower the numb er higher the priority
+- Action - Pass, Drop and Forward to stateful
+- Rule match settings
+  - Protocol - ALL or TCP, UDP and other protocols
+  - Source - List of IP address CIDRs
+  - Source Port range - Port and port ranges
+  - Destination - List of IP address CIDRs
+  - Destination Port range - Port and port ranges
+  - Options - TCP flags, ICMP type and code, IP protocol number
+
+# Stateful Rule Groups
+
+- Inspect packets in the context of their traffic flow and direction of the traffic
+- Support rules compatible with Suricata (an open source IPS)
+- Supports Standard rule, Surricata compatible rules and Domain list rule
+- Processes rules in the order of their action setting, with pass rules processed first, then drop, then alert and then stops processing when it find a match
+- Similar in behavior and use to Security Groups
+- By default, the stateful rules engine allows traffic to pass, while the security groups default is to deny traffic
+
+# Stateful rule - Domain list rule
+
+- Supports Allow list and Deny list for domain names
+- Action
+  - Allow - If doesn't match the domain specifications then traffic is denied
+  - Deny - If matches the domain specifications then traffic is denied
+- Match settings
+  - Domain list (e.g example.com or a wildcard like .example.com)
+  - Protocols - HTTP and HTTPS
+- For HTTPS traffic, Network Firewall uses the Server Name Indication (SNI) extension in the TLS handshake to determine the hostname, or domain name
+- For HTTP traffic, Network Firewall uses the HTTP host header to get the name.
+
+# Stateful rule - Suricata rule/signature
+
+- The signature of the rule consist of
+  - Action - defines what happens when the signature matches
+  - Header - defines the protocol, IP addresses, ports and direction of traffic
+  - Options - defines the content of the packet, metadata and other options
+
+eample:
+
+```bash
+drop tcp $EXTERNAL_NET any -> $HOME_NET 22 (msg:"ET SCAN SSH Scan"; flow:to_server,established; content:"SSH"; depth:4; metadata:policy security-ips drop, service ssh; reference:url,www.cybsec.com/et-scans/; classtype:attempted-recon; sid:2000001; rev:1;)
+```
+
+# GWLB (Gateway Load Balancer)
+
+- GWLB is used to deploy, scale, and manage a fleet of 3rd party network appliances in AWS.
+- Example: Firewalls, Intrusion Detection and Preventions Systems, Deep Packet Inspection Systems, payload manipulation etc.
+- GWLB operates at Layer 3 (Network Layer) - As opposed to ALB (Layer 7) and NLB (Layer 4)
+- It's a transport network gateway which acts as single entry and exit point for all traffic
+- Load balances the traffic and scales virtual applicances on demand
+- GWLB integrates with industry leading partners Aviatrix, Cisco Systems, Fortinet, Palo Alto Networks,...
+
+- GWLB Listener
+  - Listen for all IP packets across all ports (can't specify a protocol or port)
+  - You only specify a rule for routing requests to target groups
+  - Can't be deleted
+- Target groups
+  - EC2 Instances - can be managed by an ASG
+  - IP addresses - private IP only
+- Traffic between GWLB and its targets exchanged using the GENEVE protocol on UDP port 6081
+- It maintains stickiness of flows to a specific target applicance using 5-tuple (for TCP/UDP flows) or 3-tuple (for non-TCP/UDP flows)
+- Health Checks supported protocols HTTP, HTTPS, and TCP
+- Doesn't support public GWLB (internal only, no public DNS)
+- You can't associate security groups to GWLBs (SGs associated with targets must use IP addresses to allow traffic from GWLB)
+- Supports MTU size of 8500 bytes
+
+# AWS Certificate Manager (ACM)
+
+- A service that provides free SSL/TLS (X.509) certificates for use with AWS services, can deploy on CLoudFront, ELB, ElasticBeanstalk, API Gateway, etc.
+- ACM can be used to create and manage SSL/TLS certificates for your AWS resources
+- Can also request wildcard certificate e.g. \*.example.com
+- ACM is a regional service and you need to generate certificate in each region. However for CLoudFront you must request certificate in us-east-1 i.e. Nort Virginia region
+- AWS Private CA
+
+  - A managed private CA service that allows you to create and manage your own private certificates
+  - Can be used to create SSL/TLS certificates for your internal resources
+  - Can be used to create and manage private CA for your organization
+
+- You can not have a wildcard in the middle of the domain name
+  - Example: app.\*.example.com is not allowed
+  - Example: \*.app.example.com is allowed
+- Public certificates that you request through ACM are obtained from Amazon Trust Services which is an Amazon managed public certificate authority
+- Public certificates issues through ACM are valid for 13 months (395 days) However, with private CA you may chose the certificate validity period
+- ACM automatically renews the Certificates which are domain validated
+- You can import your own Certificate into ACM. You have to renew imported certificates manually
+
+# AWS Firewall Manager
+
+- Security management tool which simplifies security administration and maintenance tasks across multiple AWS accounts and resources
+- Manages the rules for AWS WAF, AWS Shield Advances, Amazon VPC security groups, AWS Network Firewall, and Amazon Route 53 Resolver DNS firewall
+- New accounts added under the AWS Organizations are automatically protected
+- Provides centralized monitoring of DDoS attacks across AWS organization
+
+## Pre-requisites for AWS Firewall Manager
+
+- Enable AWS organization (full features)
+- Enable AWS config
+- Enable AWS Resource Access Manager (RAM)
+
+### When to use what?
+
+---
+
+| **Use Case**                                                                                                             | **Recommended Service**   |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| Need an easy and quick-to-deploy firewall for protecting web applications from Layer 7 attacks                           | AWS WAF                   |
+| Need to have protection against DDoS with support from AWS to handle the attack?                                         | AWS Shield Advanced       |
+| Need a more sophisticated managed firewall (IPS/IDS) for all the traffic flowing in/out of VPC resources?                | AWS Network Firewall      |
+| Need a sophisticated 3rd party firewall (IPS/IDS) or network monitoring for all traffic flowing in/out of VPC resources? | AWS Gateway Load Balancer |
+| Need centralized governance for managing the firewall protections across accounts?                                       | AWS Firewall Manager      |
+
+---
+
+# Kubernetes Architecture
+
+## Kubernetes building blocks
+
+- Kubernetes cluster consists of control plane and data plane
+- Control plane consists of a set of control processes hosted on master node
+- Data plane consists of a set of worker nodes called Nodes
+- Nodes host the Pods
+- A Pod represents a group of one or more application containers
+
+### Control Plane Components
+
+- kube-apiserver
+  - Exposes Kubernetes APIs. It's a frontend for the Kubernetes control plane
+- etcd
+  - Key-value store used as Kubernetes backing store for all cluster data.
+- kube-scheduler
+  - Watches for newly created Pods with no assigned node, and selects a node for them to run on.
+- kube-controller-manager
+  - Runs controller processes such as Node controller, Replication controller, Namespace controller, Job Controller, EndpointSlice controller etc.
+- cloud-controller-manager
+  - links kubernetes cluster into cloud provider's API such as Node controller for determining if node (instance) is deleted in the cloud, Service controller for cloud load balancer etc.

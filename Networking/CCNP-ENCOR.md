@@ -163,3 +163,9 @@ R1 receives a packet destined for 192.168.1.35. The following routes are in its 
 - It serves the purpose of update switches' MAC Address Tables and hosts ARP Tables
   - Cisco IOS devices will refresh an existing ARP Table entry if they receive a Gratuitous ARP message (they will reset the timer to 0 and update the MAC address if it is different than the current entry)
   - However, Cisco IOS devices will not create a new ARP Table entry if they receive a Gratuitous ARP.
+
+# What is MTU?
+
+- The Maximum Transmission Unit (MTU) is the largest size of a packet that can be sent/received over a network from an interface sent from a device.
+  - The 'unit' is usually an IP packet (including the IP header)
+  - This doesn't include the L2 header/trailer

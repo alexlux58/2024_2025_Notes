@@ -597,3 +597,14 @@ Finding type: UnauthorizedAccess:EC2/SSHBruteForce Instance tag value: devops (a
 - You define parameters
 - You define actions
 - Many documents already exist in AWS
+
+# SSM - Run Command
+
+- Execute a document (=script) or just run a command
+- Run command across multiple instances (using resource groups)
+- Rate Control / Error Control
+- Integrated with IAM and CloudTrail
+- No need for SSH
+- Command output can be shown in the Console, sent to S3 bucket or CloudWatch logs
+- Send notifications to SNS about command status (In progress, Success, Failed)
+- Can be invoked using EventBridge
