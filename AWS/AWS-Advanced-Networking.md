@@ -3379,3 +3379,397 @@ drop tcp $EXTERNAL_NET any -> $HOME_NET 22 (msg:"ET SCAN SSH Scan"; flow:to_serv
   - Runs controller processes such as Node controller, Replication controller, Namespace controller, Job Controller, EndpointSlice controller etc.
 - cloud-controller-manager
   - links kubernetes cluster into cloud provider's API such as Node controller for determining if node (instance) is deleted in the cloud, Service controller for cloud load balancer etc.
+
+# Kubernetes Data plane components
+
+- Node
+  - hosts the pods (applications)
+- kubelet
+  - An agent that runs on each node in the cluster. It makes sure that containers are running in a Pod
+- kube-proxy
+  - Enables network communication to Pods from network sessions inside or outside of your cluster
+- Container Runtime
+  - Responsible for running containers. Kubernetes supports container runtimes such as containerd, CRI-O, and any other implementation of the Kubernetes CRI (Container Runtime Interface)
+
+# Amazon EKS Architecture
+
+- Amazon EKS is a managed Kubernetes service that makes it easy to run Kubernetes on AWS without needing to install and operate your own control plane or nodes
+- Amazon EKS runs the Kubernetes control plane across multiple AWS Availability Zones (AZs) to ensure high availability
+- Amazon EKS automatically detects and replaces unhealthy control plane nodes, and provides automated version upgrades and patching for them
+- Amazon EKS runs the Kubernetes control plane on AWS infrastructure and automatically scales control plane instances based on load
+
+# Amazon EKS Cluster Networking
+
+- EKS Control Plane is launched in the AWS managed account and VPC
+- Data plane nodes are launched in Customer account and VPC
+- EKS provisions 2-4 ENIs in the Customer VPC to enable the communication between Control plane and VPC
+- It's recommended to have separate subnets for EKS ENIs. EKS needs at least 6 IPs in each subnet (16 recommended)
+- EKS creates and associates SG to these EKS owned ENIs (and also to Managed Group Nodes)
+- Kubernetes API Server can be accessed over the internet (by default)
+- EKS allows assigning IPv4 or IPv6 IP addresses to Pods (but not in dualstack mode)
+
+# EKS VPC extended connectivity
+
+- Deploy separate public subnet for Load Balancer if k8s services needs to be exposed
+- Provide internet access to Nodes using NAT Gateway (IPv4) or Egress only IGW (IPv6)
+- Enable VPC endpoint PrivateLink Access for AWS Services
+- Connect your VPC with other VPCs or On-premises network using VPC peering, or Transit Gateway or VPN or Direct Connect connections
+
+# Amazon EKS Pod Networking - CNI
+
+## Kubernetes Network Model
+
+- CNCF networking specificiations
+- Every pod gets its own IP address
+- Containers in the same Pod share the network address
+- All pods can communicate with all other pods without using network address translation (NAT)
+- All nodes can communicatie with all pods without NAT.
+- The IP that a pod sees itself as is the same IP that others see it as.
+
+# Amazon VPC CNI plugin
+
+- Amazon VPC Container Network Interface (CNI) plugin:
+  - Creates and attaches ENIs to worker nodes
+  - Assigns ENI secondary IP addresses to Pods
+- Amazon EKS officially supports the Amazon VPC CNI plugin for Kubernetes
+- Alternate compatible CNI plugins:
+  - Tigera
+  - Isovalent
+  - Weaveworks
+  - VMware
+
+# Maximum pods per node
+
+- IP addresses per network interface per instance type
+
+| Instance Type | Maximum Network Interfaces | Private IPv4 addresses per interface | IPv6 addresses per interface |
+| ------------- | -------------------------- | ------------------------------------ | ---------------------------- |
+| m5.large      | 3                          | 10                                   | 10                           |
+| m5.xlarge     | 4                          | 15                                   | 15                           |
+| m5.2xlarge    | 4                          | 15                                   | 15                           |
+| m5.4xlarge    | 8                          | 30                                   | 30                           |
+
+- Max Pods = (Total number of network interfaces) x (Maximum IPs per network interface - 1) + 2
+- Example (m5.large with IPv4 address):
+  Max Pods = 3 x (10 - 1) + 2 = 29
+
+# Increased available IP addresses for Pods
+
+- Only AWS Nitro-based nodes use this capability
+- Prefix delegation:
+  Assign a prefix to EC2 ENI
+  - /28 block for IPv4 (x16)
+  - /80 block for IPv6 (x280 trillion)
+
+Max Pods = (Total number of network interfaces) x (Maximum IPs per network interface - 1) + 2
+
+Example (m5.large with IPv4 address):
+Max Pods = 3 x (10 - 1) x 16 + 2 = 434
+
+# Assigning IPv6 addresses to pods and services
+
+- Supported with AWS Nitro-based instances and Fargate
+- By default, Kubernetes assigns IPv4 addresses to pods and services but we can also configure cluster with IPv6 addresses.
+- EKS doesn't support dual-stack pods or services.
+- For Amazon EC2 nodes, you must configure the Amazon VPC CNI add-on with IP prefix delegation and IPv6.
+- You must also assign IPv4 address to VPC and subnets as VPC does require IPv4 addresses to function.
+
+# Pod to external network communication
+
+- When a pod communicates to any IPv4 address that isn't within a CIDR block of VPC, the Amazon VPC CNI plugin translates the pod's IPv4 address
+  to the primary private IPv4 address of the primary ENI of the node that the pod is running on.
+- For IPv6 address family, this isn't applicable, because IPv6 addresses are not network translated.
+
+# Multi-homed Pods with Multus CNI
+
+- Enables attaching multiple interfaces to pods
+- With Multus, you can create a multi-homed pod that has multiple interfaces
+- AWS support for Multus comes with VPC CNI
+
+# EKS Cluster Security group
+
+- When you create EKS Cluster, it creates and associates SG with following rules:
+
+| Rule Type | Protocol | Ports | Source | Destination                     |
+| --------- | -------- | ----- | ------ | ------------------------------- |
+| Inbound   | All      | All   | Self   |                                 |
+| Outbound  | All      | All   |        | 0.0.0.0/0 (IPv4) or ::/0 (IPv6) |
+
+- EKS associates this SG with:
+
+  - ENIs created by EKS in Customer VPC
+  - ENIs of the nodes in Managed Node group
+
+- At minimum following Outbound rules are required for EKS cluster to function properly:
+
+| Rule Type      | Protocol    | Ports | Destination            |
+| -------------- | ----------- | ----- | ---------------------- |
+| Outbound       | TCP         | 443   | Cluster security group |
+| Outbound       | TCP         | 10250 | Cluster security group |
+| Outbound (DNS) | TCP and UDP | 53    | Cluster security group |
+
+# Pod Security Groups - The Problem
+
+- SG is assigned to Node ENIs and hence all Pods having secondary IPs from the same ENI will use the same SG
+- This is a drawback if you need different scurity groups for different Pods
+- One of the options to work around this is to use Network policy engine like Calico which provides network security policies to restrict inter pod
+  traffic using iptables
+- EKS native option is to use Trunk and Branch ENIs
+
+# Pod Security groups - The solution Trunk and Branch ENIs
+
+- Amazon EKS and ECS supports Trunk and Branch ENI feature
+- A VPC resource controller add-on named "amazon-vpc-resource-controller-k8s" manages Trunk and Branch Network Interfaces
+- When ENABLE_POD_ENI=true, VPC resource controller creates special network interface called trunk network interface with description "aws-k8s-trunk-eni"
+  and attaches it to the node
+- The controller also creates branch interfaces with description "aws-k8s-branch-eni" and associates them with the trunk interface.
+  - kubectl set env daemonset aws-node -n kube-system ENABLE_POD_ENI=true
+- Each Pod gets dedicated ENI (branch ENI) mapped to trunk ENI
+- Independent Security group per Pod
+
+## Note
+
+- Security groups for pods can't be used with Windows nodes
+- If cluster is using IPv6 address family then this feature only works with Fargate nodes
+- Supported by most Nitro based system (t instance family is not supported)
+- The Node instances should be listed in limits.go file with IsTrunkingCompatible: true
+
+# Kubernetes Service
+
+- Accessing applications by their Pod's IPs is usually an anti-pattern because
+  - Pods are non-permanent objects
+  - Pods may be created and destroyed frequently
+  - Pods move between the cluster's nodes due to a scaling event, a node replacement, or a configuration change.
+- Kubernetes Service is a way to expose an application running on a set of Pods as a network service
+- Kubernetes and EKS Supports following Service Types:
+  - ClusterIP (access services from inside EKS cluster using Virtual IP)
+- Kubernetes and EKS Supports following Service Types:
+  - ClusterIP (access services from inside EKS cluster using Virtual IP)
+  - NodePort (access services externally using Node static port)
+  - LoadBalancer (Netowrk load balancing, access services externally using CLB/NLB Layer4)
+  - Ingress (Application load balancing, access services externally using ALB Layer7)
+- ClusterIP is the default service type
+- Makes the service reachable/accessible only from within the cluster
+- Service is exposed on a virtual IP on each node. This IP is not exposed outside of a cluster.
+- The service virtual IP is assigned from a pool which is configured by setting following parameter in kube-apiserver:
+  - --service-cluster-ip-range
+- If not configured explicitly then Amazon EKS provisions either 10.100.0.0/16 or 172.20.0.0/16 for this Virtual IP.
+- A kube-proxy daemon on each cluster node defines the ClusterIP to Pod IP mapping in iptables rules
+- Service is accessible with private DNS <service-name>.<namespace-name>.svc.cluster.local
+- NodePort is used to make a kubernetes service accessible from outside the cluster
+- Expose the service on each worker node's IP at a static port, called the NodePort
+- One Node port per Service
+- Port range: 30000-32767
+- NodePort internally uses ClusterIP to route the NodeIP/Port requests to ClusterIP service
+- Client needs to keep track of Node IPs and any IP changes over the time
+- Not a feasible option to expose services to the outside world
+
+# EKS Network and Application Load Balancing
+
+- ServiceType=LoadBalancer
+
+  - Handled by Kubernetes Controller Manager (in-tree cloud controller)
+  - Deploys AWS CLB (default) or NLB in instance mode
+  - Layer 4 with NLB and Layer 4/7 with CLB
+  - Now also supported by newer controller called AWS Load Balancer Controller
+
+- ServiceType=Ingress
+
+  - Handled by AWS Load Balancer Controller (formerly AWS ALB Insgress controller)
+  - Deploys ALB in Instance and IP mode for ingress resource
+  - Layer 7
+
+# LoadBalancer Service (with legacy controller)
+
+- Exposes services to the client outside of the cluster
+- LoadBalancer service is built on top of NodePort service
+- Supports:
+  - Classic Load Balancer (CLB)
+    - Layer 4/Layer 7 traffic (TCP, SSL/TLS, HTTP, HTTPS)
+  - Network Load Balancer (NLB)
+    - Layer4 traffic (TCP, UDP, TLS)
+    - Instance mode only
+
+# LoadBalancer Service (with newer controller)
+
+- Recommended to use AWS Load Balancer Controller
+- For target as IP (for EC2 or Fargate) use:
+  - service.beta.kubernetes.io/aws-load-balancer-type: "external"
+  - service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+- For target as instance (for EC2) use:
+  - service.beta.kubernetes.io/aws-load-balancer-type: "external"
+  - service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+- Each service needs a dedicated NLB
+- Scaling and management is a challange when number of service grows
+- Exposes services to the client outside of the cluster
+- Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster
+- Traffic routing is controlled by rules defined on the Ingress resource.
+- Saves cost and complexity as multiple services can be added behind a single ALB using ALB target groups.
+- EKS uses AWS Load Balancer Controller for provisioning load balancer resources
+
+# AWS Load Balancer Controller
+
+- The AWS implementation for Ingress controller
+- Translates the Ingress rules, parameters, and annotations into the ALB configuration, creating listeners and target groups and connecting their target to the backend Services.
+- Supports target as Instance or Pod IP.
+- Annotation used:
+  - kubernetes.io/ingress.class: alb
+- Share ALB with multiple services by using annotation:
+  - alb.ingress.kubernetes.io/group.name:my-group
+- Traffic for IPv6 is supported for IP targets only.
+  Use annotation:
+  - alb.ingress.kubernetes.io/ip-address-type: dualstack
+
+# Preserving Client IP
+
+- For NLB with LoadBalancer service:
+
+  - externalTrafficPolicy service spec defines how load-balancing happens in the cluster.
+  - If externalTrafficPolicy=Cluster, the traffic may be sent to another node and source IP is changed to node's IP address thereby Client IP is not preserved. However load is evenly spread across the nodes.
+  - By setting externalTrafficPolicy=Local, traffic is not routed outside of the node and client IP addresses is propagated to the end Pods.
+    This could result in uneven distribution of load across the nodes.
+
+- For ALB Ingress service:
+  - HTTP header X-Forwarded-For is used to get the Client IP.
+
+# Pod Network - Custom networking
+
+- Add Secondary VPC CIDR in the range 100.64.0.0/16 (~65000 IPs) to the VPC
+- This CIDR IP addresses are routable only within the VPC
+- Enable VPC CNI Custom Networking
+- VPC CNI plugin creates Secondary ENI in the separate subnet
+- Only IPs from Secondary ENI are assigned to Pods
+
+# AWS Network Manager
+
+- Connectivity
+  - Global Networks
+  - Cloud WAN
+- Monitoring and troubleshooting
+  - Reachability Analyzer
+- Security and Governance
+  - Network Access Analyzer
+- IP Management - IPAM
+
+# Amazon VPC IPAM (IP Address Manager)
+
+- Amazon VPC IPAM can be integrated with your organization's structure.
+- Create an IPAM-adminitrator account for your Organization.
+- This account must be a member of the Organization
+- AWS Organization Service control policy (SCP) to enforce CIDR allocation through IPAM while creating VPCs
+
+'''json
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Effect": "Deny",
+"Action": [
+"ec2:CreateVpc"
+],
+"Resource": "\*",
+"Condition": {
+"Null": {
+"ec2:Ipv4IpamPoolId": "true"
+}
+}
+}
+]
+}
+'''
+
+- Enforce using specific IPAM pools
+- Enforce specific IPAM pools to specific OUs
+
+# Tracking and Monitoring IP addresses with IPAM
+
+- Monitor CIDR usage with IPAM Dashboard
+- Monitor CIDR usage by resource
+- Monitor IPAM with Amazon CloudWatch
+- View IP address history
+- View public IP insigths
+
+# AWS CloudFormation
+
+## Infrastructure as a Code
+
+- If you have been doing a lot of manual work for deployment of the infrasrtucture in AWS e.g. creating VPC, Subnets, EC2 instances, VPN connection etc...
+- All this manual work will be very tough to reproduce:
+  - In another region
+  - In another AWS account
+  - Within the same region if everything was deleted
+- Wouldn't it be great, if all our infrastructure was...code?
+- CloudFormation is a declarative way of outlining your AWS Infrastructure, for any resources (most of them are supported)
+- For example, within a CloudFromation template, you say:
+  - I want a VPC and Subnets
+  - I want an internet gateway and attach it to the VPC
+  - I want a security group
+  - I want two EC2 machines using this security group in the subnet just created
+- Then CloudFormation creates those for you, in the right order, with the exact configuration that you specify.
+
+## Benefits of AWS CloudFormation
+
+- Infrastructure as a code
+  - No resources are manually created, hence no manual errors
+  - The code can be version controlled for example using git
+  - Changes to the infrastructure are reviewed through code
+- Cost
+  - Each resources within the stack is tagged with an identifier so you can easily see how much a stack costs you
+  - You can estimate the costs of your resources using the CloudFormation template
+  - Savings strategy: In Dev, you could automate deletion of templates at 5 PM and recreated at 8 AM, safely.
+
+## CloudFormation - Feature and Components
+
+- CloudFormation Designer
+  - A graphical tool for creating, viewing, and modifying AWS CloudFormation templates
+- ChangeSets
+  - Generate and Preview the CloudFormation changes before they get applied
+- StackSets
+  - Deploy a CloudFormation stack across multiple accounts and regions
+- Stack Policies
+  - Prevent accidental updates / deletes to stack resources
+- Cross Stacks
+  - Helpful when stacks have different lifecycles
+  - Use Output Export and Fn::ImportValue
+  - When you need to pass export values to many stacks (VPC Id, etc...)
+- Nested Stacks
+  - Nested stacks are stacks created as part of other stacks using the AWS::CloudFormation::Stack resource.
+  - Helpful when components must be re-used
+  - Ex: re-use how to properly configure an Application Load Balancer
+  - The nested stacks are not shared
+
+## CloudFormation - manage resource dependencies
+
+- DependsOn
+  - Control the order of the resource creation. DependsOn will force the resource creation wait until the resource specified by "DependsOn" is created successfully
+  - Example:
+    - If you reference a VPN gateway that is in the same template as your VPN gateway route propagation, you must explicitly declare a dependency on the VPN gateway attachment.
+    - The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway until it has successfully attached to the VPC.
+    - Add a DependsOn Attribute in the AWS::EC2::VPNGatewayRoutePropagation resource to explicitly declare a dependency on the VPN gateway attachment.
+- WaitCondition
+  - To coordinate stack resource creation with configuration actions that are external to the stack creation.
+  - Waits until the success/failure signal received or timeout occurs
+  - For the resources to respond to the wait condition, they must have an access to the cloudformation specific S3 bucket presigned URL where they can send the response signal
+  - WaitCondition itself can DependsOn the underlying resource
+  - Examples:
+    - Create a WaitCondition which DependsOn EC2 instance.
+    - The WaitHandler will wait for the signal to be received.
+    - EC2 bootstrap action will send the Success signal to the wait condition.
+
+## AWS Cloud Development Kit (CDK)
+
+- An open-source software development framework to define your cloud application resources using familiar programming languages
+
+# AWS Service Catalog
+
+- Allow users to launch group of approved IT resources as a Product in a self-service manner
+- It uses CloudFormation templates to launch the related resources/architecture/software/servers
+- Products can be versioned and can be shared across AWS organization, Organization Units (OUs) or AWS accounts
+- It uses user's IAM premissions or a launch constraints for launching the products
+- Users can optionally provide the parameters
+- Administrator can also provide details like support email
+- Output of the CloudFormation can also be part of the launch output e.g. Website URL etc.
+
+- User browses the products listed in AWS Service Catalog
+- User selects the product and provides the parameters
+- User launches the product
