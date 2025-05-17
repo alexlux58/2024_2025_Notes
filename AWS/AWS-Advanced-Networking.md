@@ -3773,3 +3773,112 @@ Max Pods = 3 x (10 - 1) x 16 + 2 = 434
 - User browses the products listed in AWS Service Catalog
 - User selects the product and provides the parameters
 - User launches the product
+
+# AWS Config
+
+- Access, Audit and Evaluate the configuration of your AWS resources
+- Auto remediation using Systems Manager SSM documents
+- View compliance of a resource over time
+- View configuration of a resource over time
+- View CloudTrail API calls if enabled
+
+# AWS CloudTrail
+
+- Provides audit for your AWS Account activities by logging all the API callss
+- CloudTrail is enabled by default for all AWS accounts
+- Get a history of events / API calls made within your AWS Account by:
+  - Console
+  - SDK
+  - CLI
+  - AWS Services
+- If a resource is deleted in AWS, look into CloudTrail first
+- CloudTrail console shows the past 90 days of activity. Optionally, you can persist the CloudTrail logs into CloudWatch or S3.
+- Can be region specific or global and include global events (e.g. IAM)
+
+# VPC Sharing
+
+- Multiple AWS accounts in an AWS organization can share a VPC to launch their resources (e.g. EC2 instances, RDS database etc.)
+- Account that owns the VPC (owner) shares one or more subnets with other accounts (participant)
+- Must enable resource sharing from the management account for the AWS organization.
+- Resource Share should be created for the subnet to be shared. It can be shared with AWS accounts, organizational units, or an entire organization.
+- VPC owners can't share subnets that are in a default VPC.
+
+# Benefits of Sharing VPCs
+
+- Simplified design - no complexity around inter-VPC connectivity
+- Fewer managed VPCs
+- Avoidance of the problem of CIDR overlap that is encountered with multiple VPCs
+- Segregation of duties between network teams and application owners
+- Better IPv4 address utilization
+- Resuse of network address translation (NAT) gateways, VPC interface endpoints etc.
+- No data transfer charges between instances belonging to different accounts within the same Availablity Zone
+
+## Availablity Zone consideration
+
+- AWS maps AZ names independently to different AWS accounts
+  - Example:
+    - us-east-1a in Account A may not be same AZ in Account B
+
+## VPC sharing and Transit Gateway
+
+- We can use VPC sharing to enable subnet sharing within the same project/business unit across different teams and Transit Gateway to connect these VPCs for centralized routing, firewall and on-premises connectivity.
+
+## Permissions for VPC Owner and Participants
+
+- VPC participants cannot create, delete, or describe flow logs in a shared VPC subnet that they do not own.
+- VPC participants can only enable VPC Flow Logs for ENIs they own.
+- VPC owners cannot describe or delete flow logs created by a participant
+- VPC participants cannot create, attach, or delete NAT gateways, internet gateways and egress-only internet gateways in a shared VPC subnet.
+- VPC participants cannot create, delete, or replace Route tables or NACLs in a shared VPC subnet.
+- VPC participants can work with security groups that they own in a shared VPC subnet. Participants cannot work with security groups created by VPC owners in any way including default Security group.
+- VPC participants can't launch instances using security groups that are owned by the VPC owner or other participants.
+- DNS Query logs and DNS resolution e.g. DHCP Option set, Route53 Resolver endpoints etc. is controlled by the VPC owner.
+
+## VPC sharing best practices
+
+- Have a dedicated subnets for shared AWS infrastructure components such as VPC interface endpoints, firewall endpoints, and NAT gateways.
+- These subnets should not be shared and only within the VPC owner AWS account.
+- Deny Resource Access Manager (RAM) sharing for AWS accounts which shouldn't share VPC subnets.
+- Deny ability to deploy services such as Client VPN and VPC endpoints for VPC participants using Service Control Policies (SCPs).
+- Deny Private hosted zone creation for participant accounts. If required, participant account can create their own PHZ and share it with VPC owner account to associate it with the shared VPC.
+
+# Private NAT Gateway
+
+- Allows communication between VPCs or VPC and on-premises network having the overlapping CIDRs
+- Networks could be connected over Virtual Private Gateway (VGW) or Transit Gateway (TGW)
+- Private NAT performs the Private IP network address translation
+- For deplyoing Private NAT you would often need to divide your address space in routable and non-routable (overlapping) address space and then configure the routing such that there is a communication between non-routable address range via the routable IP addresses
+
+## Problems with Private IPs
+
+- Limited by Private IP ranges defined by RFC1918
+- Need to have separate Private IP range for different business units
+- Microservices architecture require services to have their own Private IPs thereby requiring more and more Private IPs
+
+## Possible solutions for overlapping IP ranges
+
+- Using AWS PrivateLink
+- Using IPv6 addresses
+- Using self managed NAT'ing appliances
+  - Additional appliances to manage
+  - Operational overhead
+
+# AWS Wavelength
+
+- WaveLength Zones are infrastructure deployments embedded within the telecommunication providers' datacenters at the edge of the 5G networks
+- Brings AWS services to the edge of the 5G networks
+- Example: EC2, EBS, VPC...
+- Ultra-low latency applications through 5G networks
+- Traffic doesn't leave the Communication Service Provider's (CSP) network
+- High-bandwidth and secure connection to the parent AWS region
+- No additional charges or service agreements
+- Use cases: Smart Cities, ML-assisted diagnostics, Connected Vehicles, Interactive Live Video Streams, AR/VR, Real-time gaming, Industrial IoT, Robotics, Smart Manufacturing, Remote Monitoring and Control
+
+# AWS Local Zones
+
+- Places AWS compute, storage, database, and other selected AWS services closer to end users to run latency-sensitive applications
+- Extend your VPC to more locations - "Extension of an AWS Region"
+- Compatible with EC2, RDS, ECS, EBS, ElasticCache, Direct Connect...
+- Example:
+  - AWS Region: N. Virginia (us-east-1)
+  - AWS Local Zones: Boston, Chicago, Dallas, Houston, Miami
