@@ -520,7 +520,7 @@ Finding type: UnauthorizedAccess:EC2/SSHBruteForce Instance tag value: devops (a
 
 ---
 
-# AWS Systems Manager Overview
+# AWS Systems Manager (SSM) Overview
 
 - Helps you manage your EC2 and On-premises systems at scale
 - Get operational insights about the state of your infrastructure
@@ -608,3 +608,123 @@ Finding type: UnauthorizedAccess:EC2/SSHBruteForce Instance tag value: devops (a
 - Command output can be shown in the Console, sent to S3 bucket or CloudWatch logs
 - Send notifications to SNS about command status (In progress, Success, Failed)
 - Can be invoked using EventBridge
+
+# SSM - Automation
+
+- Simplifies common maintenance and deployment tasks of EC2 instances and other AWS resources
+- Example: restart instances, create an AMI, EBS snapshot
+- Automation Runbook
+  - SSM Documents of type Automation
+  - Defines actions preformed on your EC2 instances or AWS resources
+  - Pre-defined runbooks (AWS) or create custom runbooks
+- Can be triggered
+  - Manually using AWS Console, AWS CLI or SDK
+  - By Amazon EventBridge
+  - On a schedule using Maintenance Windows
+  - By AWS Config for rules remediation's
+
+# SSM - Parameter Store
+
+- Secure storage for configuration and secrets
+- Optional Seamless Encryption using KMS
+- Serverless, scalable, durable, easy SDK
+- Version tracking of configurations / secrets
+- Security through IAM
+- Notifications with Amazon EventBridge
+- Integration with CloudFormation
+
+## SSM Parameter Store Hierarchy
+
+- /my-department/
+  - my-app/
+    - dev/
+      - db-url
+      - db-password
+    - prod/
+      - db-url
+  - other-app/
+- /other-department
+- /aws/reference/secretsmanager/secret_ID_in_Secrets_Manager
+- /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2 (public)
+
+## Standard and advanced parameter tiers
+
+|                                                                 | Standard             | Advanced                               |
+| --------------------------------------------------------------- | -------------------- | -------------------------------------- |
+| Total number of parameters allowed (per AWS account and Region) | 10,000               | 100,000                                |
+| Maximum size of a parameter value                               | 4 KB                 | 8 KB                                   |
+| Parameter policies available                                    | No                   | Yes                                    |
+| Cost                                                            | No additional charge | Charges apply                          |
+| Storage Pricing                                                 | Free                 | $0.05 per advanced parameter per month |
+
+## Parameters Policies (for advanced parameters)
+
+- Allow to assign a TTL to a parameter (expiration date) to force updating or deleting sensitive data such as passwords
+- Can assign multiple policies at a time
+
+**Expiration (to delete a parameter)**
+
+```json
+{
+  "Type": "Expiration",
+  "Version": "1.0",
+  "Attributes": {
+    "Timestamp": "2020-12-02T21:34:33.000Z"
+  }
+}
+```
+
+**ExpirationNotification (EventBridge)**
+
+```json
+{
+  "Type": "ExpirationNotification",
+  "Version": "1.0",
+  "Attributes": {
+    "Before": "15",
+    "Unit": "Days"
+  }
+}
+```
+
+**NoChangeNotification (EventBridge)**
+
+```json
+{
+  "Type": "NoChangeNotification",
+  "Version": "1.0",
+  "Attributes": {
+    "After": "20",
+    "Unit": "Days"
+  }
+}
+```
+
+# SSM - Inventory
+
+- Collect metadata from your managed instances (EC2/On-premises)
+- Metadata includes installed software, OS drivers, configurations, installed updates, running services...
+- View data in AWS Console or store in S3 and query and analyze using Athena and QuickSight
+- Specify metadata collection interval (minutes, hours, days)
+- Query data from multiple AWS accounts and regions
+- Create Custom Inventory for your custom metadata (e.g., rack location of each managed instance)
+
+## SSM - State Manager
+
+- Automate the process of keeping your managed instances (EC2/On-premises) in a state that you define
+- Use cases: bootstrap instances with software, path OS/Software updates on a schedule
+- State Manager Association:
+  - Defines the state that you want to maintain to your managed instances
+  - Example: port 22 must be closed, antivirus must be installed...
+  - Specify a schedule when this configuration is applied
+- Uses SSM Documents to create an Association (e.g., SSM Document to configure CW Agent)
+
+## SSM - Patch Manager
+
+- Automates the process of patching managed instances
+- OS updates, applications updates, security updates,...
+- Supports both EC2 instances and on-premises servers
+- Supports Linux, MacOS, and Windows
+- Patch on-demand or on a schedule using Maintenance Windows
+- Scan instances and generate patch compliance report (missing patches)
+- Patch compliance report can be sent to S3
