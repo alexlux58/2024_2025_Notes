@@ -169,3 +169,22 @@ R1 receives a packet destined for 192.168.1.35. The following routes are in its 
 - The Maximum Transmission Unit (MTU) is the largest size of a packet that can be sent/received over a network from an interface sent from a device.
   - The 'unit' is usually an IP packet (including the IP header)
   - This doesn't include the L2 header/trailer
+- It generally refers to two separate (but related) concepts: Ethernet MTU and IP MTU
+- The TCP MSS (Maximum Segment Size) is a similar concept which we will cover in another video.
+- The default MTU is 1500 bytes for Ethernet, and 576 bytes for PPP.
+  - Larger MTU values can be configured
+- There are costs and benefits of larger MTU values:
+  - Increased network efficiency.
+    - The data-to-header ratio is increased
+- Increased delay between packets.
+  - Each individual packet takes more time to send
+- Increased impact of network errors.
+  - Greater chance of a corrupt bit in each packet
+  - One corrupt bit requires retransmission of entire packet.
+  - Larger packets take more time to retransmit
+- Jumbo frames
+  - Larger than the default 1500 bytes, typically defined as up to 9000 or 9216 bytes
+- Super Jumbo frames
+  - Larger than Jumbo frames, typically defined as up to 64KB (rare)
+- Baby Giant frames
+  - Larger than 1500 bytes, but smaller than Jumbo frames. Typically defined as up to 1600 bytes
