@@ -137,3 +137,10 @@ key/value pairs: method="get"
   - Client libraries are libraries that allow you to instrument your code.
   - They are used to expose metrics to Prometheus.
   - They are used to create custom metrics.
+
+# Node Exporter
+
+- The Node exporter is a Prometheus exporter for hardware and OS metrics exposed by Unix [*NIX] kernels.
+- It exposes kernel-level and machine-level metrics on Unix systems, such as Linux.
+- When in action, it provides metrics such as CPU, memory, disk space, disk I/O, and network bandwidth
+- It is written in Go with pluggable metric collectors

@@ -188,3 +188,31 @@ R1 receives a packet destined for 192.168.1.35. The following routes are in its 
   - Larger than Jumbo frames, typically defined as up to 64KB (rare)
 - Baby Giant frames
   - Larger than 1500 bytes, but smaller than Jumbo frames. Typically defined as up to 1600 bytes
+
+# Ethernet MTU
+
+- The Ethernet MTU specifies the maximum payload size of frames sent/received by an interface.
+  - This includes L2 and L3 interfaces, since both send Ethernet frames.
+  - MTU is checked at both ingress (receiving) and egress (sending) of the interface.
+- Sometimes called Interface MTU
+- If a frame's payload (L3 header + L4 header + Data) is larger than the interface's MTU, it will be dropped.
+  - Layer 2 doesn't offer any fragmentation capabilities
+- 64 bytes is the minimum Ethernet frame size, and 1518 bytes is the maximum Ethernet frame size.
+- default Ethernet MTU is 1500 bytes
+- The Ethernet MTU is the maximum size of the payload, not the entire frame.
+  - The entire frame includes the L2 header (14 bytes) and FCS (4 bytes).
+
+# IP MTU
+
+- The IP MTU specifies the maximum size of an IP packet before it needs fragmentation (default 1500 bytes).
+  - If the DF-bit is not set, packets larger than the IP MTU are fragmented.
+  - If the DF-bit is set, packets larger than the IP MTU are dropped.
+- IP MTU only applies to Layer 3 ports; Layer 2 ports (on a switch) are not L3-aware
+
+- Identification: A unique identifier for the packet, used for reassembly of fragmented packets.
+- Flags: Control flags for fragmentation, including the DF-bit (Bit 1) (Don't Fragment) and
+  MF-bit (Bit 2) (More Fragments), Reserved (Bit 0).
+- The IP MTU cannot be greater than the Ethernet MTU.
+  - If L3 tries to send a 1600-byte packet but the Ethernet MTU is 1500 bytes, the packet would be dropped
+- If you increase the Ethernet MTU of an interface, the IP MTU is automatically increased to match it.
+  - You can manually configure the IP MTU lower than the Ethernet MTU, but usually they will be the same.

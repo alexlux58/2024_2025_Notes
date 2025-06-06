@@ -728,3 +728,72 @@ Finding type: UnauthorizedAccess:EC2/SSHBruteForce Instance tag value: devops (a
 - Patch on-demand or on a schedule using Maintenance Windows
 - Scan instances and generate patch compliance report (missing patches)
 - Patch compliance report can be sent to S3
+
+- Patch Baseline
+  - Defines which patches should and shouldn't be installed on your instances
+  - Ability to create custom Patch Baselines (specify approved/rejected patches)
+  - Patches can be auto-approved within days of their release
+  - By default, install only critical patches and patches related to security
+- Patch Group
+  - Associate a set of instances with a specific Patch Baseline
+  - Example: create Patch Groups for different environments (dev, test, prod)
+  - Instances should be defined with the tag key Patch Group
+  - An instance can only be in one Patch Group
+  - Patch Group can be registered with only one Patch Baseline
+
+# SSM - Patch Manager Patch Baselines
+
+- Pre-Defined Patch Baseline
+  - Managed by AWS for different Operating Systems (can't be modified)
+  - AWS-RunPatchBaseline (SSM Document) - apply both operating system and application patches (Linux, macOS, Windows Server)
+- Custom Patch Baseline
+  - Create your own Patch Baseline and choose which patches to auto-approve
+  - Operating System, allowed patches, rejected patches, ...
+  - Ability to specify custom and alternative patch repositories
+
+# SSM - Maintenance Windows
+
+- Defines a schedule for when to perform actions on your instances
+- Example: OS patching, updating drivers, installing software, ...
+- Maintenance Windows contains
+  - Schedule
+  - Duration
+  - Set of registered instances
+  - Set of registered tasks
+
+# SSM - Session Manager
+
+- Allows you to start a secure shell on your EC2 and on-premises servers
+- Access through AWS Console, AWS CLI, or Session Manager SDK
+- Does not need SSH access, bastion hosts, or SSH keys
+- Supports Linux, macOS, and Windows
+- Log connections to your instances and executed commands
+- Session log data can be sent to S3 or CloudWatch Logs
+- CloudTrail can intercept StartSession events
+- IAM Permissions
+  - Control which users/groups can access Session Manager and which instances
+  - Use tags to restrict access to only specific EC2 instances
+- Optionally, you can restrict commands a user can run in a session
+
+# Unified CloudWatch Agent
+
+- For virtual servers (EC2 instances, on-premises servers, ...)
+- Collect additional system-level metrics such as RAM, processes, used disk space, etc.
+- Collect logs to send to CloudWatch Logs
+  - No logs from inside your EC2 instance will be sent to CloudWatch Logs without using an agent
+- Centralized configuration using SSM Parameter Store
+- Make sure IAM permissions are correct
+- Default namespace for metrics collected by the Unified CloudWatch agent is CWAgent (can be configured/changed)
+
+# Unified CloudWatch Agent - procstat Plugin
+
+- Collect metrics and monitor system utilization of individual processes
+- Supports both Linux and Windows servers
+- Example: amount of time the process uses CPU, amount of memory the process uses, ...
+- Select which processes to monitor by
+  - pid_file: name of process identification number (PID) files they create
+  - exe: process name that match string you specify (RegEx)
+  - pattern: command lines used to start the processes (RegEx)
+- Metrics collected by procstat begins with "procstat" prefix (e.g., procstat_cpu_time, procstat_cpu_usage, ...)
+
+# Unified CloudWatch Agent - Troubleshooting
