@@ -797,3 +797,499 @@ Finding type: UnauthorizedAccess:EC2/SSHBruteForce Instance tag value: devops (a
 - Metrics collected by procstat begins with "procstat" prefix (e.g., procstat_cpu_time, procstat_cpu_usage, ...)
 
 # Unified CloudWatch Agent - Troubleshooting
+
+- CloudWatch Agent Fails to Start
+  - Might be an issue with the configuration file
+  - Check configuration file logs at /opt/aws/amazon-cloudwatch-agent/logs/configuration-validation.log
+- Can't Find Metrics Collected by the CloudWatch Agent
+  - Check you're using the correct namespace (default: CWAgent)
+  - Check the configuration file amazon-cloudwatch-agent.json
+
+```json
+"agent": {
+ "metrics_collection_interval": 60,
+ "region": "us-east-1",
+ "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
+ "debug": true,
+ "run_as_user": "cwagent"
+}
+```
+
+- CloudWatch Agent Not pushing log events
+
+  - Update to the latest CloudWatch Agent version
+  - Test connectivity to the CloudWatch logs endpoint
+    "logs.<region>.amazonaws.com" (check SGs, NACLs, VPC endpoints)
+  - Review account, region, and log group configurations
+  - Check IAM Permissions
+  - Verify the system time on the instance is correctly configured
+
+- Check CloudWatch Agent logs at /opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log
+
+# CloudWatch Logs
+
+- Log groups: arbitrary name, usually representing an application
+- Log stream: instances within application / log files / containers
+- Can define log expiration policies (never expire, 1 day to 10 years)
+- CloudWatch Logs can send logs to:
+  - Amazon S3 (exports)
+  - Kinesis Data Streams
+  - Kinesis Data Firehose
+  - AWS Lambda
+  - OpenSearch Service (formerly Elasticsearch Service)
+- Logs are encrypted by default
+- Can setup KMS-based encryption with your own keys
+
+# CloudWatch Logs - Sources
+
+- SDK, CloudWatch Logs Agent, CloudWatch Unified Agent
+- Elastic Beanstalk: collection of logs from application
+- ECS: collection of logs from containers
+- Lambda: collection of logs from functions
+- VPC Flow Logs: collection of logs from VPC
+- CloudTrail: collection of logs from API calls
+- Route 53: collection of logs from DNS queries
+- Amazon API Gateway: collection of logs from API calls
+
+# CloudWatch Logs Insights
+
+- Search and analyze log data stored in CloudWatch Logs
+- Example: find a specific IP inside a log, count occurrences of "ERROR" in your logs..
+- Provides a purpose-built query language
+  - Automatically discovers fields from AWS services and JSON log events
+  - Fetch desired event fields, filter based on conditions, calculate aggregate statistics, sort events, limit number of events...
+  - Can save queries and add them to CloudWatch Dashboards
+- Can query multiple Log Groups in different AWS accounts
+- It's a query engine, not a real-time engine
+
+# CloudWatch Logs - S3 Export
+
+- Log data can take up to 12 hours to become available for export
+- The API call is CreateExportTask
+- Not near-real time or real-time...use Logs Subscriptions instead
+
+# CloudWatch Logs Subscriptions
+
+- Get a real-time log events from CloudWatch Logs for processing and analysis
+- Send to Kinesis Data Streams, Kinesis Data Firehose, or Lambda
+
+# CloudWatch Alarms
+
+- Alarms are used to trigger notifications for any metric
+- Various options (sampling, %, max, min, etc...)
+- Alarm States:
+  - OK: metric is within the defined threshold
+  - ALARM: metric is outside the defined threshold
+  - INSUFFICIENT_DATA: not enough data to determine the state of the alarm
+- Period:
+  - Length of time in seconds to evaluate the metric
+  - High resolution custom metrics: 10 sec, 30 sec or multiples of 60 sec
+
+# CloudWatch Alarm Targets
+
+- Stop, Terminate, Reboot, or Recover an EC2 instance
+- Trigger Auto Scaling Action
+- Send notification to SNS (from which you can send email, SMS, Lambda, HTTP/S, SQS, Step Functions, Chime, Slack, ...)
+
+# CloudWatch Alarms - Composite Alarms
+
+- CloudWatch Alarms are on a single metric
+- Composite Alarms are monitoring the states of multiple other alarms
+- AND and OR conditions
+- Helpful to reduce "alarm noise" by creating complex composite alarms
+
+# EC2 Instance Recovery
+
+- Status Check:
+  - Instance status = check the EC2 VM
+  - System status = check the underlying hardware
+  - Attached EBS status = check attached EBS volumes
+- Recovery: Same Private, Public, Elastic IP, metadata, placement group
+
+# CloudWatch Alarm: good to know
+
+- Alarms can be created based on CloudWatch Logs Metrics Filters
+- To test alarms and notifications, set the alarm state to Alarm using CLI
+  ```bash
+  aws cloudwatch set-alarm-state --alarm-name MyAlarm --state-value ALARM --state-reason "Testing alarm state"
+  ```
+
+# CloudWatch - Contributed Insights (Metrics)
+
+- Analyze log data and create time series that display contributor data
+- Helps you find top talkers and understand who/what is impacting system performance
+- Example: find bad hosts, identify the heaviest network users, find the URLs that generate the most errors
+- Works for any AWS-generated logs (VPC, DNS, etc...)
+- Built-in rules created by AWS (leverages your CW Logs) or build your own rules
+
+# Amazon EventBridge (formerly CloudWatch Events)
+
+- Schedule: Cron jobs (scheduled scripts)
+- Event Pattern: Event rules to react to a service doing something
+- Trigger Lambda functions, send SQS/SNS messages...
+
+- Event buses can be accessed by other AWS accounts using Resource-based Policies
+- You can archive events (all/filter) sent to an event bus (indefinitely or set period)
+
+# Amazon EventBridge - Schema Registry
+
+- EventBridge can analyze the events in your bus and infer the schema
+- The Schema Registry allows you to generate code for your application, that will know in advance how data is structured in the event bus
+
+# Amazon EventBridge - Resource based Policy
+
+- Manage permissions for a specific Event Bus
+- Example: allow/deny events from another AWS account or AWS region
+- Use case: aggregate all events from your AWS Organization in a single AWS account or AWS region
+
+# Amazon Athena
+
+- Serverless query service to analyze data stored in Amazon S3
+- Uses standard SQL language to query the files (built on Presto)
+- Supports CSV, JSON, ORC, Avro, and Parquet
+- Commonly used with Amazon Quicksight for reporting/dashboards
+- Use cases: Business intelligence / analytics / reporting, analyze and query VPC Flow Logs, ELB Logs, CloudTrail trails, etc...
+- Exam Tip: Analyze data in S3 using serverless SQL, use Athena
+
+# Amazon Athena - Performance Improvement
+
+- Use columnar data for cost-savings (less scan)
+  - Apache Parquet or ORC is recommended
+  - Huge performance improvement
+  - Use Glue to convert your data to Parquet or ORC
+- Compress data for smaller retrievals (bzip2, gzip, lz4, snappy, zlip, zstd...)
+- Partition datasets in S3 for easy querying on virtual columns
+  - s3://yourBucket/pathToTable/<PARTITION_COLUMN_NAME>=<VALUE>...
+  - Example: s3://athena-examples/flight/parquet/year=1991/month-1/day=1/
+- Use larger files (> 128 MB) to minimize overhead
+
+# Amazon Athena - Federated Query
+
+- Allows you to run SQL queries across data stored in relational, non-relational, object, and custom data sources (AWS or on-premises)
+- Uses Data Source Connectors that run on AWS Lambda to run Federated Queries (e.g., CloudWatch Logs, DynamoDB, RDS,...)
+- Store the results back in Amazon S3
+
+# Amazon Athena - Troubleshooting
+
+- Insufficient Permissions When using Athena with QuickSight
+  - Validate QuickSight can access S3 buckets used by Athena
+  - If the data in the S3 buckets is encrypted using AWS KMS key (SSE-KMS), then QuickSight IAM role must be granted access to decrypt with the key (kms:Decrypt)
+    - arn:aws:iam::<account_id>:role/service-role/aws-quicksight-s3-consumers-role-v0 (Default)
+    - arn:aws:iam::<account_id>:role/service-role/aws-quicksight-service-role-v0
+
+# AWS CloudTrail
+
+- Provides governance, compliance and audit for your AWS account
+- CloudTrail is enabled by default
+- Get a history of events / API calls made within your AWS Account by:
+
+  - AWS Management Console
+  - AWS SDKs
+  - Command Line Tools
+  - Other AWS Services
+
+- Can put logs from CloudTrail into CloudWatch Logs or S3
+- A trail can be applied to All Regions (default) or a single Region
+- If a resource is deleted in AWS, investigate CloudTrail first
+
+# CloudTrail Events
+
+- Management Events:
+  - Operations that are performed on resources in your AWS account
+  - Examples:
+    - Configuring security (IAM AttachRolePolicy)
+    - Configuring rules for routing data (Amazon EC2 CreateSubnet)
+    - Setting up logging (AWS CloudTrail CreateTrail)
+  - By default, trails are configured to log management events
+  - Can separate Read Events (that don't modify resources) from Write Events (that may modify resources)
+- Data Events:
+  - By default, data events are not logged (because high volume operations)
+  - Amazon S3 object-level activity (ex: GetObject, DeleteObject, PutObject): can separate Read and Write Events
+  - AWS Lambda function execution activity (the Invoke API)
+
+# CloudTrail Insights
+
+- Enable CloudTrail Insights to detect unusual activity in your account:
+  - inaccurate resource provisioning
+  - hitting service limits
+  - Bursts of AWS IAM actions
+  - Gaps in periodic maintenance activity
+- CloudTrail Insights analyzes normal management events to create a baseline
+- Then continuously analyzes write events to detect unusual patters
+  - Anomalies appear in the CloudTrail console
+  - Event is sent to Amazon S3
+  - An EventBridge event is generated (for automation needs)
+
+# CloudTrail Events Retention
+
+- Events are stored for 90 days in CloudTrail
+- To keep events beyond this period, log them to S3 and use Athena
+
+# CloudTrail - Log File Integrity Validation
+
+- Digest Files:
+  - References the log files for the last hour and contains a hash of each
+  - Stored in the same S3 bucket as log files (different folder)
+- Helps you determine whether a log file was modified/deleted after CloudTrail delivered it
+- Hashing using SHA-256, Digital Signing using SHA-256 with RSA
+- Protect the S3 bucket using bucket policy, versioning, MFA Delete protection, encryption, object lock
+- Protect CloudTrail using IAM
+
+# CloudTrail - Integration with EventBridge
+
+- Used to react to any API call being made in your account
+- CloudTrail is not "real-time":
+  - Delivers an event within 15 minutes of an API call
+  - Delivers log files to an S3 bucket every 5 minutes
+
+# CloudTrail - Organizations Trails
+
+- A trail that will log all events for all AWS accounts in an AWS Organization
+- Log events for management and member accounts
+- Trail with the same name will be created in every AWS account (IAM permissions)
+- Member accounts can't remove or modify the organization trail (view only)
+
+# CloudTrail - Integration with Athena
+
+- You can use Athena to directly query CloudTrail Logs stored in S3
+- Example: analyze operational activity for security and compliance
+- Can create Athena table directly from the CloudTrail Console, then specify the S3 bucket location where the CloudTrail logs are stored
+
+# Monitor Account Activity
+
+- AWS Config Configuration History
+  - Must have AWS Config Configuration Recorder on
+- CloudTrail Event History
+  - Search API history for past 90 days
+  - Filter by resource name, resource type, event name, ...
+  - Filter by IAM user, assumed IAM role session name, or AWS Access Key
+- CloudWatch Logs Insights
+  - Search API history beyond the past 90 days
+  - CloudTrail Trail must be configured to send logs to CloudWatch Logs
+- Athena Queries
+  - Search API history beyond the past 90 days
+
+# Amazon Macie
+
+- Amazon Macie is a fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS.
+- Macie helps identify and alert you to sensitive data, such as personally identifiable information (PII)
+
+# AWS Macie - Data Identifiers
+
+- Used to analyze and identify sensitive data in your S3 buckets
+- Managed Data Identifier
+  - A set of built-in criteria that are designed to detect specific type of sensitive data
+  - Examples: credit card numbers, AWS Credentials, bank accounts
+- Custom Data Identifier
+  - A set of criteria that you define to detect sensitive data
+  - Regular expression, keywords, proximity rule
+  - Examples: employee IDs, customer account numbers
+
+# AWS Macie - Findings
+
+- A report of a potential issue or sensitive data that Macie found
+- Each finding has a severity rating, affected resource, datetime, ...
+- Sensitive Data Discovery Result
+  - A record that logs details about the analysis of an S3 object
+  - Configure Macie to store the results in S3, then query using Athena
+- Suppression Rules - set of attribute-based filter criteria to archive findings automatically
+- Findings are stored for 90 days
+- Review findings using AWS console, EventBridge, Security Hub
+
+# AWS Macie - Finding Types
+
+- Policy Findings
+  - A detailed report of policy violation or issue with the security of S3 bucket
+  - Examples: default encryption is disabled, bucket is public,...
+  - Policy: IAMUser/S3BucketEncryptionDisabled, Policy:IAMUser/S3BucketPublic
+  - Detect changes only after you enable Macie
+- Sensitive Data Findings
+  - A detailed report of sensitive data that's found in S3 buckets
+  - Examples: Credentials (private keys), Financial (credit card numbers),...
+  - SensitiveData:S3Object/Credentials, SensitiveData:S3Object/Financial
+  - For Custom Data Identifier SensitiveData:S3Object/CustomIdentifier
+
+# AWS Macie - Multi-Account Strategy
+
+- You can manage multiple accounts in Macie
+- Associate the Member accounts with the Administrator account
+  - Through an AWS Organization
+  - Sending invitation through Macie
+  - Supports Delegated Administrator in an AWS Organization
+- Administrator account can:
+  - Add and remove member accounts
+  - Have access to all S3 sensitive data and settings for all accounts
+  - Manage Automated Sensitive Data Discovery and run Data Discovery jobs
+  - Manage Data Identifiers and Findings
+
+# S3 Event Notifications
+
+- S3:ObjectCreated, S3:ObjectRemoved, S3:ObjectRestore, S3:Replication...
+- Object name filtering possible (\*.jpg)
+- Use case: generate thumbnails of images uploaded to S3
+- Can create as many "S3 events" as desired
+- S3 event notifications typically deliver events in seconds but can sometimes take a minute or longer
+
+# S3 Event Notifications with Amazon EventBridge
+
+- Advanced filtering options with JSON rules (metadata, object size, name...)
+- Multiple Destinations - ex Step Functions, Kinesis Streams / Firehose ...
+- EventBridge Capabilities - Archive, Replay Events, Reliable delivery
+
+# VPC Flow Logs
+
+- Capture information about IP traffic going into your interfaces:
+  - VPC Flow Logs
+  - Subnet Flow Logs
+  - Elastic Network Interface (ENI) Flow Logs
+- Helps to monitor and troubleshoot connectivity issues
+- Flow logs data can go to S3, CloudWatch Logs, and Kinesis Data Firehose
+- Captures network information from AWS managed interfaces too: ELB, RDS, ElasticCache, Redshift, WorkSpaces, NATGW, Transit Gateway...
+
+# VPC Flow Logs Syntax
+
+![AWS Security Specialty](2019-08-13_10-41-04.png)
+
+- srcaddr and dstaddr -- help identify problematic IP
+- srcport and dstport -- help identify problematic ports
+- Action - success or failure of the request due to Security Group or NACL
+- Can be used for analytics on usage patterns, or malicious behavior
+- Query VPC flow logs using Athena on S3 or CloudWatch Logs Insights
+
+# VPC Flow Logs - Traffic not captured
+
+- Traffic to Amazon DNS server (custom DNS server traffic is logged)
+- Traffic for Amazon Windows license activation
+- Traffic to and from 169.254.169.254 for EC2 instance metadata
+- Traffic to and from 169.254.169.123 for Amazon Time Sync service
+- DHCP traffic
+- Mirrored traffic
+- Traffic to the VPC router reserved IP address (e.g., 10.0.0.1)
+- Traffic between VPC Endpoint ENI and Network Load Balancer ENI
+
+# VPC - Traffic Mirroring
+
+- Allows you to capture and inspect network traffic in your VPC
+- Route the traffic to security appliances that you manage
+- Capture the traffic
+  - From (Source) - ENIs
+  - To (Targets) - an ENI or a Network Load Balancer
+- Capture all packets or capture the packets of your interest (optionally, truncate packets)
+- Source and Target can be in the same VPC or different VPCs (VPC Peering)
+- Use cases: content inspection, threat monitoring, troubleshooting,...
+
+# VPC Network Access Analyzer
+
+- Helps you understand potential network paths to/from your resources
+- Define Network Access Requirements
+  - Example: identify publicly available resources
+- Evaluate against them and find issues / demonstrate compliance
+  - Evaluate network access to resources in your VPCs (Ec2, RDS, Aurora, OpenSearch, Redshift, ElastiCache, Lambda, ECS, EKS, ...)
+  - Match against the configurations of your VPC resources (SG, NACL, NATGW, IGW...)
+- Network Access Scope - json document contains conditions to define your network security policy (e.g. detect public databases)
+
+# Route 53 -- DNS Query Logging
+
+- Log information about public DNS queries Route 53 Resolver receives
+- Only for Public Hosted Zones
+- Logs are sent to CloudWatch Logs only
+
+# Route 53 -- Resolver Query Logging
+
+- Logs all DNS queries...
+  - Made by resources within a VPC (EC2, Lambda, etc...)
+  - From on-premises resources that are using Resolver Inbound Endpoints
+  - Leveraging Resolvers Outbound Endpoints
+  - Using Resolver DNS Firewall
+- Can send logs to CloudWatch Logs, S3 bucket, or Kinesis Data Firehose
+- Configurations can be shared with other AWS Accounts using AWS Resource Access Manager (RAM)
+
+# Amazon OpenSearch Service
+
+- Amazon OpenSearch is successor to Amazon Elasticsearch Service
+- In DynamoDB, queries only exist by primary key or indexes...
+- With OpenSearch, you can search any field, even partially matches
+- It's common to use OpenSearch as a complement to another database
+- Two modes: managed cluster or serverless cluster
+- Does not natively support SQL (can be enabled via a plugin)
+- Ingestion from Kinesis Data Firehose, AWS IoT, and CloudWatch Logs
+- Security through Cognito and IAM, KMS encryption, TLS
+- Comes with OpenSearch Dashboards (visualization)
+
+# OpenSearch - Public Access
+
+- Accessible from the Internet with a public endpoint
+- Restrict access using Access Policies, Identity-based Policies, and IP-based Policies
+
+# OpenSearch - VPC Access
+
+- Specify VPC, Subnets, Security Groups, and IAM Role
+- VPC Endpoints and ENIs will be created (IAM Role)
+- You need to use VPN, Transit Gateway, managed network, or proxy server to connect to the domain
+- Restrict access using Access Policies and Identity-base Policies
+
+# Bastion Hosts
+
+- We can use a Bastion Host to SSH into our private EC2 instances
+- The bastion is in the public subnet which is then connected to all other private subnets
+- Bastion Host security group must allow inbound from the internet on port 22 from restricted CIDR, for example the public CIDR of your corporation
+- Security Group of the EC2 instances must allow the security group of the bastion host, or the private IP of the bastion host
+
+# AWS Site-to-Site VPN
+
+- Virtual Private Gateway (VGW)
+  - VPN concentrator on the AWS side of the VPN connection
+  - VGW is created and attached to the VPC from which you want to create the Site-to-Site VPN connection
+  - Possibility to customize the ASN (Autonomous System Number) of the VGW
+- Customer Gateway (CGW)
+  - Physical device or software application on your side of the VPN connection
+  - CGW is created and configured with the public IP address of your customer gateway device
+  - Possibility to customize the ASN (Autonomous System Number) of the CGW
+
+# Site-to-Site VPN Connections
+
+- Customer Gateway Device (on-premises)
+  - What IP address to use?
+    - Public Internet-routable IP address for your Customer Gateway device
+    - If it's behind a NAT device that's enabled for NAT traversal (NAT-T), use the public IP address of the NAT device
+    - Important step: enable Route Propagation for the Virtual Private Gateway in the route table that is associated with your subnets
+    - If you need to ping your EC2 instances from on-premises, make sure you add the ICMP protocol on the inbound of your security groups
+
+# AWS VPN CloudHub
+
+- Provides secure communication between multiple sites, if you have multiple VPN connections
+- Low-cost hub-and-spoke model for primary or secondary network connectivity between different locations (VPN only)
+- It's a VPN connection so it goes over the public internet
+- To set it up, connect multiple VPN connections on the same VGW, setup dynamic routing and configure route tables
+
+# AWS Client VPN
+
+- Connect from your computer using OpenVPN to your private network in AWS and on-premises
+- Allow you to connect to your EC2 instances over a private IP (just as if you were in the private VPC network)
+- Goes over public internet
+
+# ClientVPN - Authentication Types
+
+- Active Directory Authentication
+  - Authenticate against Microsoft Active Directory (User-Based)
+  - AWS Managed Microsoft AD or on-premises AD through AD Connector
+  - Supports MFA
+- Mutual Authentication
+  - Authenticate using client certificates (Device-Based)
+  - Client certificate must be signed by a trusted CA
+  - Must upload the server certificate to AWS Certificate Manager (ACM)
+  - One client certificate per user (recommended)
+- Single Sign-On (supports IAM identity Center / AWS SSO)
+  - Authenticate against SAML 2.0-based identity providers (User-based)
+  - Establish trust relationship between AWS and the identity provider
+  - Only one identity provider at a time
+
+# VPC Peering
+
+- Privately connect two VPCs using AWS network
+- Make them behave as if they were in the same network
+- Must not have overlapping CIDRs
+- VPC Peering connection is NOT transitive (must be established for each VPC that needs to communicate with one another)
+- You must update route tables in each VPC's subnets to ensure EC2 instances can communicate with each other
+- You can create VPC Peering connection between VPCs in different AWS accounts/regions
+- You can reference a security group in a peered VPC (works cross accounts - same region)

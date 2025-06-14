@@ -234,3 +234,184 @@ to the existing VPC on both Direct Connect connections and use BGP for load bala
 <summary style="color: red;">Answer</summary>
 
 C. Purchase another 10 Gbps Direct Connect dedicated connection from AWS in a different Direct Connect location that terminates in the associated AWS Region. Set up a new virtual interface (VIF) to the existing VPC and use BGP for load balancing
+
+**Explanation:**
+AWS Direct Connect is a cloud service solution that makes it easy to establish a dedicated network connection from your premises to AWS. Using AWS Direct Connect, you create a private connection between AWS and you data center. AWS Direct Connect is compatible with all AWS services accessible over the internet and is available in speeds starting at 50 Mbps and scaling up to 100 Gbps.
+
+These are two types of Direct Connect connections:
+
+Dedicated Connection: A physical Ethernet connection associated with a single customer. Customers can request a dedicated connection through the AWS Direct Connect console, the CLI, or the API.
+
+Hosted Connection: A physical Ethernet connection that an AWS Direct Connect Partner provisions on behalf of a customer. Customers request a hosted connection by contacting a partner in the AWS Direct Connect Partner Program, which provisions the connection.
+
+You can use local preference BGP community tags to achieve load balancing and route preference for incoming traffic to your network. For each prefix that you advertise over a BGP session, you can apply a community tag to indicate the priority of the associated path for returning traffic.
+
+The following local preference BGP community tags are supported: 7224:7100 -- Low preference, 7224:7200 -- Medium preference, 7224:7300 -- High preference, Local preference BGP community tags are mutually exclusive. If you apply more than one tag to a prefix, the last tag applied is used.
+
+A Virtual Interface (VIF) is necessary to access AWS services, and can be either public, private or transit, like so:
+
+Private virtual interface: A private virtual interface should be used to access an Amazon VPC using private IP addresses.
+
+Public virtual interface: A public virtual interface can access all AWS public services using public IP addresses. A public virtual interface enables access to public services, such as Amazon S3
+
+Transit virtual interface: A transit virtual interface should be used to access one or more Amazon VPC Transit Gateways associated with Direct Connect gateways. You can use transit virtual interfaces with 1/2/5/10 Gbps AWS Direct Connect connections.
+
+**You should note the allowed VIF types for the various configurations of Direct Connect connections:**
+
+A Hosted Connection with a capacity of 500 Mbps or less can support one private VIF or one public VIF. A Hosted Connection with a capacity of 1 Gbps or more can support one private, public, or transit VIF. Each Hosted Connection supports a single VIF and you can obtain multiple VIFs by configuring multiple hosted connections.
+
+Hosted VIFs can connect to public resources or an Amazon Virtual Private Cloud (Amazon VPC) in the same way as standard VIFs. However, the account that owns the VIF is different from the connection owner. Bandwidth is shared across all VIFs on the parent connection. A hosted VIF can support one private VIF or one public VIF.
+
+A Dedicated Connection can support up to 50 public/private VIFs and 1 transit VIF.
+
+"Uptime Target" means a percentage of Maximum Uptime in a monthly billing cycle applicable to your Included Resource, based upon meeting the Minimum Configuration Requirements. To ensure an uptime target of 99.9% as mandated in the given use case, the included resources should use virtual interfaces on Dedicated Connections at a minimum of 2 Direct Connect locations, and at least one of those Direct Connect locations uses the Associated AWS Region in which your workload is located.
+
+**Reference:**
+
+https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithConnections.html
+https://aws.amazon.com/premiumsupport/knowledge-center/direct-connect-types/
+https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html
+
+**Domain**
+Design and implement hybrid IT network architectures
+
+</details>
+
+---
+
+### Question 7
+
+A company has a Direct Connect connection between its on-premises data center and its VPC on the AWS Cloud. An application running on an EC2 instance in the VPC needs to access customer data stored in the on-premises data center with consistent performance. To meet the compliance guidelines, the data should remain encrypted during this operation.
+
+As an AWS Certified Networking Specialist, which of the following solutions would you recommend to address these requirements?
+
+A. Set up a public virtual interface on the Direct Connect connection. Create an AWS Site-to-Site VPN between the customer gateway and the virtual private gateway in the VPC. Use the VPN connection to access the customer data
+B. Set up a public virtual interface on the Direct Connect connection. Create an AWS Site-to-Site VPN between the customer gateway and the virtual public gateway in the VPC.
+C. Set up private virtual interface on the Direct Connect connection. Create an AWS Site-to-Site VPN between the customer gateway and the virtual private gateway in the VPC.
+D. Set up a transit virtual interface on the Direct Connect connection. Create an AWS Site-to-Site VPN between the customer gateway and the virtual private gateway in the VPC.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. Set up a public virtual interface on the Direct Connect connection. Create an AWS Site-to-Site VPN between the customer gateway and the virtual private gateway in the VPC. Use the VPN connection to access the customer data
+
+**Explanation:**
+AWS Direct connect is a networking service that provides an alternative to using the internet to connect to AWS. Using Direct Connect, data that would have previously been transported over the internet is delivered through a private network connection between you facilities and AWS.
+
+AWS Direct Connect (DX) provides three types of virtual interfaces - public, private and transit.
+
+Private virtual interface: A private virtual interface should be used to access an Amazon VPC using private IP addresses.
+
+Public virtual interface: A public virtual interface can access all AWS public services using public IP addresses.
+
+Transit virtual interface: A transit virtual interface should be used to access one or more Amazon VPC Transit Gateways associated with Direct Connect gateways. You can use transit virtual interfaces with 1/2/5/10 Gbps AWS Direct Connect connections.
+
+By default, instances that you launch into an Amazon VPC can't communicate with your own (remote) network. You can enable access to your remote network from your VPC by creating an AWS Site-to-Site VPN connection, and configuring routing to pass traffic through the connection. A Site-to-Site VPN connection offers two VPN tunnels between a virtual private gateway or a transit gateway on the AWS side, and a customer gateway (which represents a VPN device) on the remote (on-premises) side. When you create a Site-to-Site VPN connection, you must specify the type of routing that you plan to use (static or dynamic) and update the route table for your subnet.
+
+You can combine AWS Direct Connect dedicated network connections with the Amazon VPC VPN. AWS Direct Connect public VIF can be used to establish a dedicated network connection between your network to public AWS resources, such as an Amazon virtual private gateway IPsec endpoint. This solution combines the benefits of the end-to-end secure IPSec connection with low latency and increased bandwidth of the AWS Direct Connect to provide a more consistent network experience than internet-based VPN connections.
+
+**Reference:**
+
+https://aws.amazon.com/premiumsupport/knowledge-center/public-private-interface-dx/
+https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html
+https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-vpn.html
+
+**Domain**
+Design and implement hybrid IT network architectures
+
+</details>
+
+---
+
+### Question 8
+
+A Network Engineer is setting up DNS failover configuration for Route 53. The engineer needs to use multiple routing policies (such as latency-based and weighted) to configure a more complex DNS failover.
+Which of the following are the key points to consider while configuring a failover configuration on Route 53? (Select Two)
+
+A. If you're routing traffic to any AWS resources that you can create alias records for, you need to create health checks for these resources too
+B. When responding to queries, Route 53 includes only the healthy primary resources in Active-active failover configuration
+C. More than half of the configured records with nonzero weights must be unhealthy before Route 53 starts to respond to DNS queries using records that have weights of zero
+D. If you're creating failover records in a private hosted zone, you must assign a public IP address to an instance in the VPC to check the health of an endpoint within a VPC by IP address
+E. Records without a health check are always considered healthy. If no record is healthy, all records are deemed to be healthy.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. If you're creating failover records in a private hosted zone, you must assign a public IP address to an instance in the VPC to check the health of an endpoint within a VPC by IP address
+E. Records without a health check are always considered healthy. If no record is healthy, all records are deemed to be healthy.
+
+**Explanation:**
+If a record in a group of records that have the same name and type doesn't have an associated health check, Route 53 always considers it healthy and always includes it among possible responses ot a query.
+
+If none of the records in a group of records are healthy, Route 53 needs to return something in response to DNS queries, but it has no basis for choosing one record over another. In this circumstance, Route 53 considers all the records in thr group to be healthy and selects one based on the routing policy and on the values that you specify for each record.
+
+If you're creating failover records in a private hosted zone, note the following:
+
+1. Route 53 health checkers are outside the VPC. To check the health of an endpoint within a VPC by IP address, you must assign a public IP address to an instance in the VPC.
+2. You can create a CloudWatch metric, associate an alarm with the metric, and then create a health check that is based on the data stream of the alarm.
+
+**Reference:**
+
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-types.html
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-how-route-53-chooses-records.html
+
+**Domain**
+Configure network integration with application services
+
+</details>
+
+---
+
+### Question 9
+
+An analytics company uses Amazon QuickSight (Enterprise Edition) to easily create and publish interactive BI dashboards that can be accessed from any device. For a specific requirement, the company needs to create a private connection from Amazon QuickSight to an Amazon RDS DB instance that's in a private subnet to fetch data for analysis.
+
+Which of the following represents an optimal solution for configuring a private connection between QuickSight and Amazon RDS DB instance?
+
+A. Create a new private subnet in the same VPC as the Amazon RDS DB instance. Create a new security group with necessary inbound rules for QuickSight in the same VPC. Sign in to QuickSight as a QuickSight admin and create a new QuickSight VPC connection. Create a new dataset from the RDS DB instance
+B. Create a Private Virtual Interface between VPC that hosts Amazon RDS DB instance and QuickSight. Use this connection to privately access necessary data from RDS DB
+C. Amazon QuickSight Enterprise edition is fully integrated with the Amazon VPC service. Create an ENI in QuickSight that points to the VPC that hosts the RDS DB instance. However, the subnet has to be a private subnet and not a public subnet
+D. Create a new private subnet in the same VPC as the Amazon RDS DB instance. Create a new network Access Control List (ACL) with necessary inbound rules for QuickSight in the same VPC. Connect from QuickSight using VPC connector
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. Create a new private subnet in the same VPC as the Amazon RDS DB instance. Create a new security group with necessary inbound rules for QuickSight in the same VPC. Sign in to QuickSight as a QuickSight admin and create a new QuickSight VPC connection. Create a new dataset from the RDS DB instance
+
+**Explanation:**
+Amazon QuickSight Enterprise edition is fully integrated with the Amazon VPC service. A VPC based on this service closely resembles a traditional network that you operate in your own data center. It enables you to secure and isolate traffic between resources. You define and control the network elements to suit your requirements, while still getting the benefit of cloud networking and the scalable infrastructure of AWS.
+
+By creating a VPC connection in QuickSight, you're adding an elastic network interface in your VPC. This network interface allows QuickSight to exchange network traffic with a network instance within your VPC. You can provide all of the standard security controls for this network traffic, as you do with other traffic in your VPC. Route tables, network access control lists (ACLs), subnets, and security groups settings all apply to network traffic to and from QuickSight in the same way that they apply to traffic between other resources in your VPC.
+
+When you register a VPC connection with QuickSight, you can securely connect to data that's available only in your VPC,
+for example:
+
+1. Data you can reach by IP address
+2. Data that isn't available on the public internet
+3. Private databases
+4. On-premises data
+
+This works if you set up connectivity between the VPC and your on-premises network. For example, you might set up connectivity with AWS Direct Connect, a virtual private network (VPN), or a proxy.
+
+After you connect to the data, you can use it to create data analyses and public secure data dashboards.
+
+**Reference:**
+
+https://docs.aws.amazon.com/quicksight/latest/user/working-with-aws-vpc.html
+https://docs.aws.amazon.com/quicksight/latest/user/vpc-creating-a-connection-in-quicksight.html
+https://aws.amazon.com/premiumsupport/knowledge-center/quicksight-redshift-private-connection/
+
+**Domain**
+Configure network integration with application services
+
+</details>
+
+---
+
+### Question 10
+
+A company has a three-tier web application with separate subnets for Web, Application and Database tiers. The CTO at the company wants to monitor any malicious activity targeting the web application running on EC2 instances. As a network engineer, you have been tasked with developing a solution to notify the network security team in case the network exposure of EC2 instances on specific ports violates the security policies of the company.
+
+Which of the following AWS Services would you use to build such an automated notification system that requires the last development effort? (Select Two)
+
+A.

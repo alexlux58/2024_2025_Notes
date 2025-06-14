@@ -1,3 +1,7 @@
+**Publisher -> Message -> Message Broker -> Exchange -> Queue -> Consume -> Subscriber**
+
+# AMQP - Advanced Message Queuing Protocol
+
 # Queues
 
 - In computer science, queue is a collection of entities maintained in a sequence. Sequence can be modified by

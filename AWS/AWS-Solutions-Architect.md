@@ -321,3 +321,39 @@
   - By default, any other attached EBS volume is not deleted (attribute disabled)
 - This can be controlled by the AWS console / AWS CLI / AWS SDK
 - Use case: preserve root volume when instance is terminated
+
+# EBS Snapshots
+
+- Make a backup (snapshot) of your EBS volume at a point in time
+- Not necessary to detach volume to do snapshot, but recommended
+- Cna copy snapshots across AZ or Region
+
+# EBS Snapshots Features
+
+- EBS Snapshot Archive
+  - Move a Snapshot to an "archive tier" that is 75% cheaper than the standard snapshot tier
+  - Takes within 24 to 72 hours for restoring the archive
+- Recycle Bin for EBS Snapshots
+  - Setup rules to retain deleted snapshots so you can recover them after an accidental deletion
+  - Specify retention (from 1 day to 1 year)
+- Fast Snapshot Restore (FSR)
+  - Force full initialization of snapshot to have no latency on the first use ($$$)
+
+# AMI Overview
+
+- AMI = Amazon Machine Image
+- AMI are a customization of an EC2 instance
+  - You add your own software, configuration, operating system, monitoring...
+  - Faster boot / configuration time because all your software is pre-packaged
+- AMI are built for a specific region (and can be copied across regions)
+- You can launch EC2 instances from:
+  - A Public AMI: AWS provided
+  - Your own AMI: you make and maintain them yourself
+  - An AWS Marketplace AMI: an AMI someone else made (and potentially sells)
+
+# AMI Process (from an EC2 Instance)
+
+- Start an EC2 instance and customize it
+- Stop the instance (for data integrity)
+- Build an AMI - this will also create EBS snapshots
+- Launch instances from other AMIs
