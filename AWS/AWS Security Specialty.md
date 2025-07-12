@@ -1293,3 +1293,1998 @@ Finding type: UnauthorizedAccess:EC2/SSHBruteForce Instance tag value: devops (a
 - You must update route tables in each VPC's subnets to ensure EC2 instances can communicate with each other
 - You can create VPC Peering connection between VPCs in different AWS accounts/regions
 - You can reference a security group in a peered VPC (works cross accounts - same region)
+
+# DNS Resolution in VPC
+
+- DNS Resolution (enableDnsSupport)
+  - Decides if DNS resolution from Route 53 Resolver server is supported for the VPC
+  - True (default): it queries the Amazon Provider DNS server at 169.254.168.253 or the reserved IP address at the base of the VPC IPv4 network range plus two (.2)
+- DNS Hostname (enableDnsHostnames)
+  - By default,
+    - True => default VPC
+  - Won't do anything unless enableDnsSupport=true
+  - IfTrue, assigns public hostname to EC2 instance if it has a public IPv4
+- If you use custom DNS domain names in a Private Hosted Zone in Route 53, you must set both these attributes (enableDnsSupport and enableDnsHostname) to true
+
+# VPC Endpoints
+
+- Endpoints allow you to connect to AWS Services using a private network instead of the public www network
+- They scale horizontally and are redundant
+- No more IGW, NAT, etc...to access AWS Services
+- VPC Endpoint Gateway (S3 and DynamoDB)
+- VPC Endpoint Interface (all services except DynamoDB)
+- In case of issues:
+  - Check DNS setting resolution in your VPC
+  - Check Route Tables
+
+# VPC Endpoint Gateway
+
+- Only works for S3 and DynamoDB, must create one gateway per vpc
+- Must update route tables entries (no security groups)
+- Gateway is defined at the VPC level
+- DNS resolution must be enabled in the VPC
+- The same public hostname for S3 can be used
+- Gateway endpoint cannot be extended out of a VPC (VPN, DX, TGW, peering)
+
+# VPC Endpoint Interface
+
+- Provision an ENI that will have a private endpoint interface hostname
+- Leverage Security Groups for security
+- Private DNS (setting when you create the endpoint)
+  - The public hostname of a service will resolve to the private Endpoint Interface hostname
+  - VPC Setting: "Enable DNS hostnames" and "Enable DNS Support" must be 'true'
+- Interface can be accessed from Direct Connect and Site-to-Site VPN
+
+# VPC Endpoint Policy
+
+example:
+
+```json
+{
+  "version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::my-bucket/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceVpce": "vpce-1234567890abcdef0"
+        }
+      }
+    }
+  ]
+}
+```
+
+- Controls which AWS principals (AWS accounts, IAM users, IAM Roles) can use the VPC Endpoint to access AWS services
+- Can be attached to both Interface Endpoint and Gateway Endpoint
+- Can restrict specific API calls on specific resources
+- Doesn't override or replace Identity-based Policies or service-specific policies (e.g, S3 bucket policies)
+- Note: can use aws:PrincipalOrgId to restrict access only within the Organization
+
+# VPC Endpoint - API Gateway
+
+- Private REST APIs can only be accessed using VPC Interface Endpoint
+- VPC Endpoint Policies can be used together with API Gateway resource policies
+- Restrict access to your private APIs from VPC and VPC Endpoints using resource policies (aws:SourceVpc and aws:SourceVpce)
+
+# Exposing services in your VPC to other VPC
+
+- Option 1: make it public
+
+  - Goes through the public internet (www)
+  - Tough to manage access
+
+- Option 2: VPC Peering
+
+  - Create a VPC Peering connection between the two VPCs
+  - Must update route tables in each VPC's subnets to ensure EC2 instances can communicate with each other
+  - Not transitive (must be established for each VPC that needs to communicate with one another)
+  - Can reference a security group in a peered VPC (works cross accounts - same region)
+
+- Option 3: VPC Endpoint Services (PrivateLink)
+  - Create a VPC Endpoint Interface for the service you want to expose
+  - Use Security Groups to control access
+  - Private DNS (setting when you create the endpoint)
+    - The public hostname of a service will resolve to the private Endpoint Interface hostname
+    - VPC Setting: "Enable DNS hostnames" and "Enable DNS Support" must be 'true'
+  - Interface can be accessed from Direct Connect and Site-to-Site VPN
+  - Most secure and scalable way to expose a service to 1000s of VPCs
+  - Requires a Network Load Balancer (NLB) in the service VPC
+  - If the NLB is in multiple AZ, and the ENIs in multiple AZ, the solution is fault tolerant
+
+# Network Access Control List (NACL)
+
+- NACLs are like firewalls which control traffic from and to subnets
+- One NACL per subnet, new subnets are assigned the Default NACL
+- You define NACL Rules:
+  - Rules have a number (1-32766), higher precedence with a lower number
+  - First rule match will drive the decision
+  - Example: if you define #100 ALLOW 10.0.0.10/32 and #200 DENY 10.0.0.10/32, the IP address will be allowed because 100 has a higher precedence over 200
+  - The last rule is an asterisk (\*) and denies a request in case of no rule match
+  - AWS recommends adding rules by increment of 100
+- Newly created NACLs will deny everything
+- NACLs are a great way of blocking a specific IP address at the subnet level
+
+# Default NACL
+
+- Accepts everything inbound/outbound with the subnets it's associated with
+- Do NOT modify the Default NACL, instead create custom NACLs
+
+# Ephemeral Ports
+
+- For any two endpoints to establish a connection, they must use ports
+- Clients connect to a defined port, and expect a response on an ephemeral port
+- Different Operating Systems use different port ranges, examples:
+  - IANA and MS Windows 10 -> 49152 - 65535
+  - Many Linux Kernels -> 32768 - 60999
+
+# Security Groups - Outbound Rules
+
+- Default is allowed 0.0.0.0/0 anywhere
+- But we can remove and just allow specific prefixes
+
+# Managed Prefix List
+
+- A set of one or more CIDR blocks
+- Makes it easier to configure and maintain Security Groups and Route Tables
+- Customer-Managed Prefix List
+  - Set of CIDRs that you define and managed by you
+  - Can be shared with other AWS accounts or AWS Organization
+  - Modify to update many Security Groups to once
+- AWS-Managed Prefix List
+  - Set of CIDRs for AWS services
+  - You can't create, modify, share, or delete them
+  - S3, CloudFront, DynamoDB, Ground Station...
+
+# Security Groups - Extras
+
+- Modifying Security Group Rule NEVER disrupts its tracked connections
+- Existing connections are kept until they time out
+- Use NACLs to interrupt/block connections immediately
+
+# Transit gateway
+
+- For having transitive peering between thousands of VPC and on-premises, hub-and-spoke (star) connection
+- Regional resource, can work cross-region
+- Share cross-account using Resource Access Manager (RAM)
+- You can peer Transit Gateways across regions
+- Route Tables: limit which VPC can talk with other VPC
+- Works with Direct Connect Gateway, VPN connections
+- Supports IP multicast (not supported by any other AWS service)
+
+# Transit Gateway: Site-to-Site VPN ECMP
+
+- ECMP = Equal Cost Multi-Path Routing
+- Routing strategy to allow to forward a packet over multiple best path
+- Use case: create multiple Site-to-Site VPN connections to increase the bandwidth of your connection to AWS
+
+# AWS CloudFront
+
+- Content Delivery Network (CDN) to deliver content with low latency and high transfer speeds
+- Improves read performance, content is cached at the edge
+- Improves users experience
+- 216 Point of Presence globally (edge locations)
+- DDoS protection (because worldwide), integration with Shield, AWS Web Application Firewall
+
+# CloudFront - Origins
+
+- S3 bucket
+  - For distributing files and caching them at the edge
+  - For uploading files to S3 through CloudFront
+  - Secured using Origin Access Control (OAC)
+- VPC Origin
+  - For applications hosted in VPC private subnets
+  - Application Load Balancer / Network Load Balancer / EC2 Instances
+    Custom Origin (HTTP)
+  - S3 website (must first enable the bucket as a static S3 website)
+  - Any public HTTP backend you want
+
+# CloudFront vs S3 Cross Region Replication
+
+- CloudFront:
+  - Global Edge network
+  - Files are cached for a TTL (maybe a day)
+  - Great for static content that must be available everywhere
+- S3 Cross Region Replication:
+  - must be setup for each region you want replication to happen
+  - Files are updated in near real-time
+  - Read only
+  - Great for dynamic content that needs to be available at low-latency in few regions
+
+# CloudFront Geo Restriction
+
+- You can restrict who can access your distribution
+  - Allowlist: Allow your users to access your content only if they're in one of the countries on a list of approved countries
+  - Blocklist: Prevent your users from accessing your content if they're in one of the countries on a list of banned countries
+- The "country" is determined using a 3rd party Geo-IP database
+- Use case: Copyright Laws to control access to content
+
+# CloudFront Signed URL / Signed Cookies
+
+- You want to distribute paid shared content to premium users over the world
+- We can use CloudFront Signed URL / Cookie. We attach a policy with:
+  - Includes URL expiration
+  - Includes IP ranges to access the data from
+  - Trusted signers (which AWS accounts can create a signed URL)
+- How long should the URL be valid for?
+  - Shared content (movie, music): make it short (a few minutes)
+  - Private content (private to the user): you can make it last for years
+- Signed URL = access to individual files (one signed URL per file)
+- Signed Cookie = access to multiple files (one signed cookie for many files)
+
+# CloudFront Signed URL vs S3 Pre-Signed URL
+
+- CloudFront Signed URL:
+
+  - Used to restrict access to content in CloudFront distributions
+  - Can include expiration, IP ranges, and trusted signers
+  - Ideal for distributing paid or premium content
+  - Allow access to a path, no matter the origin
+  - Account wide key-pair, only the root can manage it
+  - Can filter by IP, path, date, expiration
+  - Can leverage caching features
+
+- S3 Pre-Signed URL:
+  - Issue a request as the person who pre-signed the URL
+  - Uses the IAM key of the signing IAM principal
+  - Limited lifetime
+
+# CloudFront Signed URL Process
+
+- Two types of signers:
+  - Either a trusted key group (recommended)
+    - Can leverage APIs to create and rotate keys (and IAM for API security)
+  - An AWS account that contains a CloudFront Key Pair
+    - Need to manage keys using the root account and the AWS console
+    - Not recommended because you shouldn't use the root account for this
+  - In your CloudFront distribution, create one or more trusted key groups
+  - You generate your own public / private key
+    - The private key is used by your applications (e.g. EC2) to sign URLs
+    - The public key (uploaded) is used by CloudFront to verify URLs
+
+# CoudFront - Field Level Encryption
+
+- Protect user sensitive information through application stack
+- Adds an additional layer of security along with HTTPS
+- Sensitive information encrypted at the edge close to user
+- Usage:
+  - Specify set of fields in POST requests that you want to be encrypted (up to 10 fields)
+  - Specify the public key to encrypt them
+
+# Origin Access Control with SSE-KMS
+
+- OAC supports SSE-KMS natively (as requests are signed with Sigv4)
+- Add a statement to the KMS Key Policy to authorize the OAC
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::123456789012:role/CloudFrontOriginAccessControlRole",
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": ["kms:Decrypt", "kms:GenerateDataKey*", "kms:Encrypt"],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceArn": "arn:aws:cloudfront::123456789012:origin-access-control/OAID1234567890"
+        }
+      }
+    }
+  ]
+}
+```
+
+# Origin Access Identity with SSE-KMS
+
+- OAI doesn't support SSE-KMS natively (only SSE-S3)
+- Use Lambda@Edge to sign requests from CloudFront to S3
+- Make sure to disable OAI for this to work
+
+# CloudFront Authorization Header
+
+- Configure CloudFront distribution to forward the Authorization header using Cache Policy
+- Not supported for S3 Origins
+
+# CloudFront - Restrict access to ALB
+
+- Prevent direct access to your ALB or Custom Origins (only access through CloudFront)
+- First, configure CloudFront to add a Custom HTTP Header for the requests it sends to the ALB
+- Second, configure the ALB to only forward requests that contain that Custom HTTP Header
+- Keep the custom header name and value secret
+
+# AWS WAF (Web Application Firewall)
+
+- Protects your web applications from common web exploits (Layer 7)
+- Deploy on Application Load Balancer (localized rules)
+- Deploy on Amazon CloudFront (global or edge location rules)
+  - Used to front other solutions: CLB, EC2 instances, custom origins, S3 websites
+- Deploy on API Gateway (regional rules or edge level)
+- Deploy on AppSync (regional rules, protect your GraphQL APIs)
+- Deploy on AWS App Runner (regional rules)
+- WAF is not for DDoS protection, use AWS Shield for that
+- Define Web ACL (Web Access Control List) to protect your resources
+  - Rules can include IP addresses, HTTP headers, HTTP body, or URI strings
+  - Protects from common attack - SQL injection and Cross-Site Scripting (XSS)
+  - Size constraints, Geo match
+  - Rate-based rules (to count occurrences of events)
+- Rule Actions: Count | Allow | Block | CAPTCHA | Challenge
+
+# AWS WAF - Managed Rules
+
+- Library of over 190 managed rules
+- Ready-to-use rules that are managed by AWS and AWS Marketplace Sellers
+- Baseline Rule Groups - general protection from common threats
+  - AWSManagedRulesCommonRuleSet, AWSManagedRulesAdminProtectionRuleSet,...
+- Use-case Specific Rule Groups - protection for many AWS WAF use cases
+  - AWSManagedRulesSQLiRuleSet, AWSManagedRulesWindowRuleSet, AWSManagedRulesPHPRuleSet, AWSManagedRulesWordPressRuleSet,...
+- IP Reputation Rule Groups - block requests based on source (e.g., malicious IPs)
+  - AWSManagedRulesAmazonIpReputationList, AWSManagedRulesAnonymouslpList
+- Bot Control Rule Groups - detect and mitigate bot traffic
+
+# WAF - Web ACL - Logging
+
+- You can send your logs to an:
+  - Amazon CloudWatch Logs log group - 5 MB per second
+  - Amazon Simple Storage Service (Amazon S3) bucket - 5 minutes interval
+  - Amazon Kinesis Data Firehose - limited by Firehose quotas
+
+# AWS Shield: protect from DDoS attack
+
+- DDoS: Distributed Denial of Service - many requests at the same time
+- AWS Shield Standard:
+  - Free service that is activated for every AWS customer
+  - Provides protection from attacks such as SYN/UDP Floods, Reflection attacks and other layer 3/layer 4 attacks
+- AWS Shield Advanced:
+  - Optional DDoS mitigation service ($3,000 per month per organization)
+  - Protect against more sophisticated attack on Amazon EC2, Elastic Load Balancing (ELB), Amazon CloudFront, AWS Global Accelerator, and Route 53
+  - 24/7 access to AWS DDoS response team (DRT)
+  - Protect against higher fees during usage spikes due to DDoS
+  - Shield Advanced automatic application layer DDoS mitigation automatically creates, evaluates and deploys AWS WAF rules to mitigate layer 7 attacks
+
+# AWS Firewall Manager
+
+- Manage rules in all accounts of an AWS Organization
+- Security policy: common set of security rules
+  - WAF rules (Application Load Balancer, API Gateways, CloudFront)
+  - AWS Shield Advanced (ALB, CLB, NLB, Elastic IP, CloudFront)
+  - Security Groups for EC2, Application Load Balancer and ENI resources in VPC
+  - AWS Network Firewall (VPC Level)
+  - Amazon Route 53 Resolver DNS Firewall
+  - Policies are created at the region level
+  - Rules are applied to new resources as they are created (good for compliance) across all future accounts in your Organization
+  - Rules are applied to new resources as they are created (good for compliance) across all and future accounts in your Organization
+
+# WAF vs. Firewall Manager vs. Shield
+
+- WAF, Shield and Firewall Manager are used together for comprehensive protection
+- Define your Web ACL rules in WAF
+- For granular protection of your resources, WAF alone is the correct choice
+- If you want to use AWS WAF across accounts, accelerate WAF configuration, automate the protection of new resources, use Firewall Manager with AWS WAF
+- Shield Advanced adds additional features on top of AWS WAF, such as dedicated support from the Shield Response Team (SRT) and advanced reporting.
+- If you're prone to frequent DDoS attacks, consider purchasing Shield Advanced
+
+# Shield Advanced CloudWatch Metrics
+
+- Helps you to detect if there's a DDoS attack happening
+- DDoSDetected - indicates whether a DDoS event is happening for a specific resource
+- DDoSAttackBitsPerSecond - number of bits per second during a DDoS event for a specific resource
+- DDoSAttackPacketsPerSecond - number of packets per second during a DDoS event for a specific resource
+- DDoSAttackRequestsPerSecond - number of requests per second during a DDoS event for a specific resource
+
+# AWS Best Practices for DDoS Resiliency Edge Location Mitigation (BPI, BP3)
+
+- BPI: CloudFront
+  - Web Application delivery at the edge
+  - Protect from DDoS Common Attacks (SYN floods, UDP reflection...)
+- BPI: Global Accelerator
+  - Access your application from the edge
+  - Integration with Shield for DDoS protection
+  - Helpful if your backend is not compatible with CloudFront
+- BP3 - Route 53
+  - Domain Name Resolution at the edge
+  - DDoS Protection mechanism
+- Infrastructure layer defense (BPI, BP3, BP6)
+  - Protect Amazon Ec2 against hight traffic
+  - That includes using Global Accelerator, Route 53, CloudFront, Elastic Load Balancing
+- Amazon EC2 with Auto Scaling (BP7)
+  - Helps scale in case of sudden traffic surges including a flash crowd or a DDoS attack
+- Elastic Load Balancing (BP6)
+  - Elastic Load Balancing scales with the traffic increases and will distribute the traffic to many EC2 instances
+- Detect and filter malicious web requests (BPI, BP2)
+  - CloudFront cache static content and serve it from edge locations, protecting your backend
+  - AWS WAF is used on top of CloudFront and Application Load Balancer to filter and block requests based on request signatures
+  - WAF rate-based rules can automatically block the IPs of bad actors
+  - Use managed rules on WAF to block attacks based on IP reputation, or block anonymous IPs
+  - CloudFront can block specific geographies
+- Shield Advanced (BP1, BP2, BP6)
+  - Shield Advanced automatic application layer DDoS mitigation automatically creates, evaluates and deploys AWS WAF rules to mitigate layer 7 attacks
+- Obfuscating AWs resources (BP1, BP4, BP6)
+  - Using CloudFront, API Gateway, Elastic Load Balancing to hide your backend resources (Lambda functions, EC2 instances)
+- Security groups and Network ACLs (BP5)
+  - Use security groups and NACLs to filter traffic based on specific IP at the subnet or ENI-level
+  - Elastic IP are protected by AWS Shield Advanced
+- Protecting API endpoints (BP4)
+  - Hide EC2, Lambda, elsewhere
+  - Edge-optimized mode, or CloudFront+ regional mode (more control for DDoS)
+  - WAF + API Gateway: burst limits, headers filtering, use API keys
+
+# AWS API Gateway
+
+- AWS Lambda + API Gateway: No infrastructure to manage
+- Support for the websocket protocol
+- Handle API versioning (v1, v2...)
+- Handle different environments (dev, test, prod...)
+- Handle security (Authentication and Authorization)
+- Create API keys, handle request throttling
+- Swagger / Open API import to quickly define APIs
+- Transform and validate requests and responses
+- Generate SDK and API specifications
+- Cache API responses
+
+# API Gateway - Integrations High Level
+
+- Lambda Function
+  - Invoke Lambda function
+  - Easy way to expose REST API backed by AWS Lambda
+- HTTP
+  - Expose HTTP endpoints in the backend
+  - Example: internal HTTP API on premise, Application Load Balancer...
+  - Why? Add rate limiting, caching, user authentications, API keys, etc...
+- AWS Service
+  - Expose any AWS API through the API Gateway?
+  - Example: start an AWS Step Function workflow, post a message to SQS
+  - Why? Add authentication, deploy publicly, rate control...
+
+# API Gateway - AWS Service Integration Kinesis Data Streams example
+
+Client -> API Gateway -> Kinesis Data Streams -> Kineses Data Firehose -> S3
+
+# API Gateway - Endpoint Types
+
+- Edge-Optimized (default): For global clients
+  - Requests are routed through the CloudFront Edge locations (improves latency)
+- Regional:
+  - For clients within the same region
+  - Could manually combine with CloudFront (more control over the caching strategies and the distribution)
+- Private:
+  - Can only be accessed from your VPC using an interface VPC endpoint (ENI)
+  - Use a resource policy to define access
+
+# API Gateway - Security
+
+- User Authentication through
+
+  - IAM Roles (useful for internal applications)
+  - Cognito (identity for external users - examples mobile users)
+  - Custom Authorizer (your own logic)
+
+- Custom Domain Name HTTPS security through integration with AWS
+  - Certificate Manager (ACM)
+    - If using Edge-Optimized endpoint, then the certificate must be in us-east-1
+    - If using Regional endpoint, the certificate must be in the API Gateway region
+    - Must setup CNAME or A-alias record in Route 53
+
+# API Gateway - Throttling
+
+- Account Limit
+  - API Gateway throttles requests at 10,000 RPS across all APIs
+  - Soft limit that can be increased upon request
+- In case of throttling => 429 Too Many Requests (retry error)
+- Can set stage limit and Method limits to improve performance
+- Or you can define usage Plans to throttle per customer
+
+- Note: One API Gateway that is overloaded and not limited can cause the other APIs to be throttled
+
+# AWS Artifact (not really a service)
+
+- Portal that provides customers with on-demand access to AWS compliance documentation and AWS agreements
+- Artifact Reports - Allows you to download AWS security and compliance documents from third-party auditors, like AWS ISO certifications, Payment Card Industry (PCI) compliance, System and Organization Control (SOC) reports, FedRAMP, HIPAA, and more
+- Artifact Agreements - Allows you to review, accept, and track the status of AWS agreements such as the Business Associate Addendum (BAA) or the Health Insurance Portability and Accountability Act (HIPAA) for an individual account or in your organization
+- Can be used to support internal audit or compliance
+
+# DNS Poisoning (DNS Spoofing)
+
+- DNS works on UDP protocol which makes it easy to hack
+- There is no cryptographic DNS verification process
+
+# Route 53 - DNS Security Extensions (DNSSEC)
+
+- A protocol for securing DNS traffic, verifies DNS data integrity and origin
+- Works only with Public Hosted Zones
+- Route 53 supports both DNSSEC for Domain Registration and Signing
+- DNSSEC Signing
+  - Validate that a DNS response came from Route 53 and has not been tampered with
+  - Route 53 cryptographically signs each record in the Hosted Zone
+  - Two Keys:
+    - Managed by you: Key Signing Key (KSK) - signs the Zone Signing Key (ZSK), based on an asymmetric CMK in AWS KMS
+    - Managed by AWS Zone Signing Key (ZSK) - signs the DNS records in the zone
+- When enabled, Route 53 enforces a TTL of one week for all records in the Hosted Zone (records that have TTL less than one week are not affected)
+
+# Route 53 - Enable DNSSEC on a hosted zone
+
+- Step 1 - Prepare for DNSSEC signing
+  - Monitor zone availability (through customer feedback)
+  - Lower TTL for records (recommended 1 hour)
+  - Lower SOA minimum for 5 minutes
+- Step 2 - Enable DNSSEC signing and create a KSK
+  - Enable DNSSEC in Route 53 for your hosted zone (Console or CLI)
+  - Make Route 53 create a KSK in the console and link it to a Customer managed CMK
+- Step 3 - Establish chain of trust
+  - Create a chain of trust between the hosted zone and the parent hosted zone
+  - By creating a Delegation Signer (DS) record in the parent zone
+  - It contains a hash of the public key used to sign DNS records
+  - Your registrar can be Route 53 or a 3rd party registrar
+- Step 4 - (good to have) Monitor for errors using CloudWatch Alarms
+  - Create CloudWatch alarms for DNSSECInternalFailure and DNSSECKevSigningKeysNeedingAction
+
+# Network Protection on AWS
+
+- To protect network on AWS, we've seen
+  - Network Access Control Lists (NACLs)
+  - Amazon VPC security groups
+  - AWS WAF (protect against malicious requests)
+  - AWS Shield and AWS Shield Advanced
+  - AWS Firewall Manager (to manage them across accounts)
+
+# AWS Network Firewall
+
+- Protect your entire Amazon VPC
+- From Layer 3 to Layer 7 protection
+- Any direction, you can inspect
+
+  - VPC to VPC traffic
+  - Outbound internet
+  - Inbound internet
+  - To / from Direct Connect and Site-to-Site VPN
+
+- Internally, the AWS Network Firewall uses the AWS Gateway Load Balancer
+- Rules can be centrally managed cross-account by AWS Firewall Manager to apply to many VPCs
+
+# Network Firewall - Fine Grained Controls
+
+- Supports 1000s of rules
+  - IP and port - example: 10,000s of IPs filtering
+  - Protocol - example: block the SMB protocol for outbound communications
+  - Stateful domain list rule groups: only allow outbound traffic to \*.mycorp.com or third-party software repo
+  - General pattern matching using regex
+- Traffic filtering: Allow, drop, or alert for the traffic that matches the rules
+- Active flow inspection to protect against network threats with intrusion-prevention capabilities (like Gateway Load Balancer, but all managed by AWS)
+- Send logs of rule matches to Amazon S3, CloudWatch Logs, Kinesis Data Firehose, or Amazon OpenSearch Service
+
+# Network Firewall - Encrypted Traffic
+
+- AWS Network Firewall supports Deep Packet Inspection (DPI) for encrypted traffic Transport Layer Security (TLS)
+- It decrypts the TLS traffic, inspects and blocks any malicious content, then re-encrypts the traffic for the destination.
+- Integrates with AWS Certificate Manager (ACM)
+
+# Amazon Simple Email Service (Amazon SES)
+
+- Fully managed service to send emails securely, globally and at scale
+- Allows inbound/outbound emails
+- Reputation dashboard, performance insights, anti-spam feedback
+- Provides statistics such as email deliveries, bounces, feedback loop results, email open
+- Supports DomainKeys Identified Mail (DKIM) and and Sender Policy Framework (SPF)
+- Flexible IP deployment: shared, dedicated, and customer-owned IPs
+- Send emails using your application using AWS Console, APIs or SMTP
+- Use cases: transactional, marketing and bulk email communications
+
+# Amazon SES - Configuration Sets
+
+- Configuration sets help you customize and analyze your email send events
+- Event destinations:
+  - Kinesis Data Firehose: receives metric (numbers of sends, deliveries, opens, clicks, bounces, and complaints) for each email
+  - SNS: for immediate feedback on bounce and complaint events
+- IP pool management: use IP pools to send particular types of emails
+
+# IAM Policy - NotAction with Allow
+
+- Provide access to all the actions in an AWS service, except for the actions specified in NotAction
+- Example: allow all actions in the S3 service, except for the PutObject action
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "NotAction": "s3:PutObject",
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+- Use with the Resource element to provide scope for the policy, limiting the allowed actions
+  to the actions that can be performed on the specified resources
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "NotAction": "s3:PutObject",
+      "Resource": ["arn:aws:s3:::my-bucket/*"]
+    }
+  ]
+}
+```
+
+# IAM Policy - NotAction with Deny
+
+- Use the NotAction element in a statement with "Effect": "Deny" to deny access to all the listed resources except for the actions specified in the NotAction element
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "NotAction": "s3:GetObject",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceVpce": "vpce-1234567890abcdef0"
+        }
+      }
+    }
+  ]
+}
+```
+
+- This combination does not allow the listed items, but instead explicitly denies the actions not listed
+- You must still allow explicitly actions that you want to allow
+
+# IAM Policy - Restrict to One Region (NotAction)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "NotAction": [
+        "s3:ListBucket",
+        "cloudfront:*",
+        "iam:*",
+        "route53:*",
+        "support:*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    }
+  ]
+}
+```
+
+# Principal Options in IAM Policies
+
+- AWS Account and Root User
+
+```json
+{
+  "Principal": { "AWS": "123456789012" },
+  "Principal": { "AWS": "arn:aws:iam::123456789012:root" }
+}
+```
+
+- IAM Roles
+
+```json
+{
+  "Principal": { "AWS": "arn:aws:iam::123456789012:role/MyRole" }
+}
+```
+
+- IAM Role Sessions
+
+```json
+{
+  "Principal": {
+    "AWS": "arn:aws:sts::123456789012:assumed-role/MyRole/MySessionName"
+  },
+  "Principal": {
+    "Federated": "arn:aws:iam::123456789012:saml-provider/MySAMLProvider"
+  },
+  "Principal": {
+    "Federated": "cognito-identity.amazonaws.com"
+  }
+}
+```
+
+- IAM Users
+
+```json
+{
+  "Principal": { "AWS": "arn:aws:iam::123456789012:user/MyUser" }
+}
+```
+
+- Federated User Sessions
+
+```json
+{
+  "Principal": {
+    "Federated": "arn:aws:iam::123456789012:saml-provider/MySAMLProvider"
+  },
+  "Principal": {
+    "Federated": "cognito-identity.amazonaws.com"
+  }
+}
+```
+
+- AWS Services
+
+```json
+{
+  "Principal": { "Service": "ec2.amazonaws.com" },
+  "Principal": { "Service": "lambda.amazonaws.com" },
+  "Principal": { "Service": "s3.amazonaws.com" }
+}
+```
+
+- All Principals
+
+```json
+{
+  "Principal": "*"
+}
+
+{
+  "NotPrincipal": {"AWS": "*"}
+}
+```
+
+# IAM Condition - Condition Operators
+
+- StringEquals/StringNotEquals: Case sensitive, Exact matching
+
+```json
+{
+  "Condition": {
+    "StringEquals": {
+      "aws:RequestTag/Department": "Finance"
+    }
+  }
+}
+```
+
+- StringLike/StringNotLike: Case insensitive, Wildcard/partial matching using \*,?
+
+```json
+{
+  "Condition": {
+    "StringLike": {
+      ""s3:prefix": ["", "home/\*/data/", "home/${aws:username}/"]
+    }
+  }
+}
+```
+
+- DateEquals, DateLessThan...
+
+```json
+{
+  "Condition": {
+    "DateLessThan": {
+      "aws:TokenIssueTime": "2023-12-31T23:59:59Z"
+    }
+  }
+}
+```
+
+- NumericEquals, NumericLessThan...
+
+```json
+{
+  "Condition": {
+    "NumericEquals": {
+      "aws:MultiFactorAuthAge": 3600
+    }
+  }
+}
+```
+
+- Bool: True/False condition
+
+```json
+{
+  "Condition": {
+    "Bool": {
+      "aws:SecureTransport": "true"
+    }
+  }
+}
+```
+
+- ArnLike / ArnNotLike: Match ARN patterns
+
+```json
+{
+  "Condition": {
+    "ArnLike": {
+      "aws:SourceArn": "arn:aws:s3:::my-bucket/*"
+    }
+  }
+}
+```
+
+- IpAddress / NotIpAddress (CIDR format)
+  - Resolves to the IP address that the request originates from
+  - Public IP only - IpAddress does not apply to requests through VPC endpoints
+
+```json
+"IpAddress": {
+  "aws:SourceIp": 203.0.113.0/24"
+}
+```
+
+- For all conditions, you can use the "ForAllValues" and "ForAnyValue" prefixes to match multiple values in a list
+
+```json
+{
+  "Condition": {
+    "ForAllValues:StringEquals": {
+      "aws:TagKeys": ["Department", "Environment"]
+    }
+  }
+}
+```
+
+# IAM Conditions - RequestedRegion
+
+- The AWS region of the request
+- Used to restrict specific actions in spcific AWS regions
+
+```json
+{
+  "Condition": {
+    "StringEquals": {
+      "aws:RequestedRegion": "us-west-2"
+    }
+  }
+}
+```
+
+- When using a global AWS service (e.g., IAM, CloudFront, Route53, Support), the AWS region is always us-east-1
+- Work around using NotAction and Deny
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "NotAction": [
+        "s3:ListBucket",
+        "cloudfront:*",
+        "iam:*",
+        "route53:*",
+        "support:*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-west-2"
+        }
+      }
+    }
+  ]
+}
+```
+
+# IAM Conditions - PrincipalArn
+
+- The ARN of the IAM principal making the request
+- Used to restrict access to specific IAM users or roles
+- Compare the ARN of the principal that made the request with the ARN specified in the policy
+- Note: For IAM roles, the request context returns the ARN of the role, not the ARN of the user that assumed the role
+
+```json
+{
+  "Condition": {
+    "ArnEquals": {
+      "aws:PrincipalArn": "arn:aws:iam::123456789012:user/MyUser"
+    }
+  }
+}
+```
+
+- The following types of Principals are allowed:
+  - IAM users
+  - IAM roles
+  - Federated users (e.g., SAML, OIDC)
+  - AWS services (e.g., Lambda, EC2)
+- The following types of Principals are NOT allowed:
+  - Anonymous users (e.g., unauthenticated requests)
+  - AWS accounts (e.g., root user)
+  - IAM groups
+
+# IAM Conditions - SourceArn
+
+- The ARN of the resource that initiated the request
+- Used to restrict access to specific resources
+- Compare the ARN of the resource making a service-to-service request with the ARN that you specify in the policy
+- This key is included in the request context only if accessing a resource triggers an AWS service to call another service on behalf of the resource owner
+- Example: an S3 bucked update triggers an SN topic sns:Publish API, the policy set the value of the condition key to the ARN of the S3 bucket
+
+```json
+{
+  "Condition": {
+    "ArnEquals": {
+      "aws:SourceArn": "arn:aws:s3:::my-bucket/*"
+    }
+  }
+}
+```
+
+# IAM Conditions - CalledVia
+
+- Look at the AWS service that made the request on behalf of the IAM User or Role
+- Contains an ordered list of each AWS service in the chain that made requests on the principal's behalf
+- Supports:
+  - athena.amazonaws.com
+  - cloudformation.amazonaws.com
+  - dynamodb.amazonaws.com
+  - kms.amazonaws.com
+
+# IAM Conditions - IP and VPC Conditions
+
+- aws:SourceIp
+  - Public requester IP (e.g., public EC2 IP if coming from EC2)
+  - Not present in requests through VPC endpoints
+- aws:VpcSourceIp
+  - Requester IP through VPC endpoints (private IP)
+- aws:SourceVpce
+  - Restrict access to a specific VPC endpoint
+- aws:SourceVpc
+  - Restrict to a specific VPC ID
+  - Request must be made through a VPC Endpoint
+- Common to use these conditions with S3 Bucket Policies
+
+# IAM Conditions - IP and VPC Conditions
+
+- Restrict Access from Public IP Addresses
+
+```json
+"Version": "2012-10-17",
+"Statement": [
+  {
+    "Effect": "Deny",
+    "Action": "*",
+    "Resource": "*",
+    "Condition": {
+      "NotIpAddress": {
+        "aws:SourceIp": ["192.0.2.0/24", "203.0.113.0/24"]
+      }
+    }
+  }
+]
+```
+
+- Restrict Access from Private IP addresses (through a VPC Endpoint)
+
+```json
+"Version": "2012-10-17",
+"Statement": [
+  {
+    "Effect": "Deny",
+    "Action": "*",
+    "Resource": "*",
+    "Condition": {
+      "NotIpAddress": {
+        "aws:VpcSourceIp": ["192.0.2.0/24", "198.51.100.0/24"]
+      }
+    }
+  }
+]
+```
+
+# IAM Conditions - Resource Tag and Principal Tag
+
+- Controls access to AWS Resources using tags
+- aws:ResourceTag
+  - tags that exist on AWS Resources
+    - Sometimes you will see ec2:ResourceTag(service-specific)
+- aws:PrincipalTag
+  - tags that exist on the IAM user or IAM role making the request
+
+# IAM Permission Boundaries
+
+- IAM Permission Boundries are supported for users and roles (not groups)
+- Advanced feature to use a managed policy to set the maximum permissions an IAM entity can get.
+- Can be used in combinations of AWS Organizations SCP
+
+- Use cases:
+  - Delegate responsibilities to non administrators within their permission boundaries, for example create new IAM users
+  - Allow developers to self-assign policies and manage their own permissions, while making sure they can't escalate their privileges (= make themselves admin)
+
+# IAM Policy - Simplified Evaluation Logic (Allow/Deny)
+
+1. By default, all requests are implicitly denied except for the AWS account root user, which has full access.
+2. An explicit allow in an identity-based or resource-based policy overrides the default in 1.
+3. If a permission boundary, Organizations SCP, or session policy is present, an explicit allow is used to limit actions. Anything not explicitly allowed is an implicit deny and may override the decision in 2.
+4. An explicit deny in any policy overrides any allows
+
+# Cross-Account Access Policy Evaluation Logic
+
+- Request from Account A to Account B
+- The requester in Account A must have an identity-based policy
+- That policy must allow the requester to make a request to the resource in Account B
+- The resource-based policy in Account B must allow the requester in Account A to access the resource
+
+# IAM Roles vs Resource Based Policies
+
+- Cross account:
+
+  - attaching a resource-based policy to a resource (example: S3 bucket policy)
+  - OR using a role as a proxy
+  - When you assume a role (user, application or service), you give up your original permissions and take the permissions
+    assigned to the role
+  - When using a resource-based policy, the principal doesn't have to give up his permissions
+  - Example: user in account A needs to scan a DynamoDB table in Account A and dump it in an S3 bucket in Account B.
+  - Supported by: Amazon S3 buckets, SNS topics, SQS queues, etc...
+
+- IAM Roles:
+
+  - Helpful to give temporary permissions for a specific task
+  - Allow a user/application to perform many actions in a different account
+  - Permissions expire over time
+
+- Resource-based policies:
+  - Used to control access to specific resources (resource-centric view)
+  - Allow cross-account access
+  - Permanent authorization (as long as it exists in the resource-based policy)
+
+# Amazon EventBridge - Security
+
+- When a rule runs, it needs permissions on the target
+- Resource-based policy: Lambda, SNS, SQS, CloudWatch Logs, API Gateway...
+- IAM role: Kinesis stream, Systems Manager Run Command, ECS task...
+
+# Resource Policies and aws:PrincipalOrgID
+
+- aws:PrincipalOrgID can be used in any resource policies to restrict access to accounts that are member of an AWS Organization
+
+# ABAC - Attribute-Based Access Control
+
+- Defines fine-grained permissions based on user attributes
+- Example: department, job role, team name,...
+- Instead of creating IAM roles for every team, use ABAC to group attributes to identify which resources a set of users can access.
+- Allow operations when the principal's tags matches the resource tag
+- Helpful in rapidly-growing environments
+
+# ABAC (Attribute-Based Access Control) vs RBAC (Role-Based Access Control)
+
+- RBAC
+
+  - Defines fine-grained permissions based on user role or job function
+  - Example: Administrator, DB Admins, DevOps,...
+  - Create different policies for different job functions
+  - Disadvantage: must update policies when resources are added
+
+- Attribute-Based Access Control (ABAC) - Advantages
+  - Scale permissions easily (no need to update policies when new resources added)
+  - Permissions automatically granted based on attributes
+  - Require fewer policies (you don't create different policies for different job functions)
+  - Ability to use users' attributes from corporate directory (e.g., SAML 2.0-based IdP or Web IdP)
+
+# Multi Factor Authentication (MFA)
+
+- Users have access to your account and can possibly change configurations or delete resources in your AWS account
+- You want to protect your Root Accounts and IAM users
+- MFA = password you know + security device you own
+- Main benefit of MFA:
+  - if a password is stolen or hacked, the account is not compromised
+
+# Amazon S3 - MFA Delete
+
+- MFA (Multi-Factor Authentication) - force users to generate a code on a device (usually a mobile phone or hardware) before doing important operations on S3
+- MFA will be required to:
+  - Permanently delete an object version
+  - Suspend Versioning on the bucket
+- MFA won't be required to:
+  - Enable Versioning
+  - List deleted versions
+- To use MFA Delete, Versioning must be enabled on the bucket
+- Only the bucket owner (root account) can enable/disable MFA Delete
+
+# IAM Conditions - MultiFactorAuthPresent
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Action": "*",
+      "Resource": "*",
+      "Condition": {
+        "BoolIfExists": {
+          "aws:MultiFactorAuthPresent": "false"
+        }
+      }
+    }
+  ]
+}
+```
+
+- Restrict access to AWS services for users not authenticated using MFA
+- aws:MultiFactorAuthPresent
+- Compatible with the AWS Console and the AWS CLI
+
+# IAM Conditions - MultiFactorAuthAge
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Action": "*",
+      "Resource": "*",
+      "Condition": {
+        "NumericGreaterThan": {
+          "aws:MultiFactorAuthAge": 3600
+        }
+      }
+    }
+  ]
+}
+```
+
+- Grant access only within a specified time after MFA authentication
+- aws:MultiFactorAuthAge
+
+# Not Authorized to Perform iam:DeleteVirtualMFADevice
+
+- This error happens even when the user has the correct IAM permissions
+- This happens if someone began assigning a virtual MFA device to a user and then cancelled the process
+  - E.g. created an MFA device for the user but never activates it
+  - Must delete the existing MFA device then associate a new device
+  - AWS recommends a policy that allows a user to delete their own virtual MFA device only if they are authenticated using MFA
+- To fix the issue, the administrator must use the AWS CLI or AWS API to remove the existing but deactivated device
+
+# IAM Credentials Report
+
+- IAM users and the status of their passwords, access keys, and MFA devices
+- Download using IAM Console, AWS API, AWS CLI, or AWS SDK
+- Helps in auditing and compliance
+- Contains information such as:
+  - User name
+  - Password last used
+  - Access key last used
+  - MFA device associated
+  - Whether the user has a password set
+- The report is generated in CSV format
+- The report is updated daily, and you can download it at any time
+
+# IAM Roles for Services
+
+- Some AWS service will need to perform actions on your behalf
+- To do so, we will assign permissions to AWS services with IAM Roles
+- Common roles:
+  - EC2 instance roles
+  - Lambda Function Roles
+  - Roles for CloudFormation
+
+# Delegate Passing Permissions to AWS Services
+
+- You can grant users permissions to pass an IAM role to an AWS service
+- Ensure that only approved users can configure an AWS service with an IAM role that grants permissions
+- Grant iam:PassRole permission to the user's IAM user, role, or group
+- PassRole is not an API call (no CloudTrail logs generated)
+  - Review CLoudTrail log that created or modified the resource receiving the IAM role
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["iam:PassRole", "GetRole"],
+      "Resource": "arn:aws:iam::123456789012:role/MyServiceRole",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ec2.amazonaws.com"
+        }
+      }
+    }
+  ]
+}
+```
+
+# AWS STS - Security Token Service
+
+- Allows to grant limited and temporary access to AWS resources.
+- Token is valid for up to one hour (must be refreshed)
+- AssumeRole
+  - Within your own account: for enhanced security
+  - Cross Account Access: assume role in target account to perform actions there
+- AssumeRoleWithSAML
+  - return credentials for users logged with SAML
+- AssumeRoleWithWebIdentity
+  - return creds for users logged with an IdP (Facebook Login, Google Login, OIDC compatible)
+  - AWS recommends against using this, and using Cognito instead
+- GetSessionToken
+  - For MFA, from a user or AWS account root user
+
+# Using STS to Assume a Role
+
+- Define an IAM Role within your account or cross-account
+- Define which principals can access this IAM role
+- Use AWS STS (Security Token Service) to retrieve credentials and impersonate the IAM Role you have access to (AssumeRole API)
+- Temporary credentials can be valid between 15 minutes to 1 hour
+
+# STS - Version 1 vs Version 2
+
+- STS Version 1
+  - By default, STS is available as a global single endpoint https://sts.amazonaws.com
+  - Only support AWS Regions that are enabled by default
+  - Option to enable "All Regions"
+- STS Version 2
+
+  - Version 1 tokens do not work for new AWS Regions (e.g., me-south-1)
+  - Regional STS endpoints is available in all AWS Regions
+  - Reduce latency, built-in redundancy, increase session token validity
+
+- Error: "An error occurred (AuthFailure) when calling the DescribeInstances operation: AWS was not able to validate the provided access credentials."
+
+- To solve, two options:
+  1. Use the Regional STS Endpoint (any region) which will return STS Tokens Version 2. Use the closest regional endpoint for lowest latency.
+  2. By default, the AWS STS calls to the STS global endpoint issues session tokens which are a Version 1 (Default AWS Regions).
+     You can configure STS global endpoint to issue STS Tokens Version 2 (All AWS Regions)
+
+# Getting Access to 3rd Party using external ID
+
+- External ID is a piece of data that can be passed to AssumeRole API
+- Allowing the IAM role to be assumed only if a certain value is present (External ID)
+- It solves the Confused Deputy problem
+- Prevent any other customer from tricking 3rd party into unwittingly accessing your resources
+
+# Revoking IAM Role Temporary Credentials
+
+- Users usually have a long session duration time (e.g., 12 hours)
+- If credentials are exposed, they can be used for the duration of the session
+  - Immediately revoke all permissions to the IAM role's credentials issues before a certain time
+  - AWS attaches a new inline IAM policy to the IAM role that denies all permissions (forces users to reauthenticate) if the token is too old
+  - Doesn't affect users who assumes the IAM role after you revoke sessions (don't worry about deleting the policy)
+
+# AWS EC2 Instance Metadata Service (IMDS)
+
+- Information about an EC2 instance (e.g., hostname, instance type, network settings,...)
+- Can be accessed from within the EC2 instance itself by making a request to the EC2 metadata service endpoint
+  http://169.254.169.254/latest/meta-data
+- Can be accessed using EC2 API or CLI tools (e.g., curl or wget)
+- Metadata is stored in key-value pairs
+- Useful for automating tasks such as setting up an instance's hostname, configuring networking, or installing software
+
+# AWS EC2 Instance Metadata - Example
+
+- ami-id, block-device-mapping/, instance-id, instance-type, network/
+- hostname, local-hostname, local-ipv4, public-hostname, public-ipv4
+- Iam - InstanceProfileArn, InstanceId
+- iam/security-credentials/role-name - temporary credentials for the role attached to your instance
+- security-groups - names of security groups
+- placement/ - launch region, launch AZ, placement group name...
+- tags/instance - tags attached to the instance
+
+# EC2 Instance Metadata - Restrict Access
+
+- You can use local firewall rules to disable access for some or all processes
+
+  - iptables for Linux, PF or IPFW for FreeBSD
+
+  $ sudo iptables --append OUTPUT --proto tcp --destination 169.254.169.254 --match owner --uid-owner apache --jump REJECT
+
+  - Turn off access using AWS Console or AWS CLI (HttpEndpoint=disabled)
+
+# IMDSv2 vs IMDSv1
+
+- IMDSv1 is accessing http://169.254.169.254/latest/meta-data directly
+- IMDSv2 is more secure and is done in two steps:
+  1. Get Session Token (limited validity) -- using headers and PUT
+     $ TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 2100"`
+  2. Use Session Token in IMDSv2 calls - using headers
+     $ curl http://169.254.169.254/latest/meta-data/profile -H "X-aws-ec2-metadata-token: $TOKEN"
+
+# Requiring the usage of IMDSv2
+
+- Both IMDSv1 and IMDSv2 are available (enabled by default)
+- The CloudWatch Metric MetadataNoToken provide information on how much MDSv1 is used
+
+You can force Metadata Version 2 at Instance Launch using either:
+
+- AWS console
+- AWS CLI "HttpTokens:required"
+
+- You can require IMDSv2 when registering an AMI: --imds-support v2.0
+
+# Require EC2 Role Credentials to be retreived from IMDSv2
+
+- AWS credentials provided by the IMDS now include an ec2:RoleDelivery IAM context key
+  - 1.0 for IMDSv1
+  - 2.0 for IMDSv2
+- Attach this policy to the IAM Role of the EC2 Instance
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Action": "sts:AssumeRole",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:RoleDelivery": "1.0"
+        }
+      }
+    }
+  ]
+}
+```
+
+- Or attach it to an S3 bucket to only require IMDSv2 when API calls are made by an IAM role
+- Or attach it as an SCP in your account
+
+# IAM Policy or SCP to force IMDSv2
+
+- Prevent the launch of an EC2 instance using old instance metadata (IMDSv1)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:MetadataHttpTokens": "optional"
+        }
+      }
+    }
+  ]
+}
+```
+
+- Prevent modifying a running EC2 instance using ModifyInstanceMetadataOptions API
+  to re-enable old instance metadata (IMDSv1)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Action": "ec2:ModifyInstanceMetadataOptions",
+      "Resource": "*",
+      "Condition": {
+        "StringNotLike": {
+          "aws:PrincipalARN": "arn:aws:iam::*role/ec2-imds-admins"
+        }
+      }
+    }
+  ]
+}
+```
+
+# How Authorization Works in Amazon S3
+
+- User Context
+  - Is the IAM principal authorized by the parent AWS account (IAM policy)?
+  - If the parent owns the bucket or object, then bucket policy/ACL or object ACL is evaluated
+  - If the parent owns the bucket/object, it can grant permissions to its IAM principals using Identity-Based Policy or Resource-Based Policy
+- Bucket Context
+  - Evaluates the policies of the AWS account that owns the bucket (check for Explicit Deny)
+- Object Context
+  - Requester must have permission from the object owner (using Object ACL)
+  - If bucket owner = object owner, then access granted using Bucket Policy
+  - If bucket owner != object owner, then access granted using object owner ACL
+  - If you want to own all objects in your bucket and only use Bucket Policy and IAM-based Policies
+    to grant access, enable Bucket Owner Enforced Setting for Object Ownership
+    - Then Bucket and objects ACLs can't be edited and no longer considered for access
+
+# Bucket Operations vs. Object Operations
+
+```json
+{
+  "version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:GetBucketLocation"],
+      "Resource": "arn:aws:s3:::test"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::test/*"
+    }
+  ]
+}
+```
+
+- s3:ListBucket permission applies to arn:aws:s3:::test
+- => bucket level permission
+
+- s3:GetObject, s3:PutObject, s3:DeleteObject applies to arn:aws:s3:::test/\*
+- => object level permission
+
+# Cross-Account Access to Objects in S3 Buckets
+
+- Use one of the following to grant cross-account access to S3 objects:
+  - IAM Policies and S3 Bucket Policy
+  - IAM Policies and Access Control Lists (ACLs)
+    - ACLs only work if Bucket Owner Enforced setting = Disabled
+    - By default, all newly created buckets have Bucket Owner Enforced = Enabled
+  - Cross-Account IAM Roles
+
+# Object Permissions in Cross-Account Setting
+
+- Account A user can make sure it gives up object ownership by granting the object ownership to the Account B administrator
+- Using ACL: with adding condition that requests include ACL-specific headers, that either:
+  - Grant full permissions explicitly (ex: x-amz-grant-full-control)
+  - Use canned ACL
+- Using S3 Object Ownership (bucket-level setting to disable ACLs)
+
+# Canned ACL, Object Permissions in Cross-Account Setting
+
+- You can require the x-amz-acl header with a Canned ACL granting full control permission to the bucket owner
+- To require the x-amz-acl header in the request, specify the s3:x-amz-acl condition key
+
+# S3 Canned ACL - Deep Dive
+
+- Canned ACL are "Shortcut ACLs
+- ACL are NOT recommended (disabled by default since Apr 2023)
+- By default, enable "Object Ownership" so that only Bucket Policies, IAM Policies, SCP, and VPC Endpoint Policies control access to your S3 Bucket Objects
+- The bucket owner will own all the objects
+
+| Canned ACL                | Applies to      | Permissions Added to ACL                                                                                                              |
+| ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| private                   | Bucket & Object | Owner gets FULL_CONTROL. No one else has access rights (default).                                                                     |
+| public-read               | Bucket & Object | Owner gets FULL_CONTROL. AllUsers group gets READ access.                                                                             |
+| public-read-write         | Bucket & Object | Owner gets FULL_CONTROL. AllUsers group gets READ and WRITE access. (not recommended)                                                 |
+| aws-exec-read             | Bucket & Object | Owner gets FULL_CONTROL. EC2 gets READ access to GET an Amazon Machine Image (AMI).                                                   |
+| authenticated-read        | Bucket & Object | Owner gets FULL_CONTROL. AuthenticatedUsers group gets READ access.                                                                   |
+| bucket-owner-read         | Object          | Object owner gets FULL_CONTROL. Bucket owner gets READ access. (S3 ignores it if you specify it when creating a bucket)               |
+| bucket-owner-full-control | Object          | Both the object owner and the bucket owner get FULL_CONTROL over the object. (S3 ignores it if you specify it when creating a bucket) |
+| log-delivery-write        | Bucket          | LogDelivery group gets WRITE and READ ACP permissions on the bucket.                                                                  |
+
+# Cross-Account IAM Roles
+
+- You can use cross-account IAM roles to centralize permission management when providing cross-account access to multiple services
+- Example: access to S3 objects that are stored in multiple S3 buckets
+- Bucket Policy is not required as the API calls to S3 come from within the account (through the assumed IAM role)
+
+# Sample bucket policies force HTTPS in flight
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EnforceSSLRequestsOnly",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": ["arn:aws:s3:::my-bucket", "arn:aws:s3:::my-bucket/*"],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    }
+  ]
+}
+```
+
+# S3 Bucket Policies - Restrict Access to Specific IP Addresses
+
+- Block traffic to the bucket unless request is from specified external IP addresses
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": ["arn:aws:s3:::my-bucket", "arn:aws:s3:::my-bucket/*"],
+      "Condition:": {
+        "NotIpAddress": {
+          "aws:SourceIp": ["11.11.11.11/24"]
+        }
+      }
+    }
+  ]
+}
+```
+
+# S3 Bucket policy - restrict by user ID
+
+- Block traffic to the bucket unless request is from specified users (same AWS account)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Principal": "_",
+      "Action": "s3:_",
+      "Resource": ["arn:aws:s3:::my-bucket", "arn:aws:s3:::my-bucket/*"],
+      "Condition": {
+        "StringNotEquals": {
+          "aws:userid": ["AIDAEXAMPLEUSERID1", "RoleIDExample:*"]
+        }
+      }
+    }
+  ]
+}
+```
+
+# VPC Gateway Endpoint for Amazon S3
+
+- No cost
+- Only accessed by resources in the VPC where it's created
+- Make sure "DNS Support" is Enabled
+- Keep on using the public DNS of Amazon S3
+- Make sure Outbound rules of SG of EC2 instance allows traffic to S3
+
+# VPC Interface Endpoint for S3
+
+- ENI(s) are deployed in your Subnets (Security Groups can be attached to ENIs)
+- Can access from on-premises (VPN or Direct Connect)
+- Costs $0.01 per hour AZ
+- The public hostname of a service will resolve to the private Endpoint Interface hostname
+- Both VPC Setting "Enable DNS hostnames" and "Enable DNS support" must be 'true'
+- No "Private DNS name" option for VPC Interface Endpoint for S3
+
+# VPC Endpoint Restrictions aws:SourceVpc and aws:SourceVpce
+
+- aws:SourceVpc - restrict access to a specific VPCs
+
+```json
+{
+  "Effect": "Deny",
+  "Action": "s3:*",
+  "Resource": ["arn:aws:s3:::my-bucket", "arn:aws:s3:::my-bucket/*"],
+  "Condition": {
+    "StringNotEquals": {
+      "aws:SourceVpc": "vpc-12345678"
+    }
+  }
+}
+```
+
+- aws:SourceVpce - restrict access to a specific VPC Endpoint
+
+```json
+{
+  "Effect": "Deny",
+  "Action": "s3:*",
+  "Resource": ["arn:aws:s3:::my-bucket", "arn:aws:s3:::my-bucket/*"],
+  "Condition": {
+    "StringNotEquals": {
+      "aws:SourceVpce": "vpce-1234567890abcdef0"
+    }
+  }
+}
+```
+
+# Regain Access to Locked S3 Buckets
+
+- If you incorrectly configured your S3 bucket policy to deny access to everyone (Deny s3:_, Principal:_)
+- You must delete the S3 bucket policy using the AWS account root user
+- Note: Deny statements in IAM policies do not affect the root account
+
+# Bucket settings for Block Public Access
+
+- These settings were created to prevent company data leaks
+- If you know your bucket should never be public, leave these on
+- Can be set at the account level
+
+# S3 - Access Points
+
+- Access Points simplify security management for S3 Buckets
+- Each Access Point has:
+
+  - its own DNS name (internet Origin or VPC Origin)
+  - an access point policy (similar to bucket policy) - manage security at scale
+
+- We can define the access point to be accessible only from within the VPC
+- You must create a VPC Endpoint to access the Access Point (Gateway or Interface Endpoint)
+- The VPC Endpoint Policy must allow access to the target bucket and Access Point
+
+# S3 - Multi-Region Access Points
+
+- Provide a global endpoint that span S3 buckets in multiple AWS regions
+- Dynamically route requests to the nearest S3 bucket (lowest latency)
+- Bi-directional S3 bucket replication rules are created to keep data in sync across regions
+- Failover Controls - allows you to shift requests across S3 buckets in different AWS regions within minutes (Activate-Active or Active-Passive)
+
+# What is CORS
+
+- Cross-Origin Resource Sharing (CORS) is a security feature implemented by web browsers to allow requests to other origins while visiting the main origin
+- origin = scheme (protocol) + host (domain) + port
+  - example: https://www.example.com (implied port is 443 for HTTPS, 80 for HTTP)
+- Same origin: http://example.com/app1 and http://example.com/app2
+- Different origins: http://www.example.com and http://other.example.com
+- The requests won't be fulfilled unless the other origin allows for the requests, using CORS Headers (example: Access-Control-Allow-Origin)
+
+# Amazon S3 - CORS
+
+- If a client makes a cross-origin request on our S3 bucket, we need to enable the correct CORS headers
+- It's a popular exam question
+- You can allow for a specific origin or for \* (all origins)
+
+# Cognito User Pools (CUP) - User Features
+
+- Create a serverless database of user for your web and mobile apps
+- Simple login: Username (or email) / password combination
+- Password reset
+- Email and Phone number verification
+- Multi-factor authentication (MFA)
+- Federated identities: users from Facebook, Google, SAML...
+- Feature: block users if their credentials are compromised elsewhere
+- Login sends back a JSON Web Token (JWT) that can be used to access other AWS services
+
+# Cognito User Pools (CUP) - Integrations
+
+- CUP integrates with API Gateway and Application Load Balancer (ALB) to authenticate users
+
+# Cognito Identity Pools (Federated Identities)
+
+- Get identities for "users" so they obtain temporary AWS credentials
+- Your identity pool (e.g identity source) can include:
+
+  - Public Providers (Login with Amazon, Facebook, Google, Apple)
+  - Users in an Amazon Cognito user pool
+  - OpenID Connect Providers and SAML Identity Providers
+  - Developer Authenticated Identities (custom login server)
+  - Cognito Identity Pools allow for unauthenticated (guest) access
+
+- Users can then access AWS services directly or through API Gateway
+  - The IAM policies applied to the credentials are defined in Cognito
+  - They can be customized based on the user_id for fine grained control
+
+# Cognito Identity Pools - IAM Roles
+
+- Default IAM roles for authenticated and guest users
+- Define rules to choose the role for each user based on the user's ID
+- You can partition your users' access using policy variables
+- IAM credentials are obtained by Cognito Identity Pools through STS
+- The roles must have a "trust" policy of Cognito Identity Pools
+
+# Cognito User Pool Groups
+
+- Collection of users in a logical group in Cognito User Pool
+- Defines the permissions for users in the group by assigning IAM role to the group
+- Users can be in multiple groups:
+  - Assign precedence values to each group (lower will be chosen and its IAM role will be applied)
+  - Choose from available IAM roles by specifying the IAM role ARN
+- You can't create nested groups
+
+# Identity Federation in AWS
+
+- Give users outside of AWS permissions to access AWS resources in your account
+- You don't need to create IAM users (user management is outside AWS)
+- Use cases:
+  - A corporation has its own identity system (e.g., Active Directory)
+  - Web/Mobile application that needs access to AWS resources
+- Identity Federation can have many flavors:
+  - SAML 2.0
+  - Custom Identity broker
+  - Web identity Federation With(out) Amazon Cognito
+  - IAM Identity Center
+
+# SAML 2.0 Federation
+
+- Security Assertion Markup Language 2.0 (SAML 2.0)
+- Open standard used by many identity providers (e.g., ADFS)
+  - Supports integration with Microsoft Active Directory Federations Services (ADFS)
+  - Or any SAML 2.0 compliant identity provider
+- Access to AWS Console, AWS CLI, or AWS API using temporary credentials
+  - No need to create IAM users for each of your employees
+  - Need to setup a trust between AWS IAM and SAML 2.0 Identity Provider (both ways)
+- User-the-hood: Uses the STS API AssumeRoleWithSAML
+- SAML 2.0 Federation is the "old way", IAM Identity Center Federation is the new managed and simpler way
+  - https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html
+
+# Custom Identity broker application
+
+- Use only if Identity Provider is NOT compatible with SAML 2.0
+- The Identity Broker Authenticates users and requests temporary credentials from AWS STS
+- The Identity Broker must determine the appropriate IAM role
+- Uses the STS API AssumeRole or GetFederationToken
+
+# Web Identity Federation - Without Cognito
+
+- Not recommended by AWS - use Cognito instead
+
+# Web Identity Federation - With Cognito
+
+- Preferred over the Web Identity Federation
+  - Create IAM Roles using Cognito with the least privilege needed
+  - Build trust between the OIDC IdP and AWS
+- Cognito benefits:
+  - Supports anonymous users
+  - Supports MFA
+  - Data Synchronization
+- Cognito replaces a Token Vending Machine (TVM)
+
+# Web Identity Federation - IAM Policy
+
+- After being authenticated with Web Identity Federation, you can identify the user with an IAM policy variable
+
+- Examples:
+  - cognito-identity.amazonaws.com:sub
+  - www.amazon.com:user_id
+  - graph.facebook.com:id
+  - accounts.google.com:sub
+
+# SAML 2.0 Federation - Troubleshooting
+
+- Error: Response signature invalid (service: AWSSecurityTokenService; status code: 400; error code: InvalidIdentityToken)
+- Reason: federation metadata of the identity provider does NOT match the metadata of the IAM identity provider
+  - Example: metadata file might have changed to update an expired certificate
+- Resolution:
+  - Download the updated SAML 2.0 metadata file from the identity provider
+  - Update in the IAM identity provider using AWS CLI aws iam update-saml-provider
+
+# AWS Identity Center (successor to AWS Single Sign-On)
+
+- One login (single sign-on) for all your
+
+  - AWS accounts in AWS Organizations
+  - Business cloud applications (e.g., Salesforce, Box, Microsoft 365)
+  - SAML 2.0 enabled applications
+  - EC2 Windows Instance
+
+- Identity Providers
+  - Built-in Identity Store in IAM identity center
+  - 3rd party: Active Directory, OneLogin, Okta
+
+# AWS IAM Identity Center - Fine Grained Permissions and Assignments
+
+- Multi account permissions
+
+  - Manage access across AWS accounts in your AWS organization
+  - Permission Sets - a collection of one or more IAM policies assigned to users and groups to define AWS access.
+
+- Application Assignments
+
+  - SSO access to many SAML 2.0 business applications (Salesforce, Box, Microsoft 365)
+  - Provide required URLs, certificates, and metadata
+
+- Attribute Based Access Control (ABAC)
+  - Fine grained permissions based on users' attributes stored in IAM identity center identity store.
+  - example: cost center, title, locale,...
+  - use case: define permissions once, then modify AWS access by changing the attributes
+
+# AWS Directory Services
+
+- AWS Managed Microsoft AD
+
+  - Create your own AD in AWS, manage users locally, supports MFA
+  - Establish "trust" connections with your on-premise AD
+  - Managed Service: Microsoft AD in your AWS VPC
+  - EC2 Windows Instances:
+    - EC2 Windows instances can join the domain and run traditional AD applications (sharepoint, etc)
+    - Seamlessly Domain Join Amazon EC2 Instances from Multiple Accounts and VPCs
+  - Integrations:
+    - RDS for SQL Server, AWS Workspaces, Quicksight...
+    - AWS SSO to provide access to 3rd party applications
+  - Standalone repository in AWS or joined to on-premise AD
+  - Multi AZ deployment of AD in 2 AZ, # of DC (Domain Controllers) can be increased for scaling
+  - Automated backups
+  - Automated Multi-Region replication of your directory
+
+- AD Connector
+
+  - Directory Gateway (Proxy) to redirect to on-premiss AD, supports MFA
+  - Users are managed on the on-premise AD
+
+- Simple AD
+  - AD-compatible managed directory on AWS
+  - Cannot be joined with on-premise AD
+
+# Connect to on-premise AD
+
+- Ability to connect your on-premise Active Directory to AWS Managed Microsoft AD
+- Must establish a Direct Connect (DX) or VPN connection
+- Can setup three kinds of forest trust:
+  - One-way trust:
+    AWS => On-Premise
+  - One-way trust:
+    On-Premise => AWS
+  - Two-way forest trust:
+    AWS <=> On-Premise
+- Forest trust is different than Synchronization (replication is not supported)
+
+# Solution Architecture: Active Directory Replication
+
+- You may want to create a replica of your AD on EC2 in the cloud to minimize latency of in case DX or VPN goes down
+- Establish trust between the AWS Managed Microsoft AD and EC2
+
+# AWS Directory Services - AD Connector
+
+- AD Connector is a directory gateway to redirect directory requests to your on-premises Microsoft Active Directory
+- No caching capability
+- Manage users solely on-premise, no possibility of setting up a trust
+- VPN or Direct Connect
+- Doesn't work with SQL Server, doesn't do seamless joining, can't share directory
+
+# AWS Directory Services - Simple AD
+
+- Simple AD is an inexpensive Active Directory - compatible service with the common directory features.
+- Supports joining EC2 instances, manage users and groups
+- Does not support MFA, RDS SQL server, AWS SSO
+- Small: 500 users, large: 5000 users
+- Powered by Samba 4, compatible with Microsoft AD
+- lower cost, low scale, basic AD compatible, or LDAP compatibility
+- No trust relationship
+
+# Encryption in flight (TLS/SSL)
+
+- Data is encrypted before sending and decrypted after receiving
+- TLS certificates help with encryption (HTTPS)
+- Encryption in flight ensures no MITM (man in the middle attack) can happen
+
+# Server-side encryption (SSE) at rest
+
+- Data is encrypted after being received by the server
+- Data is decrypted before being sent
+- It is stored in an encrypted form thanks to a key (usually a data key)
+- The encryption / decryption keys must be managed somewhere, and the server must have access to it
+
+# Client-side encryption
+
+- Data is encrypted by the client and never decrypted by the server
+- Data will be decrypted by a receiving client
+- The server should not be able to decrypt the data
+- Could leverage Envelope Encryption
+
+# CloudHSM
+
+- KMS => AWS manages the software for encryption
+- CloudHSM => AWS provisions encryption hardware
+- Dedicated Hardware (HSM = Hardware Security Module)
+- You manage your own encryption keys entirely (not AWS)
+- HSM device is tamper resistant, FIPS 140-2 level 3 compliance
+- Supports both symmetric and asymmetric encryption (SSL/TLS keys)
+- No free tier available
+- Must use the CloudHSM Client Software
+- Redshift supports CloudHSM for database encryption and key management
+- Good option to use with SSE-C encryption
+
+# CloudHSM - High Availability
+
+- CloudHSM clusters are spread across Multi AZ (HA)
+- Great for availability and durability
+
+# CloudHSM vs. KMS
+
+| **Feature**                    | **AWS KMS**                                                               | **AWS CloudHSM**                                                               |
+| ------------------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Tenancy**                    | Multi-Tenant                                                              | Single-Tenant                                                                  |
+| **Standard**                   | FIPS 140-2 Level 3                                                        | FIPS 140-2 Level 3                                                             |
+| **Master Keys**                | - AWS Owned Keys <br> - AWS Managed Keys <br> - Customer Managed KMS Keys | Customer Managed CMK                                                           |
+| **Key Types**                  | - Symmetric <br> - Asymmetric <br> - Digital Signing                      | - Symmetric <br> - Asymmetric <br> - Digital Signing & Hashing                 |
+| **Key Accessibility**          | Accessible in multiple AWS regions <br> KMS Key Replication               | - Deployed and managed in a VPC <br> - Can be shared across VPCs (VPC Peering) |
+| **Cryptographic Acceleration** | None                                                                      | - SSL/TLS Acceleration <br> - Oracle TDE Acceleration                          |
+| **Access & Authentication**    | AWS IAM                                                                   | You create users and manage their permissions                                  |
+
+# CloudHSM - Integration with AWS and 3rd Party Services
+
+- Integration with AWS Services
+
+  - Through integration with AWS KMS
+  - Configure KMS Custom Key Store with CloudHSM
+  - Example: EBS, S3, RDS,...
+  - Supports RDS Oracle TDE (through KMS)
+
+- Integration with 3rd Party Services
+  - Allows creating and storing keys in CloudHSM
+  - Use cases: SSL/TLS Offload, Windows Server Certificate Authority (CA), Oracle TDE, Microsoft SignTool, Java Keytool,...
+
+# CloudHSM - Sharing Cluster Across-Accounts
+
+- You can share the private subnets a CloudHSM clusters resides in using AWS RAM
+- You CANNOT share the CloudHSM cluster itself
+- Share VPC Subnets with entire Organization, specific OUs, or AWS accounts
+- Note: configure CloudHSM Security Group to allow traffic from clients
+
+# AWS KMS (Key Management Service)
+
+- Anytime you hear "encryption" for an AWS service, it's most likely KMS
+- Easy way to control access to your data, AWS manages keys for us
+- Fully integrated with IAM for authorization
+- Seamlessly integrated into:
+  - Amazon EBS: encrypted volumes
+  - Amazon S3: Server-side encryption of objects
+  - Amazon Redshift: encryption of data
+  - Amazon RDS: encryption of data
+  - Amazon SSM: Parameter store
+- But you can also use the CLI/SDK
+
+# KMS - KMS Key Types
+
+- Symmetric (AES-256 keys)
+  - First offering of KMS, single encryption key that is used to Encrypt and Decrypt
+  - AWS services that are integrated with KMS use Symmetric KMS keys
+  - Necessary for envelope encryption
+  - You never get access to the KMS key unencrypted (must call KMS API to use)
+- Asymmetric (RSA and ECC key pairs)
+  - Public (Encrypt) and Private Key (Decrypt) pair
+  - Used for Encrypted/Decrypt, or Sign/Verify operations
+  - The public key is downloadable, but you can't access the Private Key unencrypted
+  - Use case: encryption outside of AWS by users who can't call the KMS API
+
+# Types of KMS Keys
+
+- Customer Managed Keys
+  - Create, manage and use, can enable or disable
+  - Possibility of rotation policy (new key generated every year, old key preserved)
+  - Can add a Key Policy (resource policy) and audit in CloudTrail
+  - Leverage for envelope encryption
+- AWS Managed Keys
+  - Used by AWS service (aws/s3, aws/ebs, aws/redshift)
+  - Managed by AWS (automatically rotated every 1 year)
+- AWS Owned Keys
+  - Created and managed by AWS, used by some AWS services to protect your resources
+  - Used in multiple AWS accounts, but they are not in your AWS account
+  - You can't view, use, track, or audit
+
+# KMS Key Material Origin
+
+- Identifies the source of the key material in the KMS key
+- Can't be changed after creation
+- KMS (AWS_KMS) - default
+  - AWS KMS creates and manages the key material in its own key store
+- External (EXTERNAL)
+  - You import the key material into the KMS key
+  - You're responsible for securing and managing this key material outside of AWS
+- Custom Key Store (AWS_CLOUDHSM)
+  - AWS KMS creates the key material in a custom key store (CloudHSM Cluster)
+
+# KMS Key Source - Custom Key Store (CloudHSM)
+
+- Integrate KMS with CloudHSM cluster as a Custom Key Store
+- Key materials are stored in a CloudHSM cluster that you own and manage
+- The cryptographic operations are performed in the HSMs
+- Use cases:
+  - You need direct control over the HSMs
+  - KMS keys needs to be stored in a dedicated HSMs
+
+# KMS Key Source - External
+
+- Import your own key material into KMS key, Bring Your Own Key (BYOK)
+- You're responsible for key material's security, availability, and durability outside of AWS
+- Can't be used with Custom Key Store (CloudHSM)
+- Manually rotate your KMS key (Automatic Key Rotation is NOT supported)
+
+# KMS Multi-Region Keys
+
+- A set of identical KMS keys in different AWS Regions that can be used interchangeably (~same KMS key in multiple Regions)
+- Encrypt in one Region and decrypt in other Regions (No need to re-encrypt or making cross-region API calls)
+- Multi-Region keys have the same key ID, key material, automatic rotation,...
+- KMS Multi-Region are NOT global (Primary + Replicas)
+- Each Multi-Region key is managed independently
+- Only one primary key at a time, can promote replicas into their own primary
+- Use cases: Disaster Recovery, Global Data management (e.g., DynamoDB Global Tables), Active-Active Applications that span multiple Regions, Distributed Signing applications,...

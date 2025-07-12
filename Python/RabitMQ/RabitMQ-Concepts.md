@@ -98,3 +98,43 @@ Among others, queues are mostly used to:
 - An AMQP message consists of a header, properties, and a body. The header contains metadata about the message, such as the message ID, timestamp, and priority. The properties contain additional metadata about the message, such as the content type and encoding. The body contains the actual message data.
 - The header and properties are optional, and the body is required. The body can be any type of data, including text, binary data, or a serialized object. The header and properties are used to provide additional information about the message, such as the message ID, timestamp, and priority.
 - The header and properties are used to provide additional information about the message, such as the message ID, timestamp, and priority. The body is used to contain the actual message data.
+
+# Fanout Exchange
+
+- Publisher is not aware who is th subscriber of the published message.
+- Publisher is not even ware if there is any subscriber of the message at all.
+- If there are no queue attached to the fanout exchange, the messages are dropped or discarded.
+- No binding rules are required as all the attached queues to the exchange receive the messages.
+- The binding of the queues with the exchange is required.
+
+## Publisher
+
+- Create a connection, say CN
+- Create a channel in CN, say CH
+- Create an exchange
+- publish the message
+- Close the connection
+  - Automatically closes the channel
+
+## Subscriber
+
+- Create a connection say CN
+- Create a channel in CN, say CH
+- Create the exchange (will not affect if exchange is already there)
+- Create the queue, if it does not exist already and associate it with the channel CH
+- Bind the queue with the exchange
+- Associate a call-back function with the message queue
+- Start consuming the messages from the queue
+
+# Exclusive Queues
+
+- has exclusive connection to a channel
+- It gets deleted as soon as the channel or associated Connection (TCP) is closed
+- Therefore, they are client specific
+
+# Temporary Queues
+
+- Every subscriber has its own queue
+- Good to have temporary queues for subscriber
+- Close the queue as soon as the subscriber gets over
+  - By marking the queue exclusive to the subscriber's channel
