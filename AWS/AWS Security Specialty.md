@@ -3288,3 +3288,621 @@ You can force Metadata Version 2 at Instance Launch using either:
 - Each Multi-Region key is managed independently
 - Only one primary key at a time, can promote replicas into their own primary
 - Use cases: Disaster Recovery, Global Data management (e.g., DynamoDB Global Tables), Active-Active Applications that span multiple Regions, Distributed Signing applications,...
+
+# DynamoDB Global Tables and KMS Multi-Region Keys Client-Side encryption
+
+- We can encrypt specific attributes client-side in our DynamoDB table using the Amazon DynamoDB Encryption Client
+- Combined with Global Tables, the client-side encrypted data is replicated to other regions
+- If we use a multi-region key, replicated in the same region as the DynamoDB Global table, then clients in these regions can use low-latency API calls to KMS in their region to decrypt the data client-side
+- Using client-side encryption we can protect specific fields and guarantee only decryption if the client has access to an API key
+
+# Global Aurora and KMS Multi-Region Keys Client-Side encryption
+
+- We can encrypt specific attributes client-side in our Aurora table using the AWS Encryption SDK
+- Combined with Aurora Global Tables, the client-side encrypted data is replicated to other regions
+- If we use multi-region key, replicated in the same region as the Global Aurora DB, then clients in these regions can use low-latency API calls to KMS in their region to decrypt the data client-side
+- Using client-side encryption we can protect specific fields and guarantee only decryption if the client has access to an API key, we can protect specific fields even from database admins
+
+# How does KMS work? API - Encrypt and Decrypt
+
+# Envelope Encryption
+
+- KMS Encrypt API call has a limit of 4 KB
+- If you want to encrypt >4 KB, we need to use Envelope Encryption
+- The main API that will help us is the GenerateDataKey API
+- For the exam: anything over 4 KB of data that needs to be encrypted must use the Envelope Encryption == GenerateDataKey API
+
+# Encryption SDK
+
+- The AWS Encryption SDK implemented Envelope Encryption for us
+- The Encryption SDK also exists as a CLI tool we can install
+- Implementations for Java, Python, C, Javascript
+- Feature - Data Key Caching:
+  - re-use data keys instead of creating new ones for each encryption
+  - Helps with reducing the number of calls to KMS with a security trade-off
+  - Use LocalCryptoMaterialsCache (max age, max bytes, max number of messages)
+
+# KMS Symmetric - API Summary
+
+- Encrypt: encrypt up to 4 KB of data through KMS
+- GenerateDataKey: generates a unique symmetric data key (DEK)
+  - returns a plaintext copy of the data key
+  - AND a copy that is encrypted under the CMK that you specify
+- GenerateDataKeyWithoutPlaintext:
+  - Generate a DEK to use at some point (not immediately)
+  - DEK that is encrypted under the CMK that you specify (must use Decrypt later)
+- Decrypt: decrypt up to 4 KB of data (including Data Encryption Keys)
+- GenerateRandom: Returns a random byte string
+
+# KMS Automatic Key Rotation
+
+- AWS-managed KMS Keys: automatically rotated every 1 year
+- For Customer-Managed Symmetric KMS Key
+  - Automatic key rotation is optionally enabled
+  - Customize Rotation Period between 90 and 2560 days (default: 365 days)
+  - Previous key is kept active so you can decrypt old data
+  - New Key has the same KMS Key ID (only the backing key is changed)
+
+# KMS On-Demand Key Rotation
+
+- For Customer-Managed Symmetric KMS Key (not AWS managed CMK)
+- Does NOT require Automatic Key Rotation to be enabled
+- Does NOT change existing Automatic Rotation schedules
+- Limit to how many times you can trigger an on-demand key rotation
+
+# KMS Manual Key Rotation (Customer-Managed Symmetric KMS Key and Imports)
+
+- When you want to rotate key (example: every month)
+- New Key has a different KMS Key ID
+- Keep the previous key active so you can decrypt old data
+- Better to use aliases in this case (to hide the change of key for the application)
+- Good solution to rotate KMS Key that are not eligible for automatic rotation (like asymmetric KMS Key)
+
+# KMS Alias Updating
+
+- Better to use aliases in this case (to hide the change of key for the application)
+
+# KMS Key Deletion
+
+- Generated Keys (from within KMS)
+  - No expiration date
+  - Cannot be deleted immediately, mandatory 7 to 30 days waiting period
+    - You can cancel key deletion during the waiting period
+    - During the waiting period, the KMS Key cannot be used for Encrypt / Decrypt
+    - Everything will be deleted at the end of the waiting period
+  - You may manually disable it immediately instead (to re-enable it later)
+- Imported Keys:
+  - You may set an expiration period on the key
+    - KMS will delete the key material
+    - You can also delete the key material on demand
+    - The metadata is kept so you can re-import in the future
+  - You may manually disable it and schedule for deletion (everything is deleted)
+- AWS managed keys or AWS owned keys cannot be deleted
+
+# KMS Key Deletion - CloudWatch Alarms
+
+- Use CloudTrail, CloudWatch Logs, CloudWatch Alarms and SNS to be notified when someone tries to use a CMK that's "Pending deletion" in a cryptographic operation (Encrypt, Decrypt, ...)
+
+# KMS Key Deletion - Notifications
+
+- To be notified of Keys being deleted or disabled
+- Using CloudTrail + EventBridge
+
+# KMS Multi Region Key Deletion
+
+- Deleting Replica Key
+  - Less risky, can always be re-created from the primary key (if it exists)
+  - Must be scheduled (7 to 30 days)
+- Deleting Primary Key
+  - Cannot happen until all Replicas have been deleted
+  - If you want to delete a Primary Key but keep Replicas, promote another one as Primary and then delete the "old Primary Key"
+
+# KMS Key Policies
+
+- Control access to KMS keys, "similar" to S3 bucket policies
+- Difference: you cannot control access without them
+
+- Default KMS Key Policy:
+
+  - Created if you don't provide a specific KMS Key Policy
+  - Complete access to the key to the root user = entire AWS account
+
+- Custom KMS Key Policy:
+  - Define users, roles that can access the KMS key
+  - Define who can administer the key
+  - Useful for cross-account access of your KMS key
+
+# Default KMS Key Policy
+
+```json
+{
+  "Effect": "Allow",
+  "Action": "kms:*",
+  "Resource": "*",
+  "Principal": {
+    "AWS": "arn:aws:iam::123456789012:root"
+  }
+}
+```
+
+- It gives the AWS account that owns the KMS key, full access to the KMS key
+- KMS Key policy does NOT automatically give permission to the account or any of its users
+- Allows the account to use IAM policies to allow access to the KMS key, in addition to the key policy
+
+# KMS Key Policies
+
+- AWS Owned Keys
+
+  - You cannot view or change the Key Policy
+
+- AWS Managed Keys (e.g., aws/ebs)
+
+  - You can view the Key Policy
+  - You cannot change the Key Policy
+
+- AWS Customer Managed Keys
+  - You can view the Key Policy
+  - You can edit the Key Policy
+
+# Custom KMS Key Policy - Allow Admins
+
+- KMS Key administrators have permissions to manage the KMS key
+- KMS Key administrators cannot use the KMS Key Cryptographic Operations (Encrypt / Decrypt...)
+- You can add IAM Users / Roles as KMS Key administrators
+
+```json
+{
+  "Sid": "AllowAdmins",
+  "Effect": "Allow",
+  "Principal": {
+    "AWS": "arn:aws:iam::123456789012:role/KMSAdmins"
+  },
+  "Action": [
+    "kms:Create*",
+    "kms:Describe*",
+    "kms:Enable*",
+    "kms:List*",
+    "kms:Put*",
+    "kms:Update*"
+  ],
+  "Resource": "*"
+}
+```
+
+# Custom KMS Key Policy - Allow Users to Directly Use the KMS Key
+
+- Allows IAM Users / Roles to use the KMS Key directly
+- IAM Users / Roles don't need IAM Policies if the KMS Key is in the same account
+  - The KMS Key explicitly authorizes the IAM Principal
+- Alternative is Default KMS Key + IAM Policy
+
+# KMS Grants
+
+- Allows you to grant access to specific AWS KMS keys to other AWS accounts and IAM Users / Roles within your AWS account
+- Often used for temporary permissions
+- Can be created for a variety of operations, including encrypt, decrypt, sign, and verify, as well as creating more grants
+- Grant are for one KMS Key only, and one or more IAM Principal
+- Once granted, a principal can perform any operation as specified in the Grant
+- Grants do NOT expire automatically, you must delete them manually
+- You don't need to change KMS Key Policy or IAM Policy
+
+# Creating a KMS Key Grant
+
+- Using AWS CLI
+
+```bash
+aws kms create-grant --key-id <KMS Key ID> --grantee-principal <IAM User ARN> --operations <Operation> --name <Grant Name>
+```
+
+- Make sure to delete a KMS Key Grant when you're done using it
+- For now, there's no support in the AWS Console
+
+# KMS Grants - AWS Service Usage
+
+- Grants are commonly used by AWS services that integrate with AWS KMS to encrypt your data at rest
+- The AWS service creates a Grant on behalf of a user in the account, uses its permissions, and retires the grant as soon as its task is complete
+- Users must have the CreateGrant IAM permission
+
+# Custom KMS Key Policy - Grants for AWS Services Use Cases
+
+- Use this KMS Key Policy with:
+  - Amazon EBS and Amazon EC2 to attach an encrypted EBS volume to an EC2 instance
+  - Amazon Redshift to launch an encrypted cluster
+  - AWS services integrated with AWS KMS that use grants to create, manage, or use encrypted resources with those services
+
+```json
+{
+  "Sid": "AllowEBSGrants",
+  "Effect": "Allow",
+  "Principal": {
+    "AWS": "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+  },
+  "Action": "kms:CreateGrant",
+  "Resource": "*",
+  "Condition": {
+    "Bool": {
+      "kms:GrantIsForAWSResource": "true"
+    }
+  }
+}
+```
+
+# Troubleshooting: Can't start an EC2 instance with Encrypted EBS Volume
+
+- Reasons:
+  - The KMS Key is disabled
+  - The KMS Key is scheduled for deletion
+  - The KMS Key policy does not allow the IAM role to use the KMS key
+  - The IAM role does not have the kms:Decrypt permission for the KMS key
+- Solution:
+  - Check the KMS Key policy and IAM role permissions
+  - Check if the KMS Key is enabled and not scheduled for deletion
+  - Ensure that the IAM role has the necessary permissions to use the KMS key
+
+# Condition Keys - kms:ViaService
+
+- kms:ViaService - limits the use of a KMS key to requests from specified AWS services
+- Example: the following key policy allow usage of the KMS Key through EC2 or RDS in us-west-2 on behalf of the ExampleUser
+- IAM user must be authorized to use the KMS Key and Grant it to the AWS service
+
+# Condition Keys - kms:CallerAccount
+
+- kms:CallerAccount - Allow or deny access to all identities (IAM users and roles) in an AWS account
+- Example: the following KMS Key policy is the Key policy for AWS Managed Key for Amazon EBS (aws/ebs)
+
+```json
+{
+  "Effect": "Allow",
+  "Principal": {
+    "AWS": "*"
+  },
+  "Action": "kms:Decrypt",
+  "Resource": "*",
+  "Condition": {
+    "StringEquals": {
+      "kms:CallerAccount": "123456789012"
+    },
+    "StringLike": {
+      "kms:ViaService": "ec2.us-west-2.amazonaws.com"
+    }
+  }
+}
+```
+
+# Sharing KMS Encrypted RDS DB Snapshots
+
+- You can share RDS DB snapshots encrypted with KMS CMK with other accounts, but must first share the KMS CMK with the target account using Key Policy
+
+# Asymmetric Encryption
+
+- An encryption process that uses a pair of related keys (public and private) to encrypt and decrypt data
+- Public Key can be shared, Private Key must be kept secret
+- KMS supports 3 types of asymmetric KMS keys:
+  - RSA (2048, 3072, or 4096 bits)
+  - ECC (Elliptic Curve Cryptography) keys
+  - Digital Signature keys
+- KMS supports 3 types of asymmetric KMS keys:
+  - RSA KMS Keys - encryption/decryption or signing/verification
+  - Elliptic Curve (ECC) KMS Keys - signing and verification
+  - SM2 KMS Keys (China Regions only) - encryption/decryption or signing/verification
+- Private Keys never leaves AWS KMS unencrypted
+
+# Digital Signing with KMS Asymmetric
+
+- Helps you verify the integrity of messages or files sent across different systems
+- Verify that file has not been tampered with in transit
+- Public Key used to verify the signature while Private Key used in the signing process
+- Use cases: document e-signing, secure messaging, authentication/authorization tokens, trusted source code, e-commerce transactions,...
+
+# KMS API Calls Limits and Data Key Caching
+
+- When your application makes multiple API calls to KMS and you hit service limits (requests per second limit)...
+- Data Key Caching allows you to reuse data keys that protect your data
+- Instead of generating a new data key for each encryption operation
+- Reduce latency, improve throughput, reduce cost, stay within service limits,...
+- Implemented using AWS Encryption SDK
+- Note: encryption best practices discourages reuse of data keys (tradeoff cost / security)
+
+# Changing the KMS Key for an encrypted EBS volume
+
+- You can't change the encryption keys used by an EBS volume
+- Create an EBS snapshot and create a new EBS volume and specify the new KMS key
+
+# EBS Encryption - Account level setting
+
+- New Amazon EBS volumes aren't encrypted by default
+- There's an account-level setting to encrypt automatically new EBS volumes and Snapshots
+- This setting needs to be enabled on a per-region basis
+
+# Encrypt Un-encrypted EFS File System
+
+- You can't encrypt an existing un-encrypted EFS file system
+- Create a new encrypted EFS File System and migrate the file using AWS DataSync
+
+# ABAC with KMS
+
+- Control access to your KMS Keys based on tags and aliases
+
+# KMS with SSM Parameter Store
+
+- SSM Parameter Store uses KMS to encrypt/decrypt parameter values of type Secure String
+- Two types of Secure String Parameters:
+  - Standard - all parameters encrypted using the same KMS key
+  - Advanced - each parameter encrypted with a unique data key (Envelope Encryption)
+- Specify the KMS key or use AWS Managed key (aws/ssm)
+- Works only with Symmetric KMS Keys
+- Encryption process takes place in AWS KMS
+- Note: you must have access to both the KMS key and the parameter in SSM Parameter Store
+
+# AWS Secrets Manager
+
+- Newer service, meant for storing secrets
+- Capability to force rotation of secrets every X days
+- Automate generation of secrets on rotation (uses Lambda)
+- Integration with Amazon RDS (MySQL, PostgreSQL, Aurora)
+- Secrets are encrypted using KMS
+- Mostly meant for RDS integration
+
+# AWS Secrets Manager - Multi-Region Secrets
+
+- Replicate Secrets across multiple AWS Regions
+- Secrets Manager keeps read replicas in sync with the primary Secret
+- Ability to promote a read replica Secret to a standalone Secret
+- Use cases: multi-region apps, disaster recovery strategies, multi-region DB...
+
+# KMS with Secrets Manager
+
+- Secrets Manager uses KMS to encrypt/decrypt every version of every Secret value
+- Each Secret value is encrypted with a unique data key (Envelope Encryption)
+- Specify the KMS key or use AWS Managed Key (aws/secretsmanager)
+- Works only with Symmetric KMS Keys
+- Encryption process takes place in Secrets Manager
+- Note: you must have access to both the KMS key and the Secret in Secrets Manager
+
+# Secrets Manager - Secrets Rotation
+
+- Automatically and periodically updating a Secret
+- Automated password rotation for integrated databases
+- RDS, Redshift, DocumentDB, other databases...
+- Credentials are changed in the Secret and the database
+- Secrets Manager uses Lambda function to rotate Secrets
+- When you Enable Secret Rotation, the Secret is rotated immediately
+- Note: Lambda function must have access to both Secrets Manager and your database (if Lambda in VPC private subnet, use VPC Endpoints or NAT Gateway)
+
+# Secrets Manager - Resource Policy
+
+- Specify who can access a Secret and what actions an IAM identity can perform
+- Use cases:
+  - Grant access to a single Secret for multiple users
+  - Enforcing permissions (e.g., adding an explicit deny to a secret)
+  - Sharing a Secret between AWS accounts
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "secretsmanager:*",
+      "Principal": {
+        "AWS": "arn:aws:iam::123456789012:role/SecretsManagerRole"
+      },
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+# Amazon S3 - Object Encryption
+
+- You can encrypt objects in S3 buckets using one of 4 methods
+- Server-Side Encryption (SSE)
+  - Server-Side Encryption with Amazon S3-Managed Keys (SSE-S3) - Enabled by default
+    - Encrypts S3 objects using key handled, managed, and owned by AWS
+  - Server-Side Encryption with KMS Keys stored in AWS KMS (SSE-KMS)
+    - Leverage AWS Key Management Service (AWS KMS) to manage encryption keys
+  - Server-Side Encryption with Customer-Provided Keys (SSE-C)
+    - When you want to manage your own encryption keys
+- Client-Side Encryption
+
+# Amazon S3 Encryption - SSE-S3
+
+- Encryption using keys handled, managed, and owned by AWS
+- Object is encrypted server-side
+- Encryption type is AES-256
+- Must set header "x-amz-server-side-encryption":"AES256"
+- Enabled by default for new buckets and new objects
+
+# Amazon S3 Encryption - SSE-KMS
+
+- Encryption using keys handled and managed by AWS KMS (Key Management Service)
+- KMS advantages: user control + audit key usage using CloudTrail
+- Object is encrypted server side
+- Must set header "x-amz-server-side-encryption":"aws:kms"
+
+# SSE-KMS Limitation
+
+- If you use SSE-KMS, you may be impacted by the KMS limits
+- When you upload, it calls the GenerateDataKey KMS API
+- When you download, it calls the Decrypt KMS API
+- Count towards the KMS quota per second (5500, 10000, 30000 req/s based on region)
+- You can request a quota increase using the Service Quotas Console
+
+# Amazon S3 Encryption - SSE-C
+
+- Server-Side Encryption using keys fully managed by the customer outside of AWS
+- Amazon S3 does NOT store the encryption key you provide
+- HTTPS must be used
+- Encryption key must be provided in HTTP headers, for every HTTP request made
+
+# Amazon S3 Encryption - Client-Side Encryption
+
+- Use client libraries such as Amazon S3 Client-Side Encryption Library
+- Client must encrypt data themselves before sending to Amazon S3
+- Clients must decrypt data themselves when retrieving from Amazon S3
+- Customer fully manages the keys and encryption cycle
+
+# Amazon S3 - Encryption in transit (SSL/TLS)
+
+- Encryption in flight is also called SSL/TLS
+- Amazon S3 exposes two endpoints:
+  - HTTP (unencrypted)
+  - HTTPS (encrypted)
+- HTTPS is recommended for all S3 operations
+- HTTPS is mandatory for SSE-C (Server-Side Encryption with Customer-Provided Keys)
+- Most clients would use the HTTPS endpoint by default
+
+# Amazon S3 - Force Encryption in Transit aws:SecureTransport
+
+# S3 Encryption for Objects
+
+- SSE-S3: encrypts S3 objects using keys handled and managed by AWS
+- SSE-KMS: leverage KMS to manage encryption keys
+  - Key usage appears in CloudTrail
+  - objects made public can never be read
+  - Ob s3:PutObject, make the permission kms:GenerateDataKey is allowed
+- SSE-C: when you want to manage your own encryption keys
+- Client-Side Encryption
+- Glacier: all data is AES-256 encrypted, key under AWS control
+
+# Amazon S3 - Default Encryption vs. Bucket Policies
+
+- SSE-S3 encryption is automatically applied to new objects stored in S3 buckets
+- Optionally, you can "force encryption" using a bucket policy and refuse any API call to PUT an S3 object without encryption headers (SSE-KMS or SSE-C)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::my-bucket/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+      }
+    }
+  ]
+}
+```
+
+Note: Bucket Policies are evaluated before "Default Encryption"
+
+# S3 Bucket Key for SSE-KMS encryption
+
+- New setting to decrease...
+  - Number of API calls made to KMS from S3 by 99%
+  - Costs of overall KMS encryption with Amazon S3 by 99%
+- This leverages data keys
+  - A "S3 bucket key" is generated
+  - That key is used to encrypt KMS objects with new data keys
+- You will see less KMS CloudTrail events in CloudTrail
+
+# Large File Upload to S3 with KMS key
+
+- When uploading a large file to S3 with KMS encryption, you'll have to use S3 multi-part upload
+- You must have the following permissions to the KMS Key:
+  - kms:GenerateDataKey - allows you to encrypt object part with a unique Data Key
+  - kms:Decrypt - decrypt object parts before they can be assembled, then re-encrypt them with the KMS key
+
+# S3 Batch - Object Encryption
+
+- S3 Batch - perform bulk operations on existing S3 objects with a single request (e.g., encrypt un-encrypted objects)
+- S3 Inventory - to get the list of all objects and it's associated metadata (select Encryption Status from optional fields)
+- Athena - to filter and list only un-encrypted objects
+- Note: S3 Batch Operations job must have access to the S3 bucket and the KMS key
+
+# S3 Glacier Vault Lock
+
+- Adopt a WORM (Write Once Read Many) model
+- Create a Vault Lock policy
+- Lock the policy for future edits (can no longer be changed or deleted)
+- Helpful for compliance and data retention
+
+# S3 Object Lock (versioning must be enabled)
+
+- Adopt a WORM (Write Once Read Many) model
+- Block an object version deletion for a specified amount of time
+- Retention mode - Compliance:
+  - Object versions can't be overwritten or deleted by any user, including the root user
+  - Objects retention modes can't be changed, and retention periods can't be shortened
+- Retention mode - Governance:
+  - Most users can't overwrite or delete an object version or alter its lock settings
+  - Some users have special permissions to change the retention or delete the object
+- Retention Period: protect the object for a fixed period, it can be extended
+- Legal Hold:
+  - protect the object indefinitely, independent from retention period
+  - can be freely placed and removed using the s3:PutObjectLegalHold IAM permission
+
+# Amazon S3 Glacier - Vault Policies and Vault Lock
+
+- Each Vault has:
+  - ONE vault access policy
+  - ONE vault lock policy
+- Vault Policies are written in JSON
+- Vault Access Policy is like a bucket policy (restrict user / account permissions)
+- Vault Lock Policy is a policy you lock, for regulatory and compliance requirements
+  - The policy is immutable, it can never be changed (that's why it's call LOCK)
+  - Example 1: forbid deleting an archive if less than 1 year old
+  - Example 2: implement WORM policy (write once read many)
+
+# Amazon S3 - Moving between Storage Classes
+
+- You can transition objects between storage classes
+- For infrequently accessed object, move them to Standard IA
+- For archive objects that you don't need fast access to, move them to Glacier or Glacier Deep Archive
+- Moving objects can be automated using a Lifecycle Rules
+
+# Amazon S3 - Lifecycle Rules
+
+- Transition Actions - configure objects to transition to another storage class
+  - Move objects to Standard IA class 60 days after creation
+  - Move to Glacier for archiving after 6 months
+- Expiration actions - configure objects to expire (delete) after some time
+  - Access log files can be set to delete after 365 days
+  - Can be used to delete old versions of files (if versioning is enabled)
+  - Can be used to delete incomplete Multi-Part Uploads
+- Rules can be created for a certain prefix (example:s3://mybucket/mp3/\*)
+- Rules can be created for certain objects Tags (example: Department:Finance)
+
+# Amazon S3 - Lifecycle Rules (Scenario 1)
+
+- Your application on EC2 creates images thumbnails after profile photos are uploaded to Amazon S3.
+  These thumbnails can be easily recreated, and only need to be kept for 60 days. The source images should be able to be immediately retrieved for these 60 days, and afterwards, the user can wait up to 6 hours. How would you design this?
+- S3 source images can be on Standard, with a lifecycle configuration to transition them to Glacier after 60 days
+- S3 thumbnails can be on One-Zone IA, with a lifecycle configuration to expire them (delete them) after 60 days
+
+# Amazon S3 - Lifecycle Rules (Scenario 2)
+
+- A rule in your company states that you should be able to recover your deleted S3 objects immediately for 30 days, although this may happen rarely. After this time, and for up to 365 days, deleted objects should be recoverable within 48 hours.
+- Enable S3 Versioning in order to have object versions, so that "deleted objects" are in fact hidden by a "delete marker" and can be recovered
+- Transition the "noncurrent versions" of the object to Standard IA
+- Transition afterwards the "noncurrent versions" to Glacier Deep Archive
+
+# Amazon S3 Analytics - Storage Class Analysis
+
+- Help you decide when to transition objects to the right storage class
+- Recommendations for Standard and Standard IA
+  - Does NOT work for One-Zone IA or Glacier
+- Report is updated daily
+- 24 to 48 hours to start seeing data analysis
+
+# Amazon S3 - Replication (CRR and SRR)
+
+- Must enable Versioning in source and destination buckets
+- Cross-Region Replication (CRR)
+  - Replicate objects across different AWS Regions
+  - Use cases: disaster recovery, compliance, low-latency access to data in multiple regions
+- Same-Region Replication (SRR)
+  - Replicate objects within the same AWS Region
+  - Use cases: compliance, data protection, data lifecycle management
+- Buckets can be in different AWS accounts
+- Copying is asynchronous
+- Must give proper IAM permissions to S3
+
+- Use cases:
+  - CRR - compliance, lower latency access, replication across accounts
+  - SRR - log aggregation, live replication between production and test accounts

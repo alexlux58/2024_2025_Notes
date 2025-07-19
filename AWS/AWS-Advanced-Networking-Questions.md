@@ -414,4 +414,233 @@ A company has a three-tier web application with separate subnets for Web, Applic
 
 Which of the following AWS Services would you use to build such an automated notification system that requires the last development effort? (Select Two)
 
-A.
+A. Amazon CloudWatch
+B. VPC Flow Logs
+C. AWS Shield
+D. Amazon SNS
+E. Amazon Inspector
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. Amazon SNS
+E. Amazon Inspector
+
+**Explanation:**
+Amazon inspector is an automated security assessment service that helps you test the network accessibility of your Amazon EC2 instances and the security state of your applications running on the instances.
+You can perform network security assessments via your own custom solutions, however, that entails significant time and effort. You might need to run network port-scanning tools to test routing and firewall configurations, then validate what processes are listening on your instance network ports, before finally mapping the IPs identified in the port scan back to the host's owner.
+To make this process simpler for its customers, AWS offers the Network Reachability rules package in Amazon Inspector, which is an automated security assessment service that enables you to understand and improve the security and compliance of applications deployed on AWS. The existing Amazon Inspector host assessment rules packages check the software and configurations on your EC2 instances for vulnerabilities and unintended network exposure. The Network Reachability rules package checks the network exposure of your EC2 instances and notifies you if any of your instances are exposed to the internet on ports that violate your security policies.
+
+You can use these rules packages to analyze the accessibility of critical ports, as well as all other network ports. For critical ports, Amazon Inspector will show the exposure of each and will offer findings per port. When critical, well-known ports (based on Amazon's standard guidance) are reachable, findings will be created with higher severities.
+
+The findings also have recommendations that include information about exactly which Security Group you can edit to remove the access. And like all Amazon Inspector findings, these can be published to an SNS topic for additional processing or you could use a Lambda to automatically remove ingress rules in the Security Group to address a network reachability finding. For the given use-case, the network engineer can use the SNS topic to send the notifications to the team.
+
+**Reference:**
+
+https://aws.amazon.com/blogs/security/amazon-inspector-assess-network-exposure-ec2-instances-aws-network-reachability-assessments/
+https://aws.amazon.com/blogs/security/amazon-inspector-assess-network-exposure-ec2-instances-aws-network-reachability-assessments/
+https://aws.amazon.com/blogs/security/amazon-inspector-assess-network-exposure-ec2-instances-aws-network-reachability-assessments/
+
+**Domain**
+Automate AWS tasks
+
+</details>
+
+---
+
+### Question 11
+
+The networking team at a company wants to set up two AWS Direct Connect connections between its on-premises data center and the AWS Cloud. The Direct Connect connections need to be set up in an Active/Active configuration from a public virtual interface using a public ASN.
+
+As an AWS Certified Networking Specialist, which solution would you recommend for this requirement?
+
+A. Set up the customer gateway to advertise the longer prefix on your secondary connection.
+B. Active/active configuration from a public virtual interface is not supported using public ASN
+C. Set up the customer gateway to advertise the longer prefix on your primary connection.
+D. Configure your customer gateway to advertise the same prefix with the same Border Gateway Protocol (BGP) attributes on both public virtual interfaces
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. Configure your customer gateway to advertise the same prefix with the same Border Gateway Protocol (BGP) attributes on both public virtual interfaces
+
+**Explanation:**
+AWS Direct Connect links your internal network to an AWS Direct Connect location over a standard Ethernet fiber-optic cable. One end of the cable is connected to your router, the other to an AWS Direct Connect router. With this connection, you can create virtual interfaces directly to public AWS services (for example, to Amazon S3) or Amazon VPC, bypassing internet service providers in your network path. An AWS Direct Connect location provides access to AWS in the Region with which it is associated.
+
+When using Direct Connect to transport production workloads between AWS services, it's a best practice to create two connections through different data centers or providers. You have two options on how to configure your connections:
+
+- Active/active - traffic is load-shared between interfaces based on flow. If one connection becomes unavailable, all traffic is routed through the other connection.
+- Active/passive - traffic is routed through one interface, and the other interface is used only if the first becomes unavailable.
+
+To configure an Active/Passive connection using a public ASN:
+
+Allow your customer gateway to advertise the same prefix (public IP or network that you own) with the same Border Gateway Protocol (BGP) attributes on both public virtual interfaces. This configuration permits you to load balance traffic over both public virtual interfaces.
+
+Check the vendor documentation for device-specific commands for your customer gateway device.
+
+**Reference:**
+https://aws.amazon.com/premiumsupport/knowledge-center/dx-create-dx-connection-from-public-vif/
+https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html
+https://aws.amazon.com/premiumsupport/knowledge-center/dx-create-dx-connection-from-public-vif/
+
+**Domain**
+Design and implement AWS networks
+
+</details>
+
+---
+
+### Question 12
+
+A developer has configured a private hosted zone using Route 53. The developer needs to configure health checks for record sets within the private hosted zone that are associated with EC2 instances.
+
+How can the developer build a solution to address the given use-case?
+
+A. Set up a Route 53 health check that monitors an SNS topic which in turn notifies a CloudWatch alarm when the EC2 StatusCheckFailed metric fails
+B. Set up a Route 53 health check to a private IP associated with the instances inside the VPC to be checked
+C. Set up a CloudWatch metric that checks the status of the EC2 StatusCheckFailed metric and then configure a health check that monitors the status of the metric
+D. Set up a CloudWatch metric that checks the status of the EC2 StatusCheckFailed metric, add an alarm to the metric, and then configure a health check that monitors the state of the alarm
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+D. Set up a CloudWatch metric that checks the status of the EC2 StatusCheckFailed metric, add an alarm to the metric, and then configure a health check that monitors the state of the alarm
+
+**Explanation:**
+A private hosted zone is a container that holds information about how you want Amazon Route 53 to respond to DNS queries for a domain and its subdomains within one or more VPCs that you create with the Amazon VPC service. Amazon Route 53 health checks monitor the health and performance of your web applications, web servers, and other resources. Each health check that you create can monitor one of the following:
+
+- The health of a specified resource, such as a web server.
+- The status of other health checks.
+- The status of an Amazon CloudWatch alarm.
+
+Additionally, with Amazon Route 53 Application Recovery Controller, you can set up routing control health checks with DNS failover records to manage traffic failover for your application.
+
+For the given use-case, you need to create a CloudWatch metric that checks the status of the EC2 StatusCheckFailed metric, add an alarm to the metric, and then create a health check that is based on the data stream for the alarm. To improve resiliency and availability, Route 53 doesn't wait for the CloudWatch alarm to go into the ALARM state. The status of a health check changes from healthy to unhealthy based on the data stream and the criteria in the CloudWatch alarm.
+
+**Reference:**
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-private-hosted-zones.html
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html
+
+**Domain**
+Configure network integration with application services
+
+</details>
+
+---
+
+### Question 13
+
+A company has decided to adopt IPv6 for its network. As an intermediary step in the path to fully adopting IPv6, the company is looking for dual-stack IPv4/IPv6 designs. To kickstart the change, the company has picked a straightforward hybrid network that consists of an on-premises connection to AWS over a Site-to-Site VPN connection via a Transit Gateway and an AWS Direct Connect connection between AWS and the on-premises data center.
+
+As a Network Engineer, which of the following measures would you suggest to meet the given requirements? (Select Three)
+
+A. For AWS Direct Connect connection, reuse your existing VIFs and enable them for dual-stack support
+B. For dual-stack connectivity on the Site-to-Site VPN connection via a Transit Gateway, you need to create two VPN connections, one for the IPv4 stack and one for the IPv6 stack
+C. AWS Transit Gateway does not support IPv6 traffic. Hence, VPC peering should be considered for dual-stack connectivity
+D. AWS Site-to-Site VPN connection on a Transit Gateway can support both IPv4 traffic and IPv6 traffic inside the VPN tunnels. Hence, no changes are required on this connection
+E. To use Direct Connect connection for dual-stack traffic, you need to create a separate virtual interfaces (VIFs-Private VIF or Public VIF or Transit VIF) for each stack
+F. To configure an IPv6-enabled VPC attachment for the Transit Gateway, the VPC and the attachment subnets need to have associated IPv6 CIDRs. The remaining Transit Gateway configurations continue to have the same functionalities across both stacks
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+A. For AWS Direct Connect connection, reuse your existing VIFs and enable them for dual-stack support
+B. For dual-stack connectivity on the Site-to-Site VPN connection via a Transit Gateway, you need to create two VPN connections, one for the IPv4 stack and one for the IPv6 stack
+F. To configure an IPv6-enabled VPC attachment for the Transit Gateway, the VPC and the attachment subnets need to have associated IPv6 CIDRs. The remaining Transit Gateway configurations continue to have the same functionalities across both stacks
+
+**Explanation:**
+To use your Direct Connect connection for dual-stack traffic, you need to create one of the following virtual interfaces (VIFs): Private VIF, Public VIF, or Transit VIF, or reuse your existing VIFs and enable them for dual-stack support. The following considerations apply to dual-stack VIFs:
+
+1. A virtual interface can support a BGP peering session for IPv4, IPv6, or both (dual-stack)
+2. For the IPv6 stack, Amazon automatically assigns a /125 IPv6 CIDR for the BGP peering connection.
+3. On Public VIFs, you must advertise to AWS /64 prefixes or larger.
+
+Your Site-to-Site VPN connection on a Transit Gateway can support either IPv4 traffic or IPv6 traffic inside the VPN tunnels. This means that for dual-stack connectivity, you need to create two VPN connections, one for the IPv4 stack and one for the IPv6 stack. For the Site-to-Site VPN connection, you intend to use for IPv4 routing, each tunnel will have a /30 IPv4 CIDR in the 169.254.0.0/16 range, while for the VPN connection intended for IPv6 routing, each VPN tunnel will have two CIDR blocks: one /30 IPv4 CIDR in the 169.254.0.0/16 range and one /126 IPv6 CIDR in the fd00::/8 range.
+
+AWS Transit Gateway is a network transit hub that you can use to interconnect your VPCs and hybrid networks for both IPv4 and IPv6 stacks. All Transit Gateway concepts and constructs - attachments, peering connections, associations, propagations, and routing - continue to have the same functionalities across both stacks. Note that to configure an IPv6-enabled VPC attachment to the Transit Gateway, the VPC and attachment subnets need to have associated IPv6 CIDRs.
+
+**Reference:**
+https://aws.amazon.com/blogs/networking-and-content-delivery/dual-stack-ipv6-architectures-for-aws-and-hybrid-networks/
+
+**Domain**
+Design and implement hybrid IT network architectures
+
+</details>
+
+---
+
+### Question 14
+
+A VPC is deployed with a 10.2.0.0/16 CIDR block. The networking team is reviewing DHCP options, and there is disagreement about the valid DNS addresses available for the VPC.
+Which of the following addresses are valid IP addresses provided by Amazon for this scenario.
+
+A. 10.0.0.2
+B. 10.2.0.2
+C. 10.1.0.2
+D. 169.254.169.253
+E. 169.254.169.254
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. 10.2.0.2
+D. 169.254.169.253
+
+**Explanation:**
+Domain Name System (DNS) is a standard by which names used on the internet are resolved to their corresponding IP addresses. A DNS hostname is a name that uniquely and absolutely names a computer; it's composed of a hostname and a domain name. DNS servers resolve DNS hostnames to their corresponding IP addresses. Public IPv4 addresses enable communication over the internet, while private IPv4 addresses enable communication within the network of the instance (either EC2-Classis or a VPC).
+
+To support DNS resolution, Amazon provides DNS server at the 169.254.169.253 IPv4 address or the reserved IP address at the base of the VPC IPv4 network range plus two. So for the given use case, 10.2.0.2 is also reserved by Amazon for DNS resolution.
+
+The Dynamic Host configuration Protocol (DHCP) provides a standard for passing configuration information to hosts on a TCP/IP network. The options field of a DHCP message contains configuration parameters, including the domain name, domain name server, and the netbios-node-type. By default, all instances in a nondefault VPC receive an unresolvable hostname that AWS assigns (for example, ip-10-0-0-202). You can assign your own domain name to your instances, and use up to four of your own DNS servers. To do that, you must create a custom set of DHCP options to use with the VPC.
+
+**Reference:**
+https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
+https://docs.aws.amazon.com/vpc/latest/userguide/VPC_DHCP_Options.html
+
+**Domain**
+Design and implement AWS networks
+
+</details>
+
+---
+
+### Question 15
+
+The networking team at a company wants to set up an AWS Site-to-Site VPN connection between its on-premises data center and the AWS Cloud. The VPN connection should use dynamic routing and the team wants to make sure that tunnel A is preferred over tunnel B when sending traffic from AWS to the on-premises network.
+
+Which solution would you recommend for this requirement?
+
+A. Configure the VPN connection in an Active/Passive configuration and advertise a more specific prefix for tunnel B.
+B. Configure the VPN connection in an Active/Active configuration and advertise a more specific prefix for tunnel A.
+C. Configure the VPN connection in an Active/Passive configuration and advertise a more specific prefix for tunnel A.
+D. Configure the VPN connection in an Active/Active configuration and advertise a more specific prefix for tunnel B.
+
+<details>
+<summary style="color: red;">Answer</summary>
+
+B. Configure the VPN connection in an Active/Active configuration and advertise a more specific prefix for tunnel A.
+
+**Explanation:**
+You can enable access to your remote network from your VPC by creating an AWS Site-to-Site VPN (Site-to-Site VPN) connection, and configuring routing to pass traffic through the connection. A VPN connection refers to the connection between your VPC and your own on-premises network. Site-to-Site VPN supports Internet Protocol security (IPsec) VPN connections.
+
+The type of routing that you select can depend on the make and model of your customer gateway device. If your customer gateway device supports Border Gateway Protocol (BGP), specify dynamic routing when you configure your Site-to-Site VPN connection. If your customer gateway device does not support BGP, specify static routing. If you use a device that supports BGP advertising, you don't specify static routes to the Site-to-Site VPN connection because the device uses BGP to advertise its routes to the virtual private gateway. If you use a device that doesn't support BGP advertising, you must select static routing and enter the routes (IP prefixes) for your network that should be communicated to the virtual private gateway.
+
+A Site-to-Site VPN connection offers two VPN tunnels between a virtual private gateway or a transit gateway on the AWS side, and a customer gateway (which represents a VPN device) on the remote (on-premises) side.
+
+To address the given requirement, you need to set the customer gateway device to prefer one VPN tunnel over the other by leveraging the order of preference criteria:
+
+Advertise a more specific prefix to the virtual private gateway or transit gateway on the tunnel (Tunnel A for the given use case) that the customer prefers to receive traffic from AWS.
+
+For matching prefixes where each VPN connection uses BGP, the AS PATH is compared and the prefix with the shortest AS PATH is preferred.
+
+When the AS PATHs are the same length, and the first AS in the AS_SEQUENCE is the same across multiple paths, multi-exit discriminators (MEDs) are compared. The path with the lowest MED value is preferred.
+
+**Reference:**
+https://aws.amazon.com/premiumsupport/knowledge-center/vpn-configure-tunnel-preference/
+
+**Domain**
+Design and implement AWS networks

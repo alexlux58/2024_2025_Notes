@@ -224,3 +224,116 @@ tasks:
       vars:
         my_var: "task level value" # This will override the default value
 ```
+
+# Magic Variables
+
+- Ansible provides several "magic" variables that are automatically available in playbooks and templates.
+- These variables include:
+  - `{{ ansible_hostname }}`: The hostname of the managed node.
+  - `{{ ansible_fqdn }}`: The fully qualified domain name of the managed node.
+  - `{{ ansible_os_family }}`: The operating system family of the managed node.
+  - `{{ ansible_distribution }}`: The distribution name of the managed node.
+  - `{{ ansible_distribution_version }}`: The version of the distribution.
+
+```yml
+# Example of using magic variables in a playbook
+- name: Print magic variables
+  hosts: all
+  tasks:
+    - name: Display hostname and OS family
+      debug:
+        msg: "Hostname: {{ ansible_hostname }}, OS Family: {{ ansible_os_family }}"
+```
+
+# Magic Variable - group_names
+
+- The `{{ group_names }}` magic variable contains a list of all groups that the current host belongs to.
+- It is useful for conditional tasks or when you need to apply different configurations based on group membership.
+
+```yml
+# Example of using group_names in a playbook
+- name: Example playbook using group_names
+  hosts: all
+  tasks:
+    - name: Display group names
+      debug:
+        msg: "Host {{ inventory_hostname }} belongs to groups: {{ group_names }}"
+    - name: Conditional task based on group membership
+      debug:
+        msg: "This host is part of the webservers group"
+      when: "'webservers' in group_names"
+```
+
+# Ansible Playbooks
+
+- Playbook - A single YAML file
+  - Play - Defines a set of activities (tasks) to be run on hosts
+    - Task - An action to be performed on the host
+      - Execute a command
+      - Run a script
+      - Install a package
+      - Shutdown/Restart
+
+# list Ansible modules
+
+- Ansible modules are reusable units of code that perform specific tasks.
+- They can be used to manage system resources, install software, configure services, and more.
+
+`ansible-doc -l`
+
+- Commonly used Ansible modules include:
+  - `apt`: Manages packages using the APT package manager (Debian/Ubuntu).
+  - `yum`: Manages packages using the YUM package manager (Red Hat/CentOS).
+  - `copy`: Copies files from the control machine to the managed nodes.
+  - `template`: Renders Jinja2 templates and copies them to the managed nodes.
+  - `service`: Manages services on the managed nodes.
+  - `user`: Manages user accounts on the managed nodes.
+  - `file`: Manages file properties (permissions, ownership, etc.) on the managed nodes.
+
+# Run Ansible Playbook
+
+- To run an Ansible playbook, use the `ansible-playbook` command followed by the playbook file name.
+- `ansible-playbook --help`
+
+# How to verify playbooks in Ansible?
+
+- Check Mode
+  - Ansible's "dry run" where no actual changes are made on hosts
+  - Allows preview of playbook changes without applying them
+  - Use the `--check` option to run a playbook in check mode
+- Diff Mode
+  - Provides a before-and-after comparison of playbook changes
+  - Understand and verify the impact of playbook changes before applying them
+  - Utilize the `--diff` option to run a playbook in diff mode
+
+# Why do we need ansible-lint?
+
+- Ansible lint is a command-line tool that performs linting on Ansible playbooks, roles, and collections.
+- It checks your code for potential errors, bugs, stylistic errors, and suspicious constructs.
+- It's akin to having a seasoned Ansible mentor guiding you, providing valuable insights, and catching issues that might have slipped past your notice.
+
+# Conditionals
+
+- Ansible allows you to use conditionals to control the execution of tasks based on certain conditions.
+
+```yml
+# Example of using conditionals in a playbook
+- name: Install package if not already installed
+  hosts: all
+  vars:
+    package_name: mypackage
+      - name: nginx
+        required: true
+  tasks:
+    - name: Check if package is installed
+      ansible.builtin.command: dpkg -l | grep mypackage
+      register: package_check
+      ignore_errors: true
+    when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
+
+    - name: Install {{ item.name}} if not installed
+      ansible.builtin.apt:
+        name: mypackage
+        state: present
+      when: package_check.rc != 0 and ansible_os_family == 'Debian'
+```
