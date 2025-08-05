@@ -4075,3 +4075,405 @@ Note: Bucket Policies are evaluated before "Default Encryption"
 # Network Load Balancer - SSL/TLS and HTTPS
 
 - NLB uses a Server Certificate to terminate and decrypt the front-end connections before sending them to the targets
+- To create a TLS listener, you must attach at least one server certificate from ACM on NLB
+- If client IP preservation enabled: both source IP address and port is presented to your backend servers, even when TLS is terminated at the NLB
+- Network Load Balancers do not support TLS re-negotiation or mutual TLS authentication (mTLS)
+- Use TCP Listener on port 443 to pass encrypted traffic to the targets without the NLB decrypting it
+- Important: don't use a TLS listener
+- The targets must be able to decrypt the traffic
+- TCP Listeners also support mTLS, because the NLB passes the request as is, and you can implement mTLS on the targets
+
+# AWS Certificate Manager (ACM)
+
+- To host public SSL certificates in AWS, you can:
+  - Buy your own and upload them using the CLI
+  - Have ACM provision and renew public SSL certificates for you (free of cost)
+- ACM loads SSL certificates on the following integrations:
+  - Load Balancers (including the ones created by Elastic Beanstalk)
+  - CLoudFront distributions
+  - APIs on API gateway
+- SSL certificates is overall a pain to manually manage, so ACM is great to leverage in your AWS infrastructure
+
+# ACM - Good to known
+
+- Possibility of creating public certificates
+  - Must verify public DNS
+  - Must be issues by a trusted public certificate authority (CA)
+- Possibility of creating private certificates
+  - For your internal applications
+  - You create your own private CA using ACM Private CA
+- Certificate renewal:
+  - Automatically done if generated provisioned by ACM
+  - Any manually uploaded certificates must be renewed manually and re-uploaded
+- ACM is a regional service
+  - To use with a global application (multiple ALB for example), you need to issues an SSL certificate in each region where your application is deployed
+  - You cannot copy cert across regions
+
+# AWS Private certificate authority (CA)
+
+- Managed service allows you to create private Certificate Authorities (CAs), including root and subordinary CAs
+- Can issue and deploy end-entity X.509 certificates
+- Certificates are trusted only by your Organization (not the public internet)
+- Integrates with Amazon EKS with and any AWS service that is integrated with ACM
+- Use cases:
+  - Encrypted TLS communication, Cryptographically signing code
+  - Authenticate users, computers, API endpoints, and IoT devices
+  - Enterprise customers building a Public Key Infrastructure (PKI)
+
+# ACM - Validation Techniques
+
+- Before ACM issue a public certificate, you must prove that you own/control the domain
+- DNS validation (recommended)
+  - Leverages a CNAME record created in DNS config (e.g., Route 53)
+  - Preferred for automatic renewal purposes
+  - Takes a few minutes to verify
+- Email validation
+  - a validation email is sent to contact addresses in the WHOIS database
+  - takes a few minutes to verify
+- Note: ACM Validation is NOT required for imported certificates signed by a Private CA
+
+# ACM - Automatic Renewal
+
+- ACM Fails to renew a DNS validated certificate
+  - Most likely due to missing or inaccurate CNAME records in your DNS configuration
+  - You can try email validation (requires action by the domain owner)
+- ACM sends renewal notices 45 days before expiration
+- Renewal emails sent to the Domains WHOIS mailbox addresses
+- Email contains a link that Domain owner can click for easy renewal
+- ACM issues a renewed certificate with the same ARN
+
+# ACM - Pending Validation - How to resolve?
+
+- Resolution:
+  - Confirm CNAME record is added to the correct DNS config.
+  - `dig +short _a79b2c3d4e5f6g7h8i9.example.com`
+  - Confirms CNAME record in your DNS config. contains no additional characters or has no missing characters
+  - If your DNS provider automatically adds the bare domain to the end of its DNS records, remove the bare domain from the DNS record name
+    - \_a79b2c3d4e5f6g7h8i9.example.com.example.com
+  - If there are both CNAME and TXT records for the same domain name, then delete the TXT record
+    - `dig +short CNAME _a79b2c3d4e5f6g7h8i9.example.com`
+    - `dig TXT _a79b2c3d4e5f6g7h8i9.example.com`
+
+# Process to Manually Create a Certificate
+
+- You can create a Certificate manually, then upload the Certificate to either ACM or IAM
+
+# ACM - Monitor Expired Imported Certificates
+
+- ACM sends daily expiration events starting 45 days prior to expiration
+  - The # of days can be configured
+- AWS Config has a managed rule named acm-certificate-expiration-check to check for expiring certificates (configurable number of days)
+
+# AWS Backup
+
+- Fully managed service
+- Centrally manage and automate backups across AWS services
+- No need to create custom scripts and manual processes
+- Supported services:
+  - Amazon EC2 / Amazon EBS
+  - Amazon S3
+  - Amazon RDS (all DBs engines) / Amazon Aurora / Amazon DynamoDB
+  - Amazon DocumentDB / Amazon Neptune
+  - Amazon EFS / Amazon FSx (Lustre and Windows File Server)
+  - AWS Storage Gateway (Volume Gateway)
+- Supports cross-region backups
+- Supports cross-account backups
+- Supports PITR for supported services
+- On-Demand and Scheduled backups
+- Tag-based backup policies
+- You create backup policies known as Backup Plans
+  - Backup frequency (every 12 hours, daily, weekly, monthly, cron expression)
+  - Backup window
+  - Transition to Cold Storage (Never, Days, Weeks, Months, Years)
+  - Retention Period (Always, Days, Weeks, Months, Years)
+
+# AWS Backup Vault Lock
+
+- Enforce a WORM (Write Once Ready Many) state for all the backups that you store in your AWS Backup Vault
+- Additional layer of defense to protect your backups against:
+  - Inadvertent or malicious delete operations
+  - Updates that shorten or alter retention periods
+- Even the root user cannot delete backups when enabled
+
+# Amazon Data Lifecycle Manager
+
+- Automate the creation, retention, and deletion of EBS snapshots and EBS-backed AMIs
+- Schedule backups, cross-account snapshot copies, delete outdated backups,...
+- Uses resource tags to identify the resources (EC2 instances, EBS volumes)
+- Can't be used to manage snapshots / AMIs created outside DLM
+- Can't be used to manage instance-store backed AMIs
+
+# AWS Nitro Enclaves
+
+- Process highly sensitive data in an isolated compute environment
+  - Personally Identifiable Information (PII), healthcare, financial, ...
+- Fully isolated virtual machines, hardened, and highly constrained
+  - Not a container, not persistent storage, no interactive access, no external networking
+- Helps reduce the attack surface for sensitive data processing apps
+  - Cryptographic Attestation - only authorized code can be running in your Enclave
+  - Only Enclaves can access sensitive data (integration with KMS)
+- use cases: securing private keys, processing credits cards, secure multi-party computation...
+
+# AWS Organizations
+
+- Global service
+- Allows to manage multiple AWS accounts
+- The main account is the management account
+- Other accounts are member accounts
+- Member accounts can only be part of one organization
+- Consolidated Billing across all accounts - single payment method
+- Pricing benefits from aggregated usage (volume discount for EC2, S3...)
+- Shared reserved instances and Savings Plans discounts across accounts
+- API is available to automate AWS account creation
+
+- Advantages
+  - Multi Account vs. One Account Multi VPC
+  - Use tagging standards for billing purposes
+  - Enable CloudTrail on all accounts, send logs to central S3 account
+  - Send CloudWatch Logs to a central logging account
+  - Establish Cross Account Roles for Admin purposes
+- Security: Service Control Policies (SCP)
+  - IAM policies applied to OU or Accounts to restrict Users and Roles
+  - They do not apply to the management account (full admin power)
+  - Must have an explicit allow from the root through each OU in the direct path to the target account (does not allow anything by default - like IAM)
+
+# AWS Organizations - Reserved Instances
+
+- For billing purposes, the consolidated billing feature of AWS Organizations treats all the accounts in the organization as one account
+- This means that all accounts in the organization can receive the hourly cost benefit of Reserved Instances that are purchased by any other account.
+- The payer account (master account) of an organization can turn off Reserved Instance (RI) discount and Savings Plans discount sharing for any accounts in that organization, including the payer account.
+- This means that RIs and Savings Plans discounts aren't shared between any accounts that have sharing turned off.
+- To share an RI or Savings Plans discount with an account, both accounts must have sharing turned on.
+
+# AWS Organizations - IAM Policies
+
+- Use aws:PrincipalOrgID condition key in your resource-based policies to restrict access to IAM principals from accounts in an AWS Organization
+
+# AWS Organizations - Tag Policies
+
+- Helps you standardize tags across resources in an AWS Organization
+- Ensure consistent tags, audit tagged resources, maintain proper resources categorization...
+- You define tag keys and their allowed values
+- Helps with AWS Cost Allocation Tags and Attribute-based Access Control (ABAC)
+- Prevent any non-compliant tagging operations on specified services and resources (has no effect on resources without tags)
+- Generate a report that lists all tagged/non-compliant resources
+- Use CloudWatch Events to monitor non-compliant tags
+
+# AWS Control Tower
+
+- Easy way to set up and govern a secure and compliant multi-account AWS environment based on best practices
+- Benefits:
+  - Automate the set up of your environment in a few clicks
+  - Automate ongoing policy management using guardrails
+  - Detect policy violations and remediate them
+  - Monitor compliance through an interactive dashboard
+
+# AWS Control Tower - Account Factory
+
+- Aoutomates account provisioning and deploymenets
+- Enables you to create pre-approved baselines and configuration options for AWS accounts in your organziation (e.g., VPC default configuration, subnets, region,...)
+- Uses AWS Service Catalog to provision new AWS accounts
+
+# AWS Control Tower - Detect and Remediate Policy Violations
+
+- Guardrail
+  - Provides ongionig governance for your Control Tower environment (AWS Accounts)
+  - Preventive - using SCPs (e.g., Dissalow Creation of Access Keys for the Root User)
+  - Detective - using AWS Config (e.g., Detect Whether MFA for the Root User is Enabled)
+  - Example: identify non-compliant resources (e.g., untagged resources)
+
+# AWS Control Tower - Guardrails Levels
+
+- Mandatory
+
+  - Automatically enabled and enforced by AWS Control Tower
+  - Example: Disallow public Read access to the Log Archive account
+
+- Strongly recommended
+
+  - Based on AWS best practices
+  - Example: Enable encryption for EBS volumes attached to EC2 instances
+
+- Elective
+  - Commonly used by enterprises
+  - Example: Disallow delete actions without MFA in S3 buckets
+
+# AWS Config
+
+- Helps with auditing and recording compliance of your AWS resources
+- Helps record configurations and changes over time
+- Questions that can be solved by AWS Config:
+  - Is there unrestricted SSH access to my security groups?
+  - Do my buckets have any public access?
+  - How has my ALB configuration changed over time?
+- You can receive alerts (SNS notifications) for any changes
+- AWS Config is a per-region service
+- Can be aggregated across regions and accounts
+- Possibility of storing the configuration data into S3 (analyzed by Athena)
+
+# Config Rules
+
+- Can use AWS managed config rules (over 75)
+- Can make custom config rules (must be defined in AWS Lambda)
+  - Ex: evaluate if each EBS disk is of type gp2
+  - Ex: evaluate if each EC2 instance is t2.micro
+- Rules can be evaluated / triggered
+  - For each config change
+  - And / or: at regular time intervals
+- AWS Config Rules does not prevent actions from happening (no deny)
+- Pricing: no free tier, $0.003 per configuration item recorded per region, $0.001 per config rule evaluation per region
+
+# AWS Config resource
+
+- View compliance of a resource over time
+- View configuration of a resource over time
+- View CloudTrail API calls of a resource over time
+
+# Config Rules - Remediations
+
+- Automate remediation of non-compliant resources using SSM Automation Documents
+- Use AWS-Managed Automation Documents or create custom Automation Documents
+  Tip: you can create custom Automation Documents that invokes Lambda function
+- You can set Remediation Retries if the resource is still non-compliant after auto-remediation
+
+# Config Rules - Notifications
+
+- Use EventBridge to trigger notifications when AWS resources are non-compliant
+- Ability to send configuration changes and compliance state notifications to SNS (all events - use SNS Filtering or filter at client-side)
+
+# AWS Config - Aggregators
+
+- The aggregator is crated in one central aggregator account
+- Aggregates rules, resources, etc... across multiple accounts and regions
+- If using AWS Organizations, no need for individual Authorization
+- Rules are created in each individual source AWS account
+- Can deploy rules to multiple target accounts using CloudFormation StackSets
+
+# AWS Config - Use Cases
+
+- Audit IAM policies
+- Detect if CloudTrail has been disabled
+- Detect if EC2 instances are created with unapproved AMIs
+- Detect if Security Groups are open to the public
+- Detect if Internet Gateway is added to unauthorized VPC
+- Detect if EBS volumes are encrypted
+- Detect if RDS databases are public
+
+# Trusted Advisor
+
+- No need to install anything - high level AWS account assessment
+- Analyze your AWS accounts and provides recommendations on 6 categories:
+  - Cost Optimization
+  - Performance
+  - Security
+  - Fault Tolerance
+  - Service Limits
+  - Operational Excellence
+- Business and Enterprise Support plans have access to all Trusted Advisor checks
+  - Full Set of checks
+  - Programmatic access to Trusted Advisor using the API
+
+# Cost Explorer
+
+- Visualize, understand, and manage your AWS costs and usage over time
+- Create custom reports that analyze cost and usage data
+- Analyze your data at a high level: total costs and usage across all accounts
+- Or Monthly, hourly, resource level granularity
+- Choose an optimal Savings Plan (to lower prices on your bill)
+- Forecast usage up to 12 months based on previous usage
+
+# AWS Cost Anamoly Detection
+
+- Continously monitor your cost and usage using ML to detect unusual spends
+- It learns your unique, historic spend patterns to detect one-time cost spike and/or continuous cost insreases (you don't need to define thresholds)
+- Monitor AWS services, memeber accounts, cost allocation tags, or cost categories
+- Sends you the anomaly detection report with root-cause analysis
+- Get notified with individual alerts or daily/weekly summary (using SNS)
+
+# Well Architected Framework general guiding principles
+
+- http://aws.amazon.com/architecture/well-architected/
+- stop guessing your capacity needs
+- test systems at production scale
+- automate to make architectural experimentation easier
+- allow for evolutionary architectures
+  - design based on changing requirements
+- Drive architectures using data
+- improve through game days
+  - simulate applications for flash sale days
+
+# Well Architected Framework - 6 Pillars
+
+1. operational excellence
+   - operations in the cloud
+   - monitoring, incident response, change management, etc...
+2. security
+   - protect data, systems, and assets
+   - risk management, identity and access management, detective controls, infrastructure protection, data protection, incident response
+3. reliability
+   - ensure a workload performs its intended function correctly and consistently
+   - recover from failures, dynamically acquire computing resources to meet demand, mitigate disruptions
+4. performance efficiency
+   - use IT and computing resources efficiently
+   - adapt to ever-changing requirements and technologies
+5. cost optimization
+   - avoid unnecessary costs
+   - control where the money goes, use managed services, analyze spend over time
+6. sustainability
+   - minimize the environmental impacts of running your workloads in the cloud
+   - energy efficiency, sustainable architecture, sustainable operations
+
+# AWS Well Architected Tool
+
+- Free tool to review your architectures against the 6 pillars well-architected framework and adopt architectural best practices
+- How does it work?
+  - Select your workload and answer questions
+  - Review your answers against 6 pillars
+  - obtain advice: get videos and documentations, generate a report, see the results in a dashboard
+- Let's have a look: https://console.aws.amazon.com/wellarchitected
+
+# AWS Audit Manager
+
+- Assess risk and compliance of your AWS workloads
+- Continuously audit AWS services usage and prepare audits
+- Prebuilt frameworks include:
+  - CIS AWS Foundations Benchmark 1.2.0 and 1.3.0
+  - General Data Protection Regulation (GDPR)
+  - Health Insurance Portability and Accountability Act (HIPAA)
+  - Payment Card Industry Data Security Standard (PCI DSS)
+  - Service Organization Control (SOC) 2
+- Generates reports of compliance alongside evidence folders
+- Integrates with security hub, config, control tower, cloudtrail, license manager
+- Run over multi-account via integration with AWS Organizations
+
+# CloudFormation - Service Role
+
+- IAM role that allows CloudFormation to create/update/delete stack resources on your behalf
+- Give ability to users to create/update/delete the stack resources even if they don't have permissions to work with the resources in the stack
+- Use cases:
+  - You want to achieve the least privilege principle
+  - But you don't want to give the user all the required permissions to create the stack resources
+- User must have iam:PassRole permissions
+
+# CloudFormation Stack Policies
+
+- During a CloudFormation Stack update, all update actions are allowed on all resources (default)
+- A stack policy is a JSON document that defines the update actions that are allowed on specific resources during Stack updates
+- Protect resources from unintentional updates
+- When you set a Stack Policy, all resources in the Stack are protected by default
+- Specify an explicit ALLOW for the resources you want to be allowed to be updated
+
+# CoudFormation - Dynamic References
+
+- You can reference external values stored in SSM Parameter Store or Secrets Manager within a CFN template
+- CloudFormation retrieves the value during stack create and update operations
+- Database credentials, passwords, 3rd party API keys, etc...
+- Example: retrieve RDS DB Instance master password from Secrets Manager
+- Supports
+  - ssm - plaintext values stored in SSM Parameter Store
+  - ssm-secure - secure strings stored in SSM Parameter Store
+  - secretsmanager - secret values stored in Secrets Manager
+
+# CloudFormation - Termination Protection
+
+- To prevent accidental deletes of CloudFormation Stacks, use TerminationProtection

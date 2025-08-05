@@ -337,3 +337,24 @@ tasks:
         state: present
       when: package_check.rc != 0 and ansible_os_family == 'Debian'
 ```
+
+# Modules
+
+- System
+  - User
+  - Group
+  - Hostname
+  - IPtables
+  - Lvg
+  - Make
+  - Mount
+  - Ping
+  - Timezone
+  - Systemd
+  - Service
+- Commands
+- Files
+- Database
+- Cloud
+- Windows
+- More..
