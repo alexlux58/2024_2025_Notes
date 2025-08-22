@@ -4477,3 +4477,54 @@ Note: Bucket Policies are evaluated before "Default Encryption"
 # CloudFormation - Termination Protection
 
 - To prevent accidental deletes of CloudFormation Stacks, use TerminationProtection
+
+# CloudFormation - Drift
+
+- CloudFormation allows you to create infrastructure
+- But it doesn't protect you against manual configuration changes
+- How do we know if our resources have drifted?
+- We can use CloudFormation Drift
+
+# StackSet Drift Detection
+
+- Performs drift detection on the stack associated with each stack instance in the StackSet
+- If the current state of a resource in a stack varies from the expected state:
+  - The stack considered drifted
+  - And the stack instance that the stack associated with considered drifted
+  - And the StackSet is considered drifted
+- Drift detection identifies unmanaged changes (outside CloudFormation)
+- Changes made through CloudFormation to a stack directly (not at the StackSet level), aren't considered drifted
+- You can stop drift detection on a StackSet
+
+# CloudFormation Guard (cfn-guard)
+
+- An open-source CLI tool to validate CFN templates against organization policy guidelines
+- Example: ensure users always create encrypted S3 buckets
+- You define your own policies as code using a declarative Domain-Specific Language (DSL)
+- Provides a built-in testing framework to verify that your rules work as intended
+- Doesn't validate CFN templates against syntax
+- Can be used as part of CI/CD pipeline
+
+# AWS Service Catalog
+
+- Users that are new to AWS have too many options, and may create stacks that are not compliant / in line with the rest of the organization
+- Some users just want a quick self-service portal to launch a set of authorized products pre-defined by admins
+
+# AWS Resource Access Manager (RAM)
+
+- Share AWS resources that you own with other AWS accounts
+- Share with any account or within your Organization
+- Avoid resource duplication
+- VPC Subnets:
+  - allow to have all the resources launched in the same subnets
+  - must be from the same AWS Organizations
+  - Cannot share security groups and decault VPC
+  - Participants can manage their own resources in there
+  - Participant can't view, modify, delete resources that belong to other participants or the owner
+- AWS Transit Gateway
+- Route53 Resolver Rules
+- License Manager License Configurations
+
+# Site-to-Site VPN connection as a backup
+
+- In case direct connect fails, you can set up a backup Direct Connect connection (expensive), or a Site-to-Site VPN connection

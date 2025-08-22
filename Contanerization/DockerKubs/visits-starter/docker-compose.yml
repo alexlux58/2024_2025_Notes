@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  redis-server:
+    image: redis:7.2-alpine # pin to a stable 7.x to avoid the background jobs bug
+    restart: unless-stopped
+    # Optional: expose if you want to connect from host
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  node-app:
+    build: .
+    ports:
+      - "4001:8081"
+    depends_on:
+      redis-server:
+        condition: service_healthy
+# docker-compose down -v
+# docker-compose up --build

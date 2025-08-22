@@ -488,3 +488,529 @@
   - Standard: Multi-AZ, great for prod
   - One Zone: One AZ, great for dev, backup enabled by default, compatible with IA (EFS One Zone-IA)
 - Over 90% in cost savings
+
+# EBS vs EFS - Elastic Block Storage
+
+- EBS volumes...
+  - one instance (except multi-attach io 1/io2)
+  - are locked at the Availability Zone level
+  - gp2: IO increases if the disk size increases
+  - gp3 and io 1: can increase IO independently
+- To migrate an EBS volume across AZs, you need to create a snapshot and then create a new volume in the target AZ
+  - Take a snapshot
+  - Restore the snapshot to another AZ
+  - EBS backups use IO and you shouldn't run them while your application is handling a lot of traffic
+- Root EBS volumes of instances get terminated by default if the EC2 instance gets terminated. (you can disable that)
+
+# EBS vs EFS - Elastic File System
+
+- Mounting 100s of instances across AZ
+- EFS share website files (WordPress)
+- Only for Linux Instances (POSIX)
+- EFS has a higher price point than EBS
+- Can leverage Storage Tiers for cost savings
+
+# Scalability and High Availability
+
+- Scalability means that an application / system can handle greater loads by adapting.
+- There are two kinds of scalability:
+  - Vertical scalability
+  - Horizontal Scalability (= elasticity)
+- Scalability is linked but different to High Availability
+- Let's deep dive into the distinction, using a call center as an example
+
+# Vertical Scalability
+
+- Vertically scalability means increasing the size of the instance
+- For example, your application runs on a t2.micro
+- Scaling that application vertically means running it on a t2.large
+- Vertical scalability is very common for non distributed systems, such as a database.
+- RDS, ElastiCache are services that can scale vertically
+- There's usually a limit to how much you can vertically scale (hardware limit)
+
+# Horizontal Scalability
+
+- Horizontal Scalability means increasing the number of instances / systems for your application
+- Horizontal scaling implies distributed systems.
+- This is very common for web applications / modern applications
+- It's easy to horizontally scale thanks to the cloud offerings such as Amazon EC2
+
+# High Availability
+
+- High Availability usually goes hand in hand with horizontal scaling
+- High availability means running your application / system in at least 2 data centers (== Availability Zones)
+- The goal of high availability is to survive a data center loss
+- The high availability can be passive (for RDS Multi AZ for example)
+- The high availability can be active (for horizontal scaling)
+
+# Why use a load balancer?
+
+- Spread load across multiple downstream instances
+- Expose a single point of access (DNS) to your application
+- Seamlessly handle failures of downstream instances
+- Do regular health checks to your instances
+- Provide SSL termination (HTTPS) for your websites
+- Enforce stickiness with cookies
+- High availability across zones
+- Separate public traffic from private traffic
+
+# Why use an Elastic Load Balancer?
+
+- An Elastic Load Balancer is a managed load balancer
+  - AWS guarantees that it will be working
+  - AWS takes care of upgrades, maintenance, high availability
+  - AWS provides only a few configuration knobs
+- It costs less to setup your own load balancer but it will be a lot more effort on your end
+- It is integrated with many AWS offerings / services
+  - EC2, EC2 Auto Scaling Groups, Amazon ECS
+  - AWS Certificate Manager (ACM), CloudWatch
+  - Route 53, AWS WAF, AWS Global Accelerator
+
+# Health Checks
+
+- Health Checks are crucial for Load Balancers
+- They enable the load balancer to know if instances it forwards traffic to are available to reply to requests
+- The health check is done on a port and a route (/health is common)
+- If the response is not 200 (OK), then the instance is unhealthy
+
+# Types of load balancer on AWS
+
+- AWS has 4 kinds of managed Load Balancers
+- Classic Load Balancer (v1 - old generation) - 2009 - CLB
+  - HTTP, HTTPS, TCP, SSL (secure TCP)
+- Application Load Balancer (v2 - new generation) - 2016 - ALB
+  - HTTP, HTTPS, WebSocket
+- Network Load Balancer (v2 - new generation) - 2017 - NLB
+  - TCP, TLS (secure TCP), UDP, TCP_UDP
+- Gateway Load Balancer (v2 - new generation) - 2019 - GWLB
+  - Operates at layer 3 (network layer) - IP traffic
+
+# Application Load Balancer (v2)
+
+- Application load balancers is layer 7 (HTTP)
+- Load balancing to multiple HTTP applications across machines (target groups)
+- Load balancing to multiple applications on the same machine (ex: containers)
+- Support for HTTP/2 and WebSocket
+- Support redirects (from HTTP to HTTPS for example)
+- Routing tables to different target groups:
+
+  - Routing based on path in URL (example.com/users & example.com/posts)
+  - Routing based on hostname in URL (one.example.com and other.example.com)
+  - Routing based on Query String, Headers (example.com/users?id=123&order=false)
+
+- ALB are a great fit for micro services and container-based application (example: Docker and Amazon ECS)
+- Has a port mapping feature to redirect to a dynamic port in ECS
+- In comparison, we'd need multiple Classic Load Balancer per application
+
+# Application Load Balancer (v2) Good to know
+
+- Fixed hostname (XXX.region.elb.amazonaws.com)
+- The application servers don't see the IP of the client directly
+  - The true IP of the client is inserted in the header X-forwarded-for
+  - we can also get port (x-forwarded-port) and proto (x-forwarded-proto)
+
+# Network Load Balancer (v2)
+
+- Network Load Balancer is layer 4 (TCP)
+  - Forwards TCP and UDP traffic to your instances
+  - Handle millions of requests per second
+  - Ultra-low latency
+- NLB has one static IP per AZ, and supports assigning Elastic IP (helpful for whitelisting specific IP)
+- NLB are used for extreme performance, TCP or UDP traffic
+- Not included in the AWS free tier
+
+# Network Load Balancer - Target Groups
+
+- EC2 instances
+- IP Addresses - must be private IPs
+- Application Load Balancers
+- Health Checks support the TCP, HTTP and HTTPS Protocols
+
+# Gateway Load Balancer
+
+- Deploy, scale, and manage a fleet of 3rd party network virtual appliances in AWS
+- Example: Firewalls, Intrusion Detection and Prevention Systems, Deep Packet Inspection Systems, payload manipulation,...
+- Operates at Layer 3 (network layer) - IP packets
+- Combines the following functions:
+  - Transparent Network Gateway - single entry/exit for all traffic
+  - Load Balancer - distributes traffic to your virtual appliances
+- Uses the GENEVE protocol on port 6081
+
+## Gateway Load Balancer - Target Groups
+
+- EC2 instances
+- IP Addresses - must be private IPs
+
+# Sticky Sessions (Session Affinity)
+
+- It is possible to implement stickiness so that the same client is always redirected to the same instance behind a load balancer
+- This works for Classic Load Balancer, Application Load Balancer, and Network Load Balancer
+- The "cookie" used for stickiness has an expiration date you control
+- Use case: make sure the user doesn't lose his session data
+
+# Cross-Zone Load Balancing
+
+- Application Load Balancer
+  - Enabled by default (can be disabled at the Target Group level)
+  - No charges for inter AZ data
+
+# SSL/TLS - Basics
+
+- An SSl Certificate allows traffic between your clients and your load balancer to be encrypted in transit (in-flight encryption)
+- SSL refers to Secure Socket Layer, used to encrypt connections
+- TLS refers to Transport Layer Security, which is a newer version of SSL
+- Nowadays, TLS certificate are mainly used, but people still refer as SSL
+- Public SSL certificates are issues by Certificate Authorities (CA)
+- Comodo, Symantec, GoDaddy, GlobalSign, Digicert, Letsencrypt, etc...
+- SSL certificates have an expiration date (you set) and must be renewed
+
+# Load Balancer - SSL Certificates
+
+- The load balancer uses an X.509 certificate (SSL/TLS server certificate)
+- You can manage certificates using ACM (AWS Certificate Manager)
+- You can create upload your own certificate alternatively
+- HTTPS listener:
+  - You must specify a default certificate
+  - You can add an optional list of cert to support multiple domains
+  - Clients can use SNI (Server Name Indication) to specify the hostname they reach
+  - Ability to specify a security policy to support older versions of SSL/TLS (legacy clients)
+
+# SSL - Server Name Indication (SNI)
+
+- SNI solves the problem of loading multiple SSL certificates onto one web server (to serve multiple websites)
+- It's a "newer" protocol, and requires the client to indicate the hostname of the target server in the initial SSL handshake
+- The server will then find the correct certificate, or return the default one
+
+Note:
+
+- Only works for ALB and NLB (newer generation), CloudFront
+- Does not work for CLB (older gen)
+
+# Elastic Load Balancers - SSL Certificates
+
+- Classic Load Balancer (v1)
+  - Support only one SSL certificate
+  - Must use multiple CLB for multiple hostname with multiple SSL certificates
+- Application Load Balancer (v2)
+  - Supports multiple listeners with multiple SSL certificates
+  - Uses Server Name Indication (SNI) to make it work
+- Network Load Balancer (v2)
+  - Supports multiple listeners with multiple SSL certificates
+  - Uses Server Name Indication (SNI) to make it work
+
+# Connection Draining
+
+- Feature naming
+  - Connection Draining - for CLB
+  - Deregistration Delay - for ALB and NLB
+- Time to complete "in-flight requests" while the instance is de-registering or unhealthy
+- Stops sending new requests to the EC2 instance which is de-registering
+- Between 1 to 3600 seconds (default: 300 seconds)
+- Can be disabled (set value to 0)
+- Set to a low value if your requests are short
+
+# What's an Auto Scaling Group?
+
+- In real-life, the load on your websites and application can change
+- In the cloud, you can create and get rid of servers very quickly
+- The goal of an Auto Scaling Group (ASG) is to:
+  - Scale out (add EC2 instances) to match an increased load
+  - Scale in (remove EC2 instances) to match a decreased load
+  - Ensure we have a minimum and a maximum number of EC2 instances running
+  - Automatically register new instances to a load balancer
+  - Re-create an EC2 instance in case a previous one is terminated (ex: if unhealthy)
+- ASG are free (you only pay for the underlying EC2 instances)
+
+# Auto Scaling Group Attributes
+
+- A Launch Template (older "Launch Configurations" are deprecated)
+  - AMI + Instance Type
+  - EC2 User Data
+  - EBS Volumes
+  - Security Groups
+  - SSH Key Pair
+  - IAM Roles for your EC2 instances
+  - Network + Subnets Information
+  - Load Balancer Information
+- Min Size / Max Size / Initial Capacity
+- Scaling Policies
+
+# Auto Scaling - CloudWatch Alarms and Scaling
+
+- It is possible to scale an ASG based on CloudWatch alarms
+- An alarms monitors a metric (such as Average CPU, or a custom metric)
+- Metrics such as Average CPU are computed for the overall ASG instances
+- Based on the alarm:
+  - We can create scale-out policies (increase the number of instances)
+  - We can create scale-in policies (decrease the number of instances)
+
+# Auto Scaling Groups - Scaling Policies
+
+- Dynamic Scaling
+  - Target Tracking Scaling
+    - Simple to set-up
+    - Example: I want the average ASG CPU to stay at around 40%
+  - Simple / Step Scaling
+    - When a CloudWatch alarm is triggered (example CPU > 70%), then add 2 units
+    - When a CloudWatch alarm is triggered (example CPU < 30%), then remove 1 unit
+- Scheduled Scaling
+  - Anticipate a scaling based on known usage patterns
+  - Example: increase the min capacity to 10 at 5pm on Fridays
+- Predictive Scaling: continuously analyzes historical data and automatically adjusts the capacity of your ASG
+  - Uses machine learning to predict future traffic patterns
+  - Requires Application Auto Scaling
+
+# Good metrics to scale on
+
+- CPUUtilization: Average CPU utilization across your instances
+- RequestCountPerTarget: to make sure the number of requests per EC2 instances is stable
+- Average Network In/Out (If you're application is network bound)
+- Any custom metric (that you push using CloudWatch)
+
+# Auto Scaling Groups - Scaling Cooldowns
+
+- After a scaling activity happens, you are in the cooldown period (default 300 seconds)
+- During the cooldown period, the ASG will not launch or terminate additional instances (to allow for metrics to stabilize)
+- Advice: Use a ready-to-use AMI to reduce configuration time in order to be serving requests faster and reduce the cooldown period.
+
+# Amazon RDS Overview
+
+- RDS stands for Relational Database Service
+- It's a managed DB service for DB use SQL as a query language
+- It allows you to create databases in the cloud that are managed by AWS
+  - Postgres
+  - MySQL
+  - MariaDB
+  - Oracle
+  - Microsoft SQL Server
+  - IBM DB2
+  - Aurora (AWS Proprietary database)
+
+# Advantage over using RDS versus deploying DB on EC2
+
+- RDS is a managed service:
+  - Automated provisioning, OS patching
+  - Continuous backups and restore to specific timestamp (Point in Time Restore)
+  - Monitoring and metrics dashboards
+  - Read replicas for improved read performance
+  - Multi AZ setup for DR (disaster recovery)
+  - Maintenance windows for upgrades
+  - Scaling capability (vertical and horizontal)
+  - Storage backed by EBS
+- BUT you can't SSH into your instances
+
+# RDS - Storage Auto Scaling
+
+- Helps you increase storage on your RDS DB instance dynamically
+- When RDS detects you are running out of free database storage, it scales automatically
+- Avoid manually scaling your database storage
+- You have to set Maximum Storage Threshold (maximum limit for DB storage)
+- Automatically modify storage if:
+  - Free storage is less than 10% of allocated storage
+  - Low-storage lasts at least 5 minutes
+  - 6 hours have passed since last modification
+  - Useful for applications with unpredictable workloads
+  - Supports all RDS database engines
+
+# RDS Read Replicas for read scaling
+
+- Up to 15 Read Replicas
+- Within AZ, Cross AZ or Cross Region
+- Replication is ASYNC, so reads are eventually consistent
+- Replicas can be promoted to their own DB
+- Applications must update the connection strings to leverage read replicas
+
+# RDS Read Replicas - Use Cases
+
+- You have a production database that is taking on normal load
+- You want to run a reporting application to run some analytics on the data
+- You create a Read Replica to run the new workload there
+- The production application is unaffected
+- Read replicas are used for SELECT (=read) only kind of statements (not INSERT, UPDATE, DELETE)
+
+# RDS Read Replicas - Network Cost
+
+- In AWS there's a network cost when data goes from one AZ to another
+- For RDS Read Replicas within the same region, you don't pay that fee
+
+# RDS Multi AZ (Disaster Recovery)
+
+- SYNC replication
+- One DNS name - automatic app failover to standby
+- increase availability
+- failover in case of loss of AZ, loss of network, instance or storage failure
+- No manual intervention required
+- Not used for scaling
+
+# RDS From Single AZ to Multi AZ
+
+- Zero downtime operation (no need to stop the DB)
+- Just click on "modify" for the database
+- The following happens internally:
+  - A snapshot is taken
+  - A new DB is restored from the snapshot in a new AZ
+  - Synchronization is established between the two databases
+
+# RDS Custom
+
+- Managed Oracle and Microsoft SQL Server Database with OS and database customizations
+- RDS: Automates setup, operation, and scaling of database in AWS
+- Custom: access to the underlying OS and database so you can
+  - Configure settings
+  - Install patches
+  - Enable native features
+  - Access the underlying EC2 instance using SSH or SSM Session Manager
+- De-activate Automation Mode to perform your customization, better to take a DB snapshot before
+- RDS vs. RDS Custom
+  - RDS: entire database and the OS to be managed by AWS
+
+# Amazon Aurora
+
+- Aurora is a proprietary technology from AWS (not open sourced)
+- Postgres and MySQL are bot supported as Aurora DB (that means your drivers will work as if Aurora was a Postgres or MySQL DB)
+- Aurora is "AWS cloud optimized" and claims 5x performance improvement over MySQL on RDS, over 3x the performance of Postgres on RDS
+- Aurora storage automatically grows in increments of 10GB, up to 128TB.
+- Aurora can have up to 15 replicas and the replication process is faster than MySQL (sub 10 ms replica lag)
+- Failover in Aurora is instantaneous. It's HA native
+- Aurora costs more than RDS (20% more) - but is more efficient
+
+# Aurora High Availability and Read Scaling
+
+- 6 copies of your data across 3 AZs:
+  - 4 copies out of 6 needed for writes
+  - 3 copies out of 6 needed for reads
+  - Self healing with peer-to-peer replication
+  - Storage is striped across 100s of volumes
+- One Aurora Instance takes writes (master)
+- Automated failover for master in less than 30 seconds
+- Master + up to 15 aurora read replicas serve reads
+
+# Features of Aurora
+
+- Automatic fail-over
+- Backup and Recovery
+- Isolation and security
+- Industry compliance
+- Push-button scaling
+- Automated Patching with Zero Downtime
+- Advanced Monitoring
+- Routine Maintenance
+- Backtrack: restore data at any point of time without using backups
+
+# Aurora - Custom Endpoints
+
+- Define a subnet of Aurora instances as a Custom Endpoint
+- Example: Run analytical queries on specific replicas
+- The Reader Endpoint is generally not used after defining Custom Endpoints
+
+# Aurora Serverless
+
+- Automated database instantiation and auto scaling based on actual usage
+- Good for infrequent, intermittent or unpredictable workloads
+- No capacity planning
+
+# Global Aurora
+
+- Aurora Cross Region Read Replicas:
+  - useful for disaster recovery
+  - simple to put in place
+- Aurora global database (recommended):
+  - 1 Primary Region (read/write)
+  - Up to 10 secondary (read-only) regions, replication lag is less than 1 second
+  - Up to 16 read replicas per secondary region
+  - Helps for decreasing latency
+
+# Aurora - Custom Endpoints
+
+- Define a subset of Aurora Instances as a Custom Endpoint
+- Example: Run analytical queries on specific replicas
+- The Reader Endpoint is generally not used after defining Custom Endpoints
+
+# Aurora Serverless
+
+- Automated database instantiation and auto-scaling based on actual usage
+- Good for infrequent, intermittent or uneditable workloads
+- No capacity planning needed
+- Pay per second, can be more cost-effective
+
+# Global Aurora
+
+- Aurora Cross Region Read Replicas:
+  - Useful for disaster recovery
+  - Simple to put in place
+
+# Aurora Global Database (recommended):
+
+- 1 primary region (read/write)
+- Up to 10 secondary (read-only) regions, replication lag is less than 1 second
+- Up to 16 read replicas per secondary region
+- Helps for decreasing latency
+- Promoting another region (for disaster recovery) has an RTO of < 1 minute
+- Typical cross-region replication takes less than 1 second
+
+# Aurora Machine Learning
+
+- Enables you to add ML-based predictions to your applications via SQL
+- Simple, optimized, and secure integration between Aurora and AWS ML services
+- Supported services
+  - Amazon SageMaker (use with any ML model)
+  - Amazon Comprehend (for sentiment analysis)
+- You don't need to have ML experience
+- Use cases: fraud detection, ads targeting, sentiment analysis, product recommendations
+
+# Babelfish for Aurora PostgreSQL
+
+- Allows Aurora PostgreSQL to understand commands targeted for MS SQL Server (e.g.,T-SQL)
+- Therefore Microsoft SQL Server based applications can work on Aurora PostgreSQL
+- Requires no to little code changes (using the same MS SQL Server client driver)
+- The same application can be used after a migration of your database (using AWS SCT and DMS)
+
+# RDS Backups
+
+- Automated backups:
+  - Daily full backup of the database (during the backup window)
+  - Transaction logs are backed-up by RDS every 5 minutes
+  - => ability to restore to any point in time (from oldest backup to 5 minutes ago)
+  - 1 to 35 days of retention, set 0 to disable automated backups
+- Manual DB Snapshots
+  - Manually triggered by the user
+  - Retention of backup for as long as you want
+- Trick: in a stopped RDS database, you will still pay for storage. If you plan on stopping it for a long time, you should snapshot and restore instead
+
+# Aurora Backups
+
+- Automated backups
+  - 1 to 35 days (cannot be disabled)
+  - point-in-time recovery in that timeframe
+- Manual DB Snapshots
+  - Manually triggered by the user
+  - Retention of backup for as long as you want
+
+# RDS and Aurora Restore options
+
+- Restoring a RDS / Aurora backup or a snapshot creates a new database
+- Restoring MySQL RDS database from S3
+  - Create a backup of your on-premises database
+  - Store it on Amazon S3 (object storage)
+  - Restore the backup file onto a new RDS instance running MySQL
+
+# Restoring MySQL Aurora cluster from S3
+
+- Create a backup of your on-premises database using Percona XtraBackup
+- Store the backup file on Amazon S3
+- Restore the backup file onto a new Aurora cluster running MySQL
+
+# Aurora Database Cloning
+
+- Create a new Aurora DB Cluster from an existing one
+- Faster than snapshot and restore
+- Uses copy-on-write protocol
+- Uses copy-on-write protocol
+  - Initially, the new DB cluster uses the same data volume as the original DB cluster (fast and efficient - no copying is needed)
+  - When updates are made to the new DB cluster data, then additional storage is allocated and data is copied to be separated
+- Very fast and cost-effective
+- Useful to create a "staging" database from a "production" database without impacting the production database
+
+# RDS and Aurora - Security
+
+- At-rest encryption:
