@@ -1,0 +1,907 @@
+2025-07-15 09:30:04 - INFO: Created new config at /Users/moviola/.filerunner-auto-download/config.
+2025-07-15 09:30:04 - ERROR: Failed to load state
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 312, in _load_saved_state
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/moviola/.filerunner-auto-download/state'
+2025-07-15 09:36:32 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 09:36:32 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 09:37:33 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 09:37:33 - ERROR: Could not validate credentials for beefpost2025@gmail.com
+2025-07-15 09:37:34 - ERROR: Could not validate credentials for beefpost2025@gmail.com
+2025-07-15 09:37:34 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-15 09:45:38 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 09:45:38 - ERROR: Could not validate credentials for beef-post1
+2025-07-15 09:45:39 - ERROR: Could not validate credentials for beef-post1
+2025-07-15 09:45:39 - ERROR: Failed to add account beef-post1 error:{'success': False, 'action': 'add_account', 'username': 'beef-post1', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-15 09:46:36 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 09:46:37 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-15 09:46:37 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-15 09:46:37 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-15 09:59:21 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 09:59:21 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:33:23 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:33:23 - ERROR: Failed to add account Beef-Post error:{'success': False, 'action': 'add_account', 'username': 'Beef-Post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:41:22 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:41:22 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:42:58 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:42:58 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:43:52 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:43:52 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:45:40 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:45:41 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-07-15 18:45:41 - INFO: Added account beef-post
+2025-07-15 18:45:54 - INFO: Paused account beef-post
+2025-07-15 18:46:23 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:46:23 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:46:54 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:46:54 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:49:58 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:49:59 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:50:24 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:50:24 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:52:57 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:52:57 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:53:28 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:53:29 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-07-15 18:53:29 - INFO: Added account beef-post
+2025-07-15 18:53:36 - INFO: Paused account beef-post
+2025-07-15 18:53:42 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-07-15 18:53:42 - INFO: Started account beef-post
+2025-07-15 18:56:07 - INFO: Paused account beef-post
+2025-07-15 18:56:24 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:56:24 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:56:46 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:56:46 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:59:05 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 18:59:05 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 19:00:02 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-15 19:00:02 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-16 10:53:14 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 10:53:14 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-07-16 10:53:44 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 10:53:44 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-07-16 14:23:06 - INFO: Shutting down FileRunner Auto-Downloader
+2025-07-16 14:23:07 - INFO: Saving Auto-Downloader State and Configuration
+2025-07-16 14:23:07 - INFO: Shutting down FileRunner Auto-Downloader Web App
+2025-07-16 14:23:07 - INFO: Shutting down FileRunner Auto-Downloader WebSocket Server
+2025-07-16 14:23:07 - INFO: Shutting down FileRunner Auto-Downloader Account Monitors
+2025-07-16 14:23:07 - INFO: Shutting down FileRunner Auto-Downloader Download Workers
+2025-07-16 14:23:07 - INFO: Exiting
+2025-07-16 14:24:46 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 14:24:46 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-07-16 14:33:44 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 14:33:45 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-07-16 14:33:45 - INFO: Added account beef-post
+2025-07-16 14:35:46 - INFO: Auto-Download Starting: Autodownload test package
+2025-07-16 14:35:46 - INFO: Starting Update Monitoring
+2025-07-16 14:35:46 - INFO: Update Monitoring Stopped
+2025-07-16 14:35:46 - INFO: Auto-Download Successful: Autodownload test package
+2025-07-16 14:45:25 - INFO: Paused account beef-post
+2025-07-16 14:46:07 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 14:46:08 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-07-16 14:46:08 - INFO: Added account beef-post
+2025-07-16 17:16:38 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 17:16:38 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:16:39 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:16:39 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:23:11 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 17:23:11 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:23:12 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:23:12 - ERROR: Failed to add account beef OCN error:{'success': False, 'action': 'add_account', 'username': 'beef OCN', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:25:55 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 17:25:55 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:25:55 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:25:55 - ERROR: Failed to add account beef OCN error:{'success': False, 'action': 'add_account', 'username': 'beef OCN', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:27:07 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 17:27:08 - ERROR: Could not validate credentials for Beef OCN
+2025-07-16 17:27:08 - ERROR: Could not validate credentials for Beef OCN
+2025-07-16 17:27:08 - ERROR: Failed to add account Beef OCN error:{'success': False, 'action': 'add_account', 'username': 'Beef OCN', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:28:29 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 17:28:30 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:28:30 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:28:30 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:29:51 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-07-16 17:29:52 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-07-16 17:29:52 - INFO: Added account beef-OCN
+2025-07-16 17:44:21 - INFO: Auto-Download Starting: 250716_test_package_exrs
+2025-07-16 17:44:21 - INFO: Starting Update Monitoring
+2025-07-16 17:44:21 - INFO: Update Monitoring Stopped
+2025-07-16 17:44:21 - INFO: Auto-Download Successful: 250716_test_package_exrs
+2025-07-22 04:00:51 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-07-25 16:00:56 - INFO: Auto-Download Starting: EXR_250725_PA_BEF2_VFXDP_000
+2025-07-25 16:00:56 - INFO: Starting Update Monitoring
+2025-07-25 16:02:34 - INFO: Update Monitoring Stopped
+2025-07-25 16:02:34 - INFO: Auto-Download Successful: EXR_250725_PA_BEF2_VFXDP_000
+2025-07-25 19:01:34 - INFO: Auto-Download Starting: EXR_250725_PA_BEF2_VFXDP_000_A
+2025-07-25 19:01:34 - INFO: Starting Update Monitoring
+2025-07-25 19:03:17 - INFO: Update Monitoring Stopped
+2025-07-25 19:03:18 - INFO: Auto-Download Successful: EXR_250725_PA_BEF2_VFXDP_000_A
+2025-07-29 10:02:05 - INFO: Auto-Download Starting: 250729_BW_BEF2_VFXSP_001
+2025-07-29 10:02:05 - INFO: Starting Update Monitoring
+2025-07-29 10:02:06 - INFO: Update Monitoring Stopped
+2025-07-29 10:02:06 - INFO: Auto-Download Successful: 250729_BW_BEF2_VFXSP_001
+2025-07-31 02:32:18 - INFO: Auto-Download Starting: 250731_BW_BEF2_VFXSP_002
+2025-07-31 02:32:18 - INFO: Starting Update Monitoring
+2025-07-31 02:32:18 - INFO: Update Monitoring Stopped
+2025-07-31 02:32:19 - INFO: Auto-Download Successful: 250731_BW_BEF2_VFXSP_002
+2025-07-31 02:33:52 - INFO: Auto-Download Starting: EXR_250731_BW_BEF2_VFXDP_001
+2025-07-31 02:33:53 - INFO: Starting Update Monitoring
+2025-07-31 02:34:32 - INFO: Update Monitoring Stopped
+2025-07-31 02:34:32 - INFO: Auto-Download Successful: EXR_250731_BW_BEF2_VFXDP_001
+2025-07-31 18:15:17 - INFO: Auto-Download Starting: 250731_BW_BEF2_VFXSP_002_A
+2025-07-31 18:15:17 - INFO: Starting Update Monitoring
+2025-07-31 18:15:18 - INFO: Update Monitoring Stopped
+2025-07-31 18:15:18 - INFO: Auto-Download Successful: 250731_BW_BEF2_VFXSP_002_A
+2025-08-01 11:06:26 - INFO: Shutting down FileRunner Auto-Downloader
+2025-08-01 11:06:26 - INFO: Saving Auto-Downloader State and Configuration
+2025-08-01 11:06:26 - INFO: Shutting down FileRunner Auto-Downloader Web App
+2025-08-01 11:06:26 - INFO: Shutting down FileRunner Auto-Downloader WebSocket Server
+2025-08-01 11:06:26 - INFO: Shutting down FileRunner Auto-Downloader Account Monitors
+2025-08-01 11:06:26 - INFO: Shutting down FileRunner Auto-Downloader Download Workers
+2025-08-01 11:06:26 - INFO: Exiting
+2025-08-01 11:14:25 - INFO: {'current': [], 'complete': [2433464, 2437686, 2435431, 2438680], 'failed': [], 'cancelled': [], 'details': {'2438680': {'name': '250731_BW_BEF2_VFXSP_002_A', 'bytes': 24116318, 'package_id': 2438680}, '2437686': {'name': '250731_BW_BEF2_VFXSP_002', 'bytes': 12625458, 'package_id': 2437686}, '2435431': {'name': '250729_BW_BEF2_VFXSP_001', 'bytes': 5661978, 'package_id': 2435431}, '2433464': {'name': 'EXR_250725_PA_BEF2_VFXDP_000', 'bytes': 6691541198, 'package_id': 2433464}}}
+2025-08-01 11:14:25 - INFO: {'current': [], 'complete': [2433608, 2437692], 'failed': [], 'cancelled': [], 'details': {'2437692': {'name': 'EXR_250731_BW_BEF2_VFXDP_001', 'bytes': 2293232071, 'package_id': 2437692}, '2433608': {'name': 'EXR_250725_PA_BEF2_VFXDP_000_A', 'bytes': 6691541198, 'package_id': 2433608}}}
+2025-08-01 11:14:25 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-08-01 11:14:25 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-08-01 17:13:08 - INFO: Auto-Download Starting: 250801_BW_BEF2_VFXSP_003
+2025-08-01 17:13:08 - INFO: Starting Update Monitoring
+2025-08-01 17:13:10 - INFO: Update Monitoring Stopped
+2025-08-01 17:13:11 - INFO: Auto-Download Successful: 250801_BW_BEF2_VFXSP_003
+2025-08-01 19:33:22 - INFO: Auto-Download Starting: 250801_BW_BEF2_VFXSP_003_A
+2025-08-01 19:33:22 - INFO: Starting Update Monitoring
+2025-08-01 19:33:24 - INFO: Update Monitoring Stopped
+2025-08-01 19:33:25 - INFO: Auto-Download Successful: 250801_BW_BEF2_VFXSP_003_A
+2025-08-01 20:46:27 - INFO: Auto-Download Starting: 250801_BW_BEF2_VFXSP_003_B
+2025-08-01 20:46:27 - INFO: Starting Update Monitoring
+2025-08-01 20:46:29 - INFO: Update Monitoring Stopped
+2025-08-01 20:46:30 - INFO: Auto-Download Successful: 250801_BW_BEF2_VFXSP_003_B
+2025-08-05 04:09:02 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-08-05 13:01:55 - INFO: Auto-Download Starting: 250805_BW_BEF2_VFXSP_004
+2025-08-05 13:01:55 - INFO: Starting Update Monitoring
+2025-08-05 13:01:58 - INFO: Update Monitoring Stopped
+2025-08-05 13:01:59 - INFO: Auto-Download Successful: 250805_BW_BEF2_VFXSP_004
+2025-08-05 16:52:52 - INFO: Auto-Download Starting: 250805_BW_BEF2_VFXSP_004_A
+2025-08-05 16:52:52 - INFO: Starting Update Monitoring
+2025-08-05 16:52:57 - INFO: Update Monitoring Stopped
+2025-08-05 16:52:57 - INFO: Auto-Download Successful: 250805_BW_BEF2_VFXSP_004_A
+2025-08-06 09:02:20 - INFO: Auto-Download Starting: 250806_BW_BEF2_VFXSP_005
+2025-08-06 09:02:20 - INFO: Starting Update Monitoring
+2025-08-06 09:02:24 - INFO: Update Monitoring Stopped
+2025-08-06 09:02:24 - INFO: Auto-Download Successful: 250806_BW_BEF2_VFXSP_005
+2025-08-07 09:57:51 - INFO: Auto-Download Starting: 250807_BW_BEF2_VFXSP_006
+2025-08-07 09:57:51 - INFO: Starting Update Monitoring
+2025-08-07 09:57:55 - INFO: Update Monitoring Stopped
+2025-08-07 09:57:55 - INFO: Auto-Download Successful: 250807_BW_BEF2_VFXSP_006
+2025-08-08 01:31:01 - INFO: Auto-Download Starting: 250808_BW_BEF2_VFXSP_007
+2025-08-08 01:31:01 - INFO: Starting Update Monitoring
+2025-08-08 01:31:08 - INFO: Update Monitoring Stopped
+2025-08-08 01:31:09 - INFO: Auto-Download Successful: 250808_BW_BEF2_VFXSP_007
+2025-08-09 03:50:37 - INFO: Auto-Download Starting: 250809_BW_BEF2_VFXSP_008
+2025-08-09 03:50:38 - INFO: Starting Update Monitoring
+2025-08-09 03:50:48 - INFO: Update Monitoring Stopped
+2025-08-09 03:50:48 - INFO: Auto-Download Successful: 250809_BW_BEF2_VFXSP_008
+2025-08-11 12:40:00 - INFO: Auto-Download Starting: 250811_BW_BEF2_VFXSP_009
+2025-08-11 12:40:00 - INFO: Starting Update Monitoring
+2025-08-11 12:40:01 - INFO: Update Monitoring Stopped
+2025-08-11 12:40:01 - INFO: Auto-Download Successful: 250811_BW_BEF2_VFXSP_009
+2025-08-12 16:50:00 - INFO: Auto-Download Starting: 20250812_BS_BEF2_VFXVSP_001
+2025-08-12 16:50:00 - INFO: Starting Update Monitoring
+2025-08-12 16:50:27 - INFO: Update Monitoring Stopped
+2025-08-12 16:50:27 - INFO: Auto-Download Successful: 20250812_BS_BEF2_VFXVSP_001
+2025-08-13 01:31:17 - INFO: Auto-Download Starting: 250813_BW_BEF2_VFXSP_010
+2025-08-13 01:31:17 - INFO: Starting Update Monitoring
+2025-08-13 01:31:21 - INFO: Update Monitoring Stopped
+2025-08-13 01:31:21 - INFO: Auto-Download Successful: 250813_BW_BEF2_VFXSP_010
+2025-08-13 10:35:23 - INFO: Auto-Download Starting: 250813_BW_BEF2_VFXSP_010_A
+2025-08-13 10:35:23 - INFO: Starting Update Monitoring
+2025-08-13 10:35:25 - INFO: Update Monitoring Stopped
+2025-08-13 10:35:25 - INFO: Auto-Download Successful: 250813_BW_BEF2_VFXSP_010_A
+2025-08-13 17:04:57 - INFO: Auto-Download Starting: 250813_BW_BEF2_VFXSP_010_B
+2025-08-13 17:04:57 - INFO: Starting Update Monitoring
+2025-08-13 17:04:57 - INFO: Update Monitoring Stopped
+2025-08-13 17:04:57 - INFO: Auto-Download Successful: 250813_BW_BEF2_VFXSP_010_B
+2025-08-13 23:57:35 - INFO: Auto-Download Starting: 250813_BW_BEF2_VFXSP_010_C
+2025-08-13 23:57:35 - INFO: Starting Update Monitoring
+2025-08-13 23:57:36 - INFO: Update Monitoring Stopped
+2025-08-13 23:57:37 - INFO: Auto-Download Successful: 250813_BW_BEF2_VFXSP_010_C
+2025-08-14 17:24:20 - INFO: Auto-Download Starting: 20250814_BS_BEF2_VFXVSP_001
+2025-08-14 17:24:20 - INFO: Starting Update Monitoring
+2025-08-14 17:24:21 - INFO: Update Monitoring Stopped
+2025-08-14 17:24:22 - INFO: Auto-Download Successful: 20250814_BS_BEF2_VFXVSP_001
+2025-08-15 10:32:36 - INFO: Auto-Download Starting: 250814_BW_BEF2_VFXSP_011
+2025-08-15 10:32:39 - INFO: Starting Update Monitoring
+2025-08-15 10:32:40 - INFO: Update Monitoring Stopped
+2025-08-15 10:32:40 - INFO: Auto-Download Successful: 250814_BW_BEF2_VFXSP_011
+2025-08-15 16:55:02 - INFO: Auto-Download Starting: 250815_BW_BEF2_VFXSP_012
+2025-08-15 16:55:02 - INFO: Starting Update Monitoring
+2025-08-15 16:55:03 - INFO: Update Monitoring Stopped
+2025-08-15 16:55:03 - INFO: Auto-Download Successful: 250815_BW_BEF2_VFXSP_012
+2025-08-18 13:37:58 - INFO: Auto-Download Starting: 250818_BW_BEF2_VFXSP_013
+2025-08-18 13:37:58 - INFO: Starting Update Monitoring
+2025-08-18 13:38:04 - INFO: Update Monitoring Stopped
+2025-08-18 13:38:04 - INFO: Auto-Download Successful: 250818_BW_BEF2_VFXSP_013
+2025-08-18 15:32:03 - INFO: Auto-Download Starting: 250818_BW_BEF2_VFXSP_014
+2025-08-18 15:32:03 - INFO: Starting Update Monitoring
+2025-08-18 15:32:11 - INFO: Update Monitoring Stopped
+2025-08-18 15:32:11 - INFO: Auto-Download Successful: 250818_BW_BEF2_VFXSP_014
+2025-08-19 18:18:03 - INFO: Auto-Download Starting: 250819_BW_BEF2_VFXSP_015
+2025-08-19 18:18:07 - INFO: Starting Update Monitoring
+2025-08-19 18:18:16 - INFO: Update Monitoring Stopped
+2025-08-19 18:18:16 - INFO: Auto-Download Successful: 250819_BW_BEF2_VFXSP_015
+2025-08-20 15:58:20 - INFO: Auto-Download Starting: 250820_BS_BEF2_VFXVSP_003
+2025-08-20 15:58:20 - INFO: Starting Update Monitoring
+2025-08-20 15:58:21 - INFO: Update Monitoring Stopped
+2025-08-20 15:58:21 - INFO: Auto-Download Successful: 250820_BS_BEF2_VFXVSP_003
+2025-08-21 16:33:17 - INFO: Auto-Download Starting: 250821_BW_BEF2_VFXSP_016
+2025-08-21 16:33:17 - INFO: Starting Update Monitoring
+2025-08-21 16:33:17 - INFO: Update Monitoring Stopped
+2025-08-21 16:33:17 - INFO: Auto-Download Successful: 250821_BW_BEF2_VFXSP_016
+2025-08-21 21:05:01 - INFO: Auto-Download Starting: 250818_BASE_BEF2_VFXVSP_001
+2025-08-21 21:05:01 - INFO: Starting Update Monitoring
+2025-08-21 21:05:19 - INFO: Update Monitoring Stopped
+2025-08-21 21:05:20 - INFO: Auto-Download Successful: 250818_BASE_BEF2_VFXVSP_001
+2025-08-21 21:05:20 - INFO: Auto-Download Starting: EXR_250818_BASE_BEF2_VFXDP_001
+2025-08-21 21:05:20 - INFO: Starting Update Monitoring
+2025-08-21 21:28:21 - INFO: Update Monitoring Stopped
+2025-08-21 21:28:21 - INFO: Auto-Download Successful: EXR_250818_BASE_BEF2_VFXDP_001
+2025-08-25 00:16:15 - INFO: Auto-Download Starting: 250825_BASE_BEF2_VFXVSP_001
+2025-08-25 00:16:15 - INFO: Starting Update Monitoring
+2025-08-25 00:16:15 - INFO: Update Monitoring Stopped
+2025-08-25 00:16:16 - INFO: Auto-Download Successful: 250825_BASE_BEF2_VFXVSP_001
+2025-08-25 00:18:52 - INFO: Auto-Download Starting: 250825_BASE_BEF2_VFXVSP_002
+2025-08-25 00:18:52 - INFO: Starting Update Monitoring
+2025-08-25 00:18:57 - INFO: Update Monitoring Stopped
+2025-08-25 00:18:58 - INFO: Auto-Download Successful: 250825_BASE_BEF2_VFXVSP_002
+2025-08-25 00:22:32 - INFO: Auto-Download Starting: EXR_250825_BASE_BEF2_VFXDP_001
+2025-08-25 00:22:32 - INFO: Starting Update Monitoring
+2025-08-25 00:24:14 - INFO: Update Monitoring Stopped
+2025-08-25 00:24:14 - INFO: Auto-Download Successful: EXR_250825_BASE_BEF2_VFXDP_001
+2025-08-25 10:22:53 - INFO: {'current': [], 'complete': [2452672, 2459522, 2456771, 2457831, 2455499, 2452177, 2458067, 2454043, 2454207, 2459529], 'failed': [], 'cancelled': [], 'details': {'2459529': {'name': '250825_BASE_BEF2_VFXVSP_002', 'bytes': 336082152, 'package_id': 2459529}, '2459522': {'name': '250825_BASE_BEF2_VFXVSP_001', 'bytes': 14819577, 'package_id': 2459522}, '2458067': {'name': '250818_BASE_BEF2_VFXVSP_001', 'bytes': 1101531569, 'package_id': 2458067}, '2457831': {'name': '250821_BW_BEF2_VFXSP_016', 'bytes': 7277202, 'package_id': 2457831}, '2456771': {'name': '250820_BS_BEF2_VFXVSP_003', 'bytes': 5064256, 'package_id': 2456771}, '2455499': {'name': '250819_BW_BEF2_VFXSP_015', 'bytes': 290983696, 'package_id': 2455499}, '2454207': {'name': '250818_BW_BEF2_VFXSP_014', 'bytes': 439726592, 'package_id': 2454207}, '2454043': {'name': '250818_BW_BEF2_VFXSP_013', 'bytes': 342028784, 'package_id': 2454043}, '2452672': {'name': '250815_BW_BEF2_VFXSP_012', 'bytes': 42556192, 'package_id': 2452672}, '2452177': {'name': '250814_BW_BEF2_VFXSP_011', 'bytes': 38319872, 'package_id': 2452177}}}
+2025-08-25 10:22:53 - INFO: {'current': [], 'complete': [2458063, 2459536], 'failed': [], 'cancelled': [], 'details': {'2459536': {'name': 'EXR_250825_BASE_BEF2_VFXDP_001', 'bytes': 6672543530, 'package_id': 2459536}, '2458063': {'name': 'EXR_250818_BASE_BEF2_VFXDP_001', 'bytes': 98788260252, 'package_id': 2458063}}}
+2025-08-25 10:22:53 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-08-25 10:22:53 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-08-25 15:59:12 - INFO: Auto-Download Starting: EXR_250825_PIG_BEF2_VFXDP_001
+2025-08-25 15:59:12 - INFO: Starting Update Monitoring
+2025-08-25 15:59:55 - INFO: Update Monitoring Stopped
+2025-08-25 15:59:55 - INFO: Auto-Download Successful: EXR_250825_PIG_BEF2_VFXDP_001
+2025-08-26 02:35:40 - INFO: Auto-Download Starting: 250826_BASE_BEF2_VFXVSP_002
+2025-08-26 02:35:40 - INFO: Starting Update Monitoring
+2025-08-26 02:35:40 - INFO: Auto-Download Successful: 250826_BASE_BEF2_VFXVSP_002
+2025-08-26 02:35:41 - INFO: Auto-Download Starting: 250826_BASE_BEF2_VFXVSP_001
+2025-08-26 02:35:41 - INFO: Starting Update Monitoring
+2025-08-26 02:35:43 - INFO: Update Monitoring Stopped
+2025-08-26 02:35:44 - INFO: Auto-Download Successful: 250826_BASE_BEF2_VFXVSP_001
+2025-08-26 02:41:46 - INFO: Auto-Download Starting: EXR_250826_BASE_BEF2_VFXDP_001
+2025-08-26 02:41:46 - INFO: Starting Update Monitoring
+2025-08-26 02:43:39 - INFO: Update Monitoring Stopped
+2025-08-26 02:43:39 - INFO: Auto-Download Successful: EXR_250826_BASE_BEF2_VFXDP_001
+2025-08-26 03:47:31 - ERROR: Listing packages failed (fail count: 1): 502 - b'<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-08-26 03:51:37 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-08-27 02:07:04 - INFO: Auto-Download Starting: 250827_BASE_BEF2_VFXDP_001
+2025-08-27 02:07:04 - INFO: Starting Update Monitoring
+2025-08-27 02:07:19 - INFO: Update Monitoring Stopped
+2025-08-27 02:07:20 - INFO: Auto-Download Successful: 250827_BASE_BEF2_VFXDP_001
+2025-08-27 03:10:10 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-28 12:02:23 - INFO: Auto-Download Starting: 250821_BW_BEF2_VFXSP_017
+2025-08-28 12:02:23 - INFO: Starting Update Monitoring
+2025-08-28 12:02:35 - INFO: Auto-Download Successful: 250821_BW_BEF2_VFXSP_017
+2025-08-28 15:41:19 - INFO: Auto-Download Starting: 250828_BS_BEF2_VFXVSP_004
+2025-08-28 15:41:19 - INFO: Starting Update Monitoring
+2025-08-28 15:41:28 - INFO: Update Monitoring Stopped
+2025-08-28 15:41:28 - INFO: Auto-Download Successful: 250828_BS_BEF2_VFXVSP_004
+2025-08-29 09:31:02 - INFO: Auto-Download Starting: 250829_BASE_BEF2_VFXDP_001
+2025-08-29 09:31:02 - INFO: Starting Update Monitoring
+2025-08-29 09:31:29 - INFO: Update Monitoring Stopped
+2025-08-29 09:31:30 - INFO: Auto-Download Successful: 250829_BASE_BEF2_VFXDP_001
+2025-08-29 10:49:20 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 14:06:26 - INFO: Auto-Download Starting: 250821_BW_BEF2_VFXSP_018
+2025-08-29 14:06:26 - INFO: Starting Update Monitoring
+2025-08-29 14:06:30 - INFO: Update Monitoring Stopped
+2025-08-29 14:06:30 - INFO: Auto-Download Successful: 250821_BW_BEF2_VFXSP_018
+2025-08-29 16:08:13 - ERROR: A retry was requested for package with ID "2461647", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:09:35 - ERROR: A retry was requested for package with ID "2464190", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:09:39 - ERROR: A retry was requested for package with ID "2461647", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:55:11 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:40 - INFO: Paused account beef-OCN
+2025-08-29 16:55:43 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-08-29 16:55:43 - INFO: Started account beef-OCN
+2025-08-29 16:55:44 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:45 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:45 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:52 - ERROR: A retry was requested for package with ID "2461647", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:55:53 - ERROR: A retry was requested for package with ID "2464190", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:55:53 - ERROR: A retry was requested for package with ID "2464989", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 17:47:16 - INFO: Auto-Download Starting: 250821_BW_BEF2_VFXSP_019
+2025-08-29 17:47:17 - INFO: Starting Update Monitoring
+2025-08-29 17:47:21 - INFO: Update Monitoring Stopped
+2025-08-29 17:47:21 - INFO: Auto-Download Successful: 250821_BW_BEF2_VFXSP_019
+2025-09-02 10:14:41 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-09-02 10:15:48 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-09-02 10:16:00 - ERROR: A retry was requested for package with ID "2464989", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-02 10:16:02 - ERROR: A retry was requested for package with ID "2464989", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-02 10:26:28 - INFO: Paused account beef-OCN
+2025-09-02 10:28:55 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-02 10:28:56 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-09-02 10:28:56 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-09-02 10:28:56 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-09-02 10:29:37 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-02 10:29:38 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-09-02 10:29:38 - INFO: Added account beef-OCN
+2025-09-02 10:35:38 - INFO: Auto-Download Starting: 250902_auto-dowload_test2
+2025-09-02 10:35:38 - INFO: Starting Update Monitoring
+2025-09-02 10:35:38 - INFO: Update Monitoring Stopped
+2025-09-02 10:35:38 - INFO: Auto-Download Successful: 250902_auto-dowload_test2
+2025-09-02 18:06:56 - INFO: Auto-Download Starting: 250902_BS_BEF2_VFXVSP_005
+2025-09-02 18:06:56 - INFO: Starting Update Monitoring
+2025-09-02 18:07:22 - INFO: Update Monitoring Stopped
+2025-09-02 18:07:22 - INFO: Auto-Download Successful: 250902_BS_BEF2_VFXVSP_005
+2025-09-03 04:28:56 - INFO: Auto-Download Starting: 250903_BASE_BEF2_VFXDP_002
+2025-09-03 04:28:56 - INFO: Starting Update Monitoring
+2025-09-03 04:28:56 - INFO: Update Monitoring Stopped
+2025-09-03 04:28:56 - INFO: Auto-Download Successful: 250903_BASE_BEF2_VFXDP_002
+2025-09-03 20:14:36 - INFO: Auto-Download Starting: 250903_CB_BEF2_VFXVSP_001
+2025-09-03 20:14:36 - INFO: Starting Update Monitoring
+2025-09-03 20:14:42 - INFO: Update Monitoring Stopped
+2025-09-03 20:14:42 - INFO: Auto-Download Successful: 250903_CB_BEF2_VFXVSP_001
+2025-09-04 12:21:13 - INFO: Auto-Download Starting: 250904_SAR_BEF2_Type_R&D
+2025-09-04 12:21:13 - INFO: Starting Update Monitoring
+2025-09-04 12:21:13 - INFO: Update Monitoring Stopped
+2025-09-04 12:21:13 - INFO: Auto-Download Successful: 250904_SAR_BEF2_Type_R&D
+2025-09-04 14:45:37 - INFO: Auto-Download Starting: 250821_BWA_BEF2_VFXSP_020
+2025-09-04 14:45:37 - INFO: Starting Update Monitoring
+2025-09-04 14:45:49 - INFO: Update Monitoring Stopped
+2025-09-04 14:45:49 - INFO: Auto-Download Successful: 250821_BWA_BEF2_VFXSP_020
+2025-09-04 15:02:37 - INFO: Auto-Download Starting: 250904_CB_BEF2_VFXVSP_001
+2025-09-04 15:02:37 - INFO: Starting Update Monitoring
+2025-09-04 15:02:57 - INFO: Update Monitoring Stopped
+2025-09-04 15:02:57 - INFO: Auto-Download Successful: 250904_CB_BEF2_VFXVSP_001
+2025-09-05 03:08:40 - INFO: Auto-Download Starting: 250905_BASE_BEF2_VFXDP_004
+2025-09-05 03:08:40 - INFO: Starting Update Monitoring
+2025-09-05 03:08:41 - INFO: Update Monitoring Stopped
+2025-09-05 03:08:41 - INFO: Auto-Download Successful: 250905_BASE_BEF2_VFXDP_004
+2025-09-05 03:08:41 - INFO: Auto-Download Starting: 250905_BASE_BEF2_VFXDP_003
+2025-09-05 03:08:42 - INFO: Starting Update Monitoring
+2025-09-05 03:08:56 - INFO: Update Monitoring Stopped
+2025-09-05 03:08:56 - INFO: Auto-Download Successful: 250905_BASE_BEF2_VFXDP_003
+2025-09-05 06:17:53 - INFO: Auto-Download Starting: 250905_BWA_BEF2_VFXSP_021
+2025-09-05 06:17:53 - INFO: Starting Update Monitoring
+2025-09-05 06:17:55 - INFO: Update Monitoring Stopped
+2025-09-05 06:17:55 - INFO: Auto-Download Successful: 250905_BWA_BEF2_VFXSP_021
+2025-09-05 09:35:18 - INFO: Auto-Download Starting: 250905_SAR_BEF2_Type_R&D
+2025-09-05 09:35:19 - INFO: Starting Update Monitoring
+2025-09-05 09:35:19 - INFO: Update Monitoring Stopped
+2025-09-05 09:35:19 - INFO: Auto-Download Successful: 250905_SAR_BEF2_Type_R&D
+2025-09-05 11:57:28 - INFO: Auto-Download Starting: 250905_CB_BEF2_VFXVSP_001
+2025-09-05 11:57:28 - INFO: Starting Update Monitoring
+2025-09-05 11:57:29 - INFO: Update Monitoring Stopped
+2025-09-05 11:57:30 - INFO: Auto-Download Successful: 250905_CB_BEF2_VFXVSP_001
+2025-09-05 12:19:44 - INFO: Auto-Download Starting: 250905_CHO_BEF2_VFXVSP_001
+2025-09-05 12:19:45 - INFO: Starting Update Monitoring
+2025-09-05 12:20:02 - INFO: Update Monitoring Stopped
+2025-09-05 12:20:02 - INFO: Auto-Download Successful: 250905_CHO_BEF2_VFXVSP_001
+2025-09-05 13:04:25 - INFO: Auto-Download Starting: 250905_CB_BEF2_VFXVSP_002
+2025-09-05 13:04:25 - INFO: Starting Update Monitoring
+2025-09-05 13:04:32 - INFO: Update Monitoring Stopped
+2025-09-05 13:04:32 - INFO: Auto-Download Successful: 250905_CB_BEF2_VFXVSP_002
+2025-09-05 15:29:53 - INFO: Auto-Download Starting: 250905_BWA_BEF2_VFXSP_021
+2025-09-05 15:29:53 - INFO: Starting Update Monitoring
+2025-09-05 15:29:57 - INFO: Update Monitoring Stopped
+2025-09-05 15:29:58 - INFO: Auto-Download Successful: 250905_BWA_BEF2_VFXSP_021
+2025-09-05 15:43:47 - INFO: Auto-Download Starting: 250905_BEEF_S2_VFXTO_BWA_022
+2025-09-05 15:43:51 - INFO: Starting Update Monitoring
+2025-09-05 15:43:56 - INFO: Update Monitoring Stopped
+2025-09-05 15:43:56 - INFO: Auto-Download Successful: 250905_BEEF_S2_VFXTO_BWA_022
+2025-09-05 17:43:50 - INFO: Auto-Download Starting: 250905_BEEF_S2_VFXTO_BWA_023
+2025-09-05 17:43:50 - INFO: Starting Update Monitoring
+2025-09-05 17:43:51 - INFO: Update Monitoring Stopped
+2025-09-05 17:43:52 - INFO: Auto-Download Successful: 250905_BEEF_S2_VFXTO_BWA_023
+2025-09-05 21:04:08 - INFO: Auto-Download Starting: 250905_CB_BEF2_VFXVSP_003
+2025-09-05 21:04:08 - INFO: Starting Update Monitoring
+2025-09-05 21:04:11 - INFO: Update Monitoring Stopped
+2025-09-05 21:04:12 - INFO: Auto-Download Successful: 250905_CB_BEF2_VFXVSP_003
+2025-09-08 09:37:24 - INFO: Auto-Download Starting: 250908_CHO_BEF2_VFXVSP_001
+2025-09-08 09:37:24 - INFO: Starting Update Monitoring
+2025-09-08 09:37:32 - INFO: Update Monitoring Stopped
+2025-09-08 09:37:32 - INFO: Auto-Download Successful: 250908_CHO_BEF2_VFXVSP_001
+2025-09-08 09:40:10 - INFO: Auto-Download Starting: 250908_CB_BEF2_VFXVSP_001
+2025-09-08 09:40:10 - INFO: Starting Update Monitoring
+2025-09-08 09:40:12 - INFO: Update Monitoring Stopped
+2025-09-08 09:40:13 - INFO: Auto-Download Successful: 250908_CB_BEF2_VFXVSP_001
+2025-09-08 12:45:39 - INFO: Auto-Download Starting: 250908_CHO_BEF2_VFXVSP_002
+2025-09-08 12:45:39 - INFO: Starting Update Monitoring
+2025-09-08 12:45:42 - INFO: Update Monitoring Stopped
+2025-09-08 12:45:42 - INFO: Auto-Download Successful: 250908_CHO_BEF2_VFXVSP_002
+2025-09-08 13:08:23 - INFO: Auto-Download Starting: 25mmdd_BS_BEF2_VFXVSP_006
+2025-09-08 13:08:23 - INFO: Starting Update Monitoring
+2025-09-08 13:08:36 - INFO: Update Monitoring Stopped
+2025-09-08 13:08:36 - INFO: Auto-Download Successful: 25mmdd_BS_BEF2_VFXVSP_006
+2025-09-08 14:36:29 - INFO: Auto-Download Starting: 250908_CHO_BEF2_VFXVSP_003
+2025-09-08 14:36:29 - INFO: Starting Update Monitoring
+2025-09-08 14:36:30 - INFO: Update Monitoring Stopped
+2025-09-08 14:36:30 - INFO: Auto-Download Successful: 250908_CHO_BEF2_VFXVSP_003
+2025-09-08 14:39:19 - INFO: Auto-Download Starting: 25mmdd_BS_BEF2_VFXVSP_007
+2025-09-08 14:39:19 - INFO: Starting Update Monitoring
+2025-09-08 14:39:19 - INFO: Update Monitoring Stopped
+2025-09-08 14:39:20 - INFO: Auto-Download Successful: 25mmdd_BS_BEF2_VFXVSP_007
+2025-09-08 21:31:46 - INFO: Auto-Download Starting: 250908_CB_BEF2_VFXVSP_002
+2025-09-08 21:31:46 - INFO: Starting Update Monitoring
+2025-09-08 21:31:46 - INFO: Update Monitoring Stopped
+2025-09-08 21:31:47 - INFO: Auto-Download Successful: 250908_CB_BEF2_VFXVSP_002
+2025-09-09 04:00:37 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-09-09 08:20:00 - INFO: Auto-Download Starting: 250909_CHO_BEF2_VFXVSP_001
+2025-09-09 08:20:00 - INFO: Starting Update Monitoring
+2025-09-09 08:20:10 - INFO: Update Monitoring Stopped
+2025-09-09 08:20:11 - INFO: Auto-Download Successful: 250909_CHO_BEF2_VFXVSP_001
+2025-09-09 13:16:00 - INFO: Auto-Download Starting: 250909_CB_BEF2_VFXVSP_001
+2025-09-09 13:16:00 - INFO: Starting Update Monitoring
+2025-09-09 13:16:01 - INFO: Update Monitoring Stopped
+2025-09-09 13:16:01 - INFO: Auto-Download Successful: 250909_CB_BEF2_VFXVSP_001
+2025-09-09 13:18:50 - INFO: Auto-Download Starting: 250909_CB_BEF2_VFXVSP_001
+2025-09-09 13:18:50 - INFO: Starting Update Monitoring
+2025-09-09 13:18:51 - INFO: Update Monitoring Stopped
+2025-09-09 13:18:52 - INFO: Auto-Download Successful: 250909_CB_BEF2_VFXVSP_001
+2025-09-09 21:36:36 - INFO: Auto-Download Starting: 250909_CB_BEF2_VXFVSP_002
+2025-09-09 21:36:36 - INFO: Starting Update Monitoring
+2025-09-09 21:36:40 - INFO: Update Monitoring Stopped
+2025-09-09 21:36:41 - INFO: Auto-Download Successful: 250909_CB_BEF2_VXFVSP_002
+2025-09-10 08:21:47 - INFO: Auto-Download Starting: 250910_CHO_BEF2_VFXVSP_001
+2025-09-10 08:21:47 - INFO: Starting Update Monitoring
+2025-09-10 08:21:51 - INFO: Update Monitoring Stopped
+2025-09-10 08:21:51 - INFO: Auto-Download Successful: 250910_CHO_BEF2_VFXVSP_001
+2025-09-10 12:45:15 - INFO: Shutting down FileRunner Auto-Downloader
+2025-09-10 12:45:15 - INFO: Saving Auto-Downloader State and Configuration
+2025-09-10 12:45:15 - INFO: Shutting down FileRunner Auto-Downloader Web App
+2025-09-10 12:45:16 - INFO: Shutting down FileRunner Auto-Downloader WebSocket Server
+2025-09-10 12:45:16 - INFO: Shutting down FileRunner Auto-Downloader Account Monitors
+2025-09-10 12:45:16 - INFO: Shutting down FileRunner Auto-Downloader Download Workers
+2025-09-10 12:45:16 - INFO: Exiting
+2025-09-10 13:13:58 - INFO: {'current': [], 'complete': [2472065, 2469511, 2471950, 2469648, 2469922, 2473253, 2470311, 2471849, 2473260, 2470700, 2470575, 2471604, 2471614, 2468165, 2468934, 2467269, 2467016, 2470475, 2470489, 2472794, 2470237, 2469088, 2472435, 2470260, 2472054, 2469111, 2473720, 2469502, 2474156], 'failed': [], 'cancelled': [], 'details': {'2474156': {'name': '250910_CHO_BEF2_VFXVSP_001', 'bytes': 250371334, 'package_id': 2474156}, '2473720': {'name': '250909_CB_BEF2_VXFVSP_002', 'bytes': 221986488, 'package_id': 2473720}, '2473260': {'name': '250909_CB_BEF2_VFXVSP_001', 'bytes': 50151428, 'package_id': 2473260}, '2473253': {'name': '250909_CB_BEF2_VFXVSP_001', 'bytes': 50151428, 'package_id': 2473253}, '2472794': {'name': '250909_CHO_BEF2_VFXVSP_001', 'bytes': 608644552, 'package_id': 2472794}, '2472435': {'name': '250908_CB_BEF2_VFXVSP_002', 'bytes': 58170668, 'package_id': 2472435}, '2472065': {'name': '250908_CHO_BEF2_VFXVSP_003', 'bytes': 76384638, 'package_id': 2472065}, '2472054': {'name': '25mmdd_BS_BEF2_VFXVSP_007', 'bytes': 55786466, 'package_id': 2472054}, '2471950': {'name': '25mmdd_BS_BEF2_VFXVSP_006', 'bytes': 669721671, 'package_id': 2471950}, '2471849': {'name': '250908_CHO_BEF2_VFXVSP_002', 'bytes': 161256244, 'package_id': 2471849}, '2471614': {'name': '250908_CB_BEF2_VFXVSP_001', 'bytes': 110772228, 'package_id': 2471614}, '2471604': {'name': '250908_CHO_BEF2_VFXVSP_001', 'bytes': 436478418, 'package_id': 2471604}, '2470700': {'name': '250905_CB_BEF2_VFXVSP_003', 'bytes': 234450660, 'package_id': 2470700}, '2470575': {'name': '250905_BEEF_S2_VFXTO_BWA_023', 'bytes': 93358584, 'package_id': 2470575}, '2470489': {'name': '250905_BEEF_S2_VFXTO_BWA_022', 'bytes': 281892452, 'package_id': 2470489}, '2470475': {'name': '250905_BWA_BEF2_VFXSP_021', 'bytes': 281892442, 'package_id': 2470475}, '2470311': {'name': '250905_CB_BEF2_VFXVSP_002', 'bytes': 48343212, 'package_id': 2470311}, '2470260': {'name': '250905_CHO_BEF2_VFXVSP_001', 'bytes': 1102713110, 'package_id': 2470260}, '2470237': {'name': '250905_CB_BEF2_VFXVSP_001', 'bytes': 48343212, 'package_id': 2470237}, '2469922': {'name': '250905_SAR_BEF2_Type_R&D', 'bytes': 9560740, 'package_id': 2469922}, '2469648': {'name': '250905_BWA_BEF2_VFXSP_021', 'bytes': 93358574, 'package_id': 2469648}, '2469511': {'name': '250905_BASE_BEF2_VFXDP_004', 'bytes': 12128522, 'package_id': 2469511}, '2469502': {'name': '250905_BASE_BEF2_VFXDP_003', 'bytes': 948723939, 'package_id': 2469502}, '2469111': {'name': '250904_CB_BEF2_VFXVSP_001', 'bytes': 1131293572, 'package_id': 2469111}, '2469088': {'name': '250821_BWA_BEF2_VFXSP_020', 'bytes': 694724730, 'package_id': 2469088}, '2468934': {'name': '250904_SAR_BEF2_Type_R&D', 'bytes': 9990755, 'package_id': 2468934}, '2468165': {'name': '250903_CB_BEF2_VFXVSP_001', 'bytes': 310073888, 'package_id': 2468165}, '2467269': {'name': '250903_BASE_BEF2_VFXDP_002', 'bytes': 10913957, 'package_id': 2467269}, '2467016': {'name': '250902_BS_BEF2_VFXVSP_005', 'bytes': 1351299012, 'package_id': 2467016}}}
+2025-09-10 13:13:58 - INFO: {'current': [], 'complete': [2460102, 2460358, 2461647, 2459536, 2466389, 2464989, 2464190, 2466452], 'failed': [], 'cancelled': [], 'details': {'2466452': {'name': '250902_auto-dowload_test2', 'bytes': 864089, 'package_id': 2466452}, '2466389': {'name': '250902_test_package', 'bytes': 843276, 'package_id': 2466389}, '2464989': {'name': '250829 test package', 'bytes': 843276, 'package_id': 2464989}, '2464190': {'name': 'EXR_250829_BASE_BEF2_VFXDP_001', 'bytes': 200827984208, 'package_id': 2464190}, '2461647': {'name': 'EXR_250827_BASE_BEF2_VFXDP_001', 'bytes': 95508319108, 'package_id': 2461647}, '2460358': {'name': 'EXR_250826_BASE_BEF2_VFXDP_001', 'bytes': 6672738113, 'package_id': 2460358}, '2460102': {'name': 'EXR_250825_PIG_BEF2_VFXDP_001', 'bytes': 2200679551, 'package_id': 2460102}, '2459536': {'name': 'EXR_250825_BASE_BEF2_VFXDP_001', 'bytes': 6672543530, 'package_id': 2459536}}}
+2025-09-10 13:13:58 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-09-10 13:13:58 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-09-10 22:55:34 - INFO: Auto-Download Starting: 250910_BEEF_S2_VFXTO_BWA_024
+2025-09-10 22:55:34 - INFO: Starting Update Monitoring
+2025-09-10 22:55:42 - INFO: Update Monitoring Stopped
+2025-09-10 22:55:43 - INFO: Auto-Download Successful: 250910_BEEF_S2_VFXTO_BWA_024
+2025-09-11 09:21:31 - INFO: Auto-Download Starting: 250911_CHO_BEF2_VFXVSP_001
+2025-09-11 09:21:35 - INFO: Starting Update Monitoring
+2025-09-11 09:21:47 - INFO: Update Monitoring Stopped
+2025-09-11 09:21:47 - INFO: Auto-Download Successful: 250911_CHO_BEF2_VFXVSP_001
+2025-09-11 13:49:28 - INFO: Auto-Download Starting: 250911_CB_BEF2_VFXVSP_001
+2025-09-11 13:49:28 - INFO: Starting Update Monitoring
+2025-09-11 13:49:32 - INFO: Update Monitoring Stopped
+2025-09-11 13:49:33 - INFO: Auto-Download Successful: 250911_CB_BEF2_VFXVSP_001
+2025-09-11 19:21:47 - INFO: Auto-Download Starting: EXR_250911_PIG_BEF2_VXDP_002
+2025-09-11 19:21:47 - INFO: Starting Update Monitoring
+2025-09-11 19:23:25 - INFO: Update Monitoring Stopped
+2025-09-11 19:23:25 - INFO: Auto-Download Successful: EXR_250911_PIG_BEF2_VXDP_002
+2025-09-12 01:43:26 - INFO: Auto-Download Starting: 251210_BEEF_S2_VFXTO_BWA_025
+2025-09-12 01:43:26 - INFO: Starting Update Monitoring
+2025-09-12 01:43:30 - INFO: Update Monitoring Stopped
+2025-09-12 01:43:31 - INFO: Auto-Download Successful: 251210_BEEF_S2_VFXTO_BWA_025
+2025-09-12 01:48:57 - INFO: Auto-Download Starting: 250912_BEEF_S2_VFXTO_BWA_025
+2025-09-12 01:48:57 - INFO: Starting Update Monitoring
+2025-09-12 01:49:01 - INFO: Update Monitoring Stopped
+2025-09-12 01:49:01 - INFO: Auto-Download Successful: 250912_BEEF_S2_VFXTO_BWA_025
+2025-09-12 02:02:44 - INFO: Auto-Download Starting: 250912_BASE_BEF2_VFXDP_005
+2025-09-12 02:02:44 - INFO: Starting Update Monitoring
+2025-09-12 02:02:46 - INFO: Update Monitoring Stopped
+2025-09-12 02:02:46 - INFO: Auto-Download Successful: 250912_BASE_BEF2_VFXDP_005
+2025-09-12 02:03:06 - INFO: Auto-Download Starting: EXR_250912_BASE_BEF2_VFXDP_002
+2025-09-12 02:03:06 - INFO: Starting Update Monitoring
+2025-09-12 02:03:51 - INFO: Update Monitoring Stopped
+2025-09-12 02:03:51 - INFO: Auto-Download Successful: EXR_250912_BASE_BEF2_VFXDP_002
+2025-09-12 08:28:21 - INFO: Auto-Download Starting: 250912_CHO_BEF2_VFXVSP_008
+2025-09-12 08:28:21 - INFO: Starting Update Monitoring
+2025-09-12 08:28:28 - INFO: Update Monitoring Stopped
+2025-09-12 08:28:29 - INFO: Auto-Download Successful: 250912_CHO_BEF2_VFXVSP_008
+2025-09-12 12:47:51 - INFO: Auto-Download Starting: 250912_CB_BEF2_VFXVSP_001
+2025-09-12 12:47:51 - INFO: Starting Update Monitoring
+2025-09-12 12:47:54 - INFO: Update Monitoring Stopped
+2025-09-12 12:47:55 - INFO: Auto-Download Successful: 250912_CB_BEF2_VFXVSP_001
+2025-09-12 12:58:53 - INFO: Auto-Download Starting: 250912_CB_BEF2_VFXVSP_002
+2025-09-12 12:58:53 - INFO: Starting Update Monitoring
+2025-09-12 12:58:57 - INFO: Update Monitoring Stopped
+2025-09-12 12:58:57 - INFO: Auto-Download Successful: 250912_CB_BEF2_VFXVSP_002
+2025-09-12 15:06:00 - INFO: Auto-Download Starting: 250912_CB_BEF2_VFXVSP_003
+2025-09-12 15:06:00 - INFO: Starting Update Monitoring
+2025-09-12 15:06:02 - INFO: Update Monitoring Stopped
+2025-09-12 15:06:02 - INFO: Auto-Download Successful: 250912_CB_BEF2_VFXVSP_003
+2025-09-12 15:35:07 - INFO: Auto-Download Starting: 250912_autodownload_test
+2025-09-12 15:35:07 - INFO: Starting Update Monitoring
+2025-09-12 15:35:07 - INFO: Update Monitoring Stopped
+2025-09-12 15:35:07 - INFO: Auto-Download Successful: 250912_autodownload_test
+2025-09-12 15:41:23 - INFO: Paused account beef-OCN
+2025-09-12 15:42:25 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-09-12 15:42:25 - INFO: Started account beef-OCN
+2025-09-12 15:44:28 - INFO: Auto-Download Starting: 250912_autodownload_test2
+2025-09-12 15:44:28 - INFO: Starting Update Monitoring
+2025-09-12 15:44:28 - INFO: Update Monitoring Stopped
+2025-09-12 15:44:28 - INFO: Auto-Download Successful: 250912_autodownload_test2
+2025-09-12 15:45:59 - INFO: Paused account beef-OCN
+2025-09-12 15:46:28 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-12 15:46:29 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-09-12 15:46:29 - INFO: Added account beef-OCN
+2025-09-12 15:48:32 - INFO: Auto-Download Starting: 250912_autodownload3
+2025-09-12 15:48:36 - INFO: Starting Update Monitoring
+2025-09-12 15:48:43 - INFO: Update Monitoring Stopped
+2025-09-12 15:48:43 - INFO: Auto-Download Successful: 250912_autodownload3
+2025-09-15 07:32:13 - INFO: Auto-Download Starting: 250915_BASE_BEF2_VFXDP_006
+2025-09-15 07:32:13 - INFO: Starting Update Monitoring
+2025-09-15 07:32:31 - INFO: Update Monitoring Stopped
+2025-09-15 07:32:32 - INFO: Auto-Download Successful: 250915_BASE_BEF2_VFXDP_006
+2025-09-15 09:50:55 - INFO: Shutting down FileRunner Auto-Downloader
+2025-09-15 09:50:55 - INFO: Saving Auto-Downloader State and Configuration
+2025-09-15 09:50:55 - INFO: Shutting down FileRunner Auto-Downloader Web App
+2025-09-15 09:50:55 - INFO: Shutting down FileRunner Auto-Downloader WebSocket Server
+2025-09-15 09:50:55 - INFO: Shutting down FileRunner Auto-Downloader Account Monitors
+2025-09-15 09:50:55 - INFO: Shutting down FileRunner Auto-Downloader Download Workers
+2025-09-15 09:50:55 - INFO: Exiting
+2025-09-15 10:03:17 - INFO: {'current': [], 'complete': [2472065, 2476165, 2471950, 2477597, 2469922, 2473253, 2477095, 2470311, 2471849, 2474156, 2473260, 2470700, 2470575, 2471604, 2476733, 2471614, 2470475, 2477775, 2476753, 2470489, 2472794, 2475746, 2472435, 2470260, 2472054, 2473720, 2477564, 2475261, 2478840], 'failed': [], 'cancelled': [], 'details': {'2478840': {'name': '250915_BASE_BEF2_VFXDP_006', 'bytes': 1056631779, 'package_id': 2478840}, '2477775': {'name': '250912_CB_BEF2_VFXVSP_003', 'bytes': 112835892, 'package_id': 2477775}, '2477597': {'name': '250912_CB_BEF2_VFXVSP_002', 'bytes': 240592820, 'package_id': 2477597}, '2477564': {'name': '250912_CB_BEF2_VFXVSP_001', 'bytes': 188204608, 'package_id': 2477564}, '2477095': {'name': '250912_CHO_BEF2_VFXVSP_008', 'bytes': 420112620, 'package_id': 2477095}, '2476753': {'name': '250912_BASE_BEF2_VFXDP_005', 'bytes': 107907866, 'package_id': 2476753}, '2476733': {'name': '250912_BEEF_S2_VFXTO_BWA_025', 'bytes': 201268162, 'package_id': 2476733}, '2476165': {'name': '250911_CB_BEF2_VFXVSP_001', 'bytes': 240592820, 'package_id': 2476165}, '2475746': {'name': '250911_CHO_BEF2_VFXVSP_001', 'bytes': 464364170, 'package_id': 2475746}, '2475261': {'name': '250910_BEEF_S2_VFXTO_BWA_024', 'bytes': 475275986, 'package_id': 2475261}, '2474156': {'name': '250910_CHO_BEF2_VFXVSP_001', 'bytes': 250371334, 'package_id': 2474156}, '2473720': {'name': '250909_CB_BEF2_VXFVSP_002', 'bytes': 221986488, 'package_id': 2473720}, '2473260': {'name': '250909_CB_BEF2_VFXVSP_001', 'bytes': 50151428, 'package_id': 2473260}, '2473253': {'name': '250909_CB_BEF2_VFXVSP_001', 'bytes': 50151428, 'package_id': 2473253}, '2472794': {'name': '250909_CHO_BEF2_VFXVSP_001', 'bytes': 608644552, 'package_id': 2472794}, '2472435': {'name': '250908_CB_BEF2_VFXVSP_002', 'bytes': 58170668, 'package_id': 2472435}, '2472065': {'name': '250908_CHO_BEF2_VFXVSP_003', 'bytes': 76384638, 'package_id': 2472065}, '2472054': {'name': '25mmdd_BS_BEF2_VFXVSP_007', 'bytes': 55786466, 'package_id': 2472054}, '2471950': {'name': '25mmdd_BS_BEF2_VFXVSP_006', 'bytes': 669721671, 'package_id': 2471950}, '2471849': {'name': '250908_CHO_BEF2_VFXVSP_002', 'bytes': 161256244, 'package_id': 2471849}, '2471614': {'name': '250908_CB_BEF2_VFXVSP_001', 'bytes': 110772228, 'package_id': 2471614}, '2471604': {'name': '250908_CHO_BEF2_VFXVSP_001', 'bytes': 436478418, 'package_id': 2471604}, '2470700': {'name': '250905_CB_BEF2_VFXVSP_003', 'bytes': 234450660, 'package_id': 2470700}, '2470575': {'name': '250905_BEEF_S2_VFXTO_BWA_023', 'bytes': 93358584, 'package_id': 2470575}, '2470489': {'name': '250905_BEEF_S2_VFXTO_BWA_022', 'bytes': 281892452, 'package_id': 2470489}, '2470475': {'name': '250905_BWA_BEF2_VFXSP_021', 'bytes': 281892442, 'package_id': 2470475}, '2470311': {'name': '250905_CB_BEF2_VFXVSP_002', 'bytes': 48343212, 'package_id': 2470311}, '2470260': {'name': '250905_CHO_BEF2_VFXVSP_001', 'bytes': 1102713110, 'package_id': 2470260}, '2469922': {'name': '250905_SAR_BEF2_Type_R&D', 'bytes': 9560740, 'package_id': 2469922}}}
+2025-09-15 10:03:17 - INFO: {'current': [], 'complete': [2476746, 2477867, 2476532, 2477863, 2477868], 'failed': [], 'cancelled': [], 'details': {'2477868': {'name': '250912_autodownload3', 'bytes': 23905100, 'package_id': 2477868}, '2477867': {'name': '250912_autodownload_test2', 'bytes': 880830, 'package_id': 2477867}, '2477863': {'name': '250912_autodownload_test', 'bytes': 6871714, 'package_id': 2477863}, '2476746': {'name': 'EXR_250912_BASE_BEF2_VFXDP_002', 'bytes': 4743459724, 'package_id': 2476746}, '2476532': {'name': 'EXR_250911_PIG_BEF2_VXDP_002', 'bytes': 11026110916, 'package_id': 2476532}}}
+2025-09-15 10:03:17 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-09-15 10:03:17 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-09-15 13:51:19 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/BS2_06_VFX/NEXIS_FR_INBOX/FileRunner-beef-post'
+2025-09-15 15:50:38 - INFO: Auto-Download Starting: 250915_BEEF_201_LOCKED_CUT_VAM
+2025-09-15 15:50:38 - INFO: Starting Update Monitoring
+2025-09-15 15:55:45 - ERROR: A retry was requested for package with ID "2479360", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-15 15:55:51 - INFO: Paused account beef-post
+2025-09-15 16:00:23 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-15 16:00:23 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-09-15 16:00:53 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-15 16:00:53 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-09-15 16:02:51 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-15 16:02:52 - INFO: Starting FileRunner Auto-Downloader for user: beef-Post
+2025-09-15 16:02:52 - INFO: Added account beef-Post
+2025-09-15 16:29:39 - INFO: Update Monitoring Stopped
+2025-09-15 16:29:40 - INFO: Auto-Download Successful: 250915_BEEF_201_LOCKED_CUT_VAM
+2025-09-15 16:29:41 - INFO: Auto-Download Starting: 250915_BEEF_204_LOCKED_CUT_VAM
+2025-09-15 16:29:41 - INFO: Starting Update Monitoring
+2025-09-15 16:58:16 - INFO: Update Monitoring Stopped
+2025-09-15 16:58:17 - INFO: Auto-Download Successful: 250915_BEEF_204_LOCKED_CUT_VAM
+2025-09-15 17:02:00 - INFO: Auto-Download Starting: 250915_BEEF_202_LOCKED_CUT_VAM
+2025-09-15 17:02:00 - INFO: Starting Update Monitoring
+2025-09-15 17:46:32 - INFO: Update Monitoring Stopped
+2025-09-15 17:46:33 - INFO: Auto-Download Successful: 250915_BEEF_202_LOCKED_CUT_VAM
+2025-09-15 19:27:56 - INFO: Auto-Download Starting: 250915_CB_BEF2_VFXVSP_002
+2025-09-15 19:27:56 - INFO: Starting Update Monitoring
+2025-09-15 19:27:57 - INFO: Update Monitoring Stopped
+2025-09-15 19:27:58 - INFO: Auto-Download Successful: 250915_CB_BEF2_VFXVSP_002
+2025-09-16 03:51:31 - ERROR: Listing packages failed (fail count: 1): 502 - b'<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-09-16 09:49:25 - INFO: Auto-Download Starting: 250916_BRN_BEF2_VFXVSP_008
+2025-09-16 09:49:25 - INFO: Starting Update Monitoring
+2025-09-16 09:49:41 - INFO: Update Monitoring Stopped
+2025-09-16 09:49:42 - INFO: Auto-Download Successful: 250916_BRN_BEF2_VFXVSP_008
+2025-09-16 11:55:45 - INFO: Auto-Download Starting: 250916_CB_BEF2_VFXVSP_001
+2025-09-16 11:55:46 - INFO: Starting Update Monitoring
+2025-09-16 11:55:49 - INFO: Update Monitoring Stopped
+2025-09-16 11:55:49 - INFO: Auto-Download Successful: 250916_CB_BEF2_VFXVSP_001
+2025-09-16 16:04:18 - INFO: Auto-Download Starting: 250916_test_1
+2025-09-16 16:04:18 - INFO: Starting Update Monitoring
+2025-09-16 16:04:18 - INFO: Update Monitoring Stopped
+2025-09-16 16:04:18 - INFO: Auto-Download Successful: 250916_test_1
+2025-09-16 16:07:32 - INFO: Paused account beef-Post
+2025-09-16 16:08:22 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-16 16:08:22 - ERROR: Failed to add account beef-Post error:{'success': False, 'action': 'add_account', 'username': 'beef-Post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-09-16 16:08:53 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-16 16:08:54 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-09-16 16:08:54 - INFO: Added account beef-post
+2025-09-16 16:09:03 - INFO: Auto-Download Starting: 250916_test_1
+2025-09-16 16:09:03 - INFO: Starting Update Monitoring
+2025-09-16 16:09:03 - INFO: Update Monitoring Stopped
+2025-09-16 16:09:03 - INFO: Auto-Download Successful: 250916_test_1
+2025-09-16 17:37:43 - INFO: Auto-Download Starting: 250916_CHO_BEF2_VFXVSP_009
+2025-09-16 17:37:43 - INFO: Starting Update Monitoring
+2025-09-16 17:37:59 - INFO: Update Monitoring Stopped
+2025-09-16 17:37:59 - INFO: Auto-Download Successful: 250916_CHO_BEF2_VFXVSP_009
+2025-09-16 23:31:35 - INFO: Auto-Download Starting: 250916_BEEF_S2_VFXTO_BWA_026
+2025-09-16 23:31:35 - INFO: Starting Update Monitoring
+2025-09-16 23:31:48 - INFO: Update Monitoring Stopped
+2025-09-16 23:31:49 - INFO: Auto-Download Successful: 250916_BEEF_S2_VFXTO_BWA_026
+2025-09-17 09:40:58 - INFO: Paused account beef-post
+2025-09-17 09:41:01 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-09-17 09:41:01 - INFO: Started account beef-post
+2025-09-17 09:43:05 - INFO: Auto-Download Starting: 280917_test1
+2025-09-17 09:43:05 - INFO: Starting Update Monitoring
+2025-09-17 09:43:05 - INFO: Update Monitoring Stopped
+2025-09-17 09:43:05 - INFO: Auto-Download Successful: 280917_test1
+2025-09-17 09:53:20 - INFO: Auto-Download Starting: 250916_BEEF_S2_VFXTO_BWA_026
+2025-09-17 09:53:20 - INFO: Starting Update Monitoring
+2025-09-17 09:53:33 - INFO: Update Monitoring Stopped
+2025-09-17 09:53:34 - INFO: Auto-Download Successful: 250916_BEEF_S2_VFXTO_BWA_026
+2025-09-17 09:57:23 - INFO: Auto-Download Starting: 250917_test#2
+2025-09-17 09:57:23 - INFO: Starting Update Monitoring
+2025-09-17 09:57:28 - INFO: Update Monitoring Stopped
+2025-09-17 09:57:29 - INFO: Auto-Download Successful: 250917_test#2
+2025-09-17 15:11:16 - INFO: Auto-Download Starting: 250917_CB_BEF2_VFXVSP_001
+2025-09-17 15:11:16 - INFO: Starting Update Monitoring
+2025-09-17 15:11:27 - INFO: Update Monitoring Stopped
+2025-09-17 15:11:27 - INFO: Auto-Download Successful: 250917_CB_BEF2_VFXVSP_001
+2025-09-17 17:12:39 - INFO: Auto-Download Starting: 250917_Beef_S2_Annotations_BWA
+2025-09-17 17:12:39 - INFO: Starting Update Monitoring
+2025-09-17 17:12:40 - INFO: Update Monitoring Stopped
+2025-09-17 17:12:40 - INFO: Auto-Download Successful: 250917_Beef_S2_Annotations_BWA
+2025-09-17 18:16:15 - INFO: Auto-Download Starting: 250917_CHO_BEF2_VFXVSP_010
+2025-09-17 18:16:15 - INFO: Starting Update Monitoring
+2025-09-17 18:16:25 - INFO: Update Monitoring Stopped
+2025-09-17 18:16:26 - INFO: Auto-Download Successful: 250917_CHO_BEF2_VFXVSP_010
+2025-09-18 10:08:28 - INFO: Paused account beef-post
+2025-09-18 10:09:33 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-18 10:09:34 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-09-18 10:09:34 - INFO: Added account beef-post
+2025-09-18 10:11:29 - INFO: Auto-Download Starting: 250917_test#2
+2025-09-18 10:11:29 - INFO: Starting Update Monitoring
+2025-09-18 10:11:34 - INFO: Update Monitoring Stopped
+2025-09-18 10:11:35 - INFO: Auto-Download Successful: 250917_test#2
+2025-09-18 10:12:10 - INFO: Auto-Download Starting: 250917_Beef_S2_Annotations_BWA
+2025-09-18 10:12:10 - INFO: Starting Update Monitoring
+2025-09-18 10:12:12 - INFO: Update Monitoring Stopped
+2025-09-18 10:12:12 - INFO: Auto-Download Successful: 250917_Beef_S2_Annotations_BWA
+2025-09-18 12:31:34 - INFO: Auto-Download Starting: 250918_Beef_S2_NukeScript_BWA
+2025-09-18 12:31:34 - INFO: Starting Update Monitoring
+2025-09-18 12:31:34 - INFO: Update Monitoring Stopped
+2025-09-18 12:31:34 - INFO: Auto-Download Successful: 250918_Beef_S2_NukeScript_BWA
+2025-09-18 17:18:48 - INFO: Auto-Download Starting: 250918_BRN_BEF2_VFXVSP_009
+2025-09-18 17:18:48 - INFO: Starting Update Monitoring
+2025-09-18 17:19:02 - INFO: Update Monitoring Stopped
+2025-09-18 17:19:02 - INFO: Auto-Download Successful: 250918_BRN_BEF2_VFXVSP_009
+2025-09-18 19:11:04 - INFO: Auto-Download Starting: 250918_BEEF_203_LOCKED_CUT_VAM
+2025-09-18 19:11:04 - INFO: Starting Update Monitoring
+2025-09-18 19:58:41 - INFO: Update Monitoring Stopped
+2025-09-18 19:58:41 - INFO: Auto-Download Successful: 250918_BEEF_203_LOCKED_CUT_VAM
+2025-09-18 22:41:37 - INFO: Auto-Download Starting: 250919_PIG_BEF2_VFXVSP_001
+2025-09-18 22:41:37 - INFO: Starting Update Monitoring
+2025-09-18 22:42:53 - INFO: Update Monitoring Stopped
+2025-09-18 22:42:54 - INFO: Auto-Download Successful: 250919_PIG_BEF2_VFXVSP_001
+2025-09-18 23:53:40 - INFO: Auto-Download Starting: 250918_BEEF_S2_VFXTO_BWA_027
+2025-09-18 23:53:40 - INFO: Starting Update Monitoring
+2025-09-18 23:53:52 - INFO: Auto-Download Successful: 250918_BEEF_S2_VFXTO_BWA_027
+2025-09-19 03:37:50 - ERROR: Timed out getting package list from the hub.
+Traceback (most recent call last):
+  File "urllib3/connection.py", line 174, in _new_conn
+  File "urllib3/util/connection.py", line 95, in create_connection
+  File "urllib3/util/connection.py", line 85, in create_connection
+TimeoutError: [Errno 60] Operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "urllib3/connectionpool.py", line 703, in urlopen
+  File "urllib3/connectionpool.py", line 386, in _make_request
+  File "urllib3/connectionpool.py", line 1040, in _validate_conn
+  File "urllib3/connection.py", line 358, in connect
+  File "urllib3/connection.py", line 179, in _new_conn
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPSConnection object at 0x10694f5b0>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "requests/adapters.py", line 489, in send
+  File "urllib3/connectionpool.py", line 785, in urlopen
+  File "urllib3/util/retry.py", line 592, in increment
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694f5b0>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 1824, in poll
+  File "requests/api.py", line 73, in get
+  File "requests/api.py", line 59, in request
+  File "requests/sessions.py", line 587, in request
+  File "requests/sessions.py", line 701, in send
+  File "requests/adapters.py", line 553, in send
+requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694f5b0>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+2025-09-19 03:38:50 - ERROR: Timed out getting package list from the hub.
+Traceback (most recent call last):
+  File "urllib3/connection.py", line 174, in _new_conn
+  File "urllib3/util/connection.py", line 95, in create_connection
+  File "urllib3/util/connection.py", line 85, in create_connection
+TimeoutError: [Errno 60] Operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "urllib3/connectionpool.py", line 703, in urlopen
+  File "urllib3/connectionpool.py", line 386, in _make_request
+  File "urllib3/connectionpool.py", line 1040, in _validate_conn
+  File "urllib3/connection.py", line 358, in connect
+  File "urllib3/connection.py", line 179, in _new_conn
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPSConnection object at 0x10694e020>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "requests/adapters.py", line 489, in send
+  File "urllib3/connectionpool.py", line 785, in urlopen
+  File "urllib3/util/retry.py", line 592, in increment
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694e020>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 1824, in poll
+  File "requests/api.py", line 73, in get
+  File "requests/api.py", line 59, in request
+  File "requests/sessions.py", line 587, in request
+  File "requests/sessions.py", line 701, in send
+  File "requests/adapters.py", line 553, in send
+requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694e020>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+2025-09-19 10:26:41 - INFO: Auto-Download Starting: 250919_BEEF_S2_Wrapped_NukeScript_BWA
+2025-09-19 10:26:41 - INFO: Starting Update Monitoring
+2025-09-19 10:28:27 - INFO: Update Monitoring Stopped
+2025-09-19 10:28:27 - INFO: Auto-Download Successful: 250919_BEEF_S2_Wrapped_NukeScript_BWA
+2025-09-19 11:14:11 - INFO: Auto-Download Starting: 250919_CB_BEF2_VFXVSP_001
+2025-09-19 11:14:11 - INFO: Starting Update Monitoring
+2025-09-19 11:14:25 - INFO: Update Monitoring Stopped
+2025-09-19 11:14:25 - INFO: Auto-Download Successful: 250919_CB_BEF2_VFXVSP_001
+2025-09-20 23:56:56 - INFO: Auto-Download Starting: 250920_BEEF_S2_VFXTO_BWA_028
+2025-09-20 23:56:56 - INFO: Starting Update Monitoring
+2025-09-20 23:57:08 - INFO: Auto-Download Successful: 250920_BEEF_S2_VFXTO_BWA_028
+2025-09-22 10:42:16 - INFO: Auto-Download Starting: 250919_CB_BEF2_VFXVSP_002
+2025-09-22 10:42:16 - INFO: Starting Update Monitoring
+2025-09-22 10:42:22 - INFO: Update Monitoring Stopped
+2025-09-22 10:42:23 - INFO: Auto-Download Successful: 250919_CB_BEF2_VFXVSP_002
+2025-09-22 11:19:41 - INFO: Auto-Download Starting: 250922_CHO_BEF2_VFXVSP_012
+2025-09-22 11:19:41 - INFO: Starting Update Monitoring
+2025-09-22 11:20:28 - INFO: Update Monitoring Stopped
+2025-09-22 11:20:28 - INFO: Auto-Download Successful: 250922_CHO_BEF2_VFXVSP_012
+2025-09-22 17:42:26 - INFO: Auto-Download Starting: 250922_BRN_BEF2_VFXVSP_010
+2025-09-22 17:42:26 - INFO: Starting Update Monitoring
+2025-09-22 17:42:43 - INFO: Update Monitoring Stopped
+2025-09-22 17:42:44 - INFO: Auto-Download Successful: 250922_BRN_BEF2_VFXVSP_010
+2025-09-23 01:03:37 - INFO: Auto-Download Starting: 250923_BEEF_S2_VFXTO_BWA_029
+2025-09-23 01:03:37 - INFO: Starting Update Monitoring
+2025-09-23 01:03:41 - INFO: Update Monitoring Stopped
+2025-09-23 01:03:42 - INFO: Auto-Download Successful: 250923_BEEF_S2_VFXTO_BWA_029
+2025-09-23 09:09:16 - INFO: Auto-Download Starting: 250923_CHO_BEF2_VFXVSP_013
+2025-09-23 09:09:16 - INFO: Starting Update Monitoring
+2025-09-23 09:09:19 - INFO: Update Monitoring Stopped
+2025-09-23 09:09:19 - INFO: Auto-Download Successful: 250923_CHO_BEF2_VFXVSP_013
+2025-09-23 10:34:08 - INFO: Auto-Download Starting: 20250923_EXM_BEF2_VFXVSP_001
+2025-09-23 10:34:08 - INFO: Starting Update Monitoring
+2025-09-23 10:34:09 - INFO: Update Monitoring Stopped
+2025-09-23 10:34:10 - INFO: Auto-Download Successful: 20250923_EXM_BEF2_VFXVSP_001
+2025-09-23 13:08:30 - INFO: Auto-Download Starting: 250923_CB_BEF2_VFXVSP_001
+2025-09-23 13:08:30 - INFO: Starting Update Monitoring
+2025-09-23 13:08:34 - INFO: Update Monitoring Stopped
+2025-09-23 13:08:35 - INFO: Auto-Download Successful: 250923_CB_BEF2_VFXVSP_001
+2025-09-23 15:09:49 - INFO: Auto-Download Starting: 20250923_EXM_BEF2_VFXVSP_001_a
+2025-09-23 15:09:49 - INFO: Starting Update Monitoring
+2025-09-23 15:09:49 - INFO: Update Monitoring Stopped
+2025-09-23 15:09:50 - INFO: Auto-Download Successful: 20250923_EXM_BEF2_VFXVSP_001_a
+2025-09-23 15:20:06 - INFO: Auto-Download Starting: EXR_20250923_EXM_BEF2_VFXDP_002
+2025-09-23 15:20:06 - INFO: Starting Update Monitoring
+2025-09-23 15:20:50 - INFO: Update Monitoring Stopped
+2025-09-23 15:20:50 - INFO: Auto-Download Successful: EXR_20250923_EXM_BEF2_VFXDP_002
+2025-09-23 18:02:43 - INFO: Auto-Download Starting: 250923_CB_BEF2_VFXVSP_002
+2025-09-23 18:02:43 - INFO: Starting Update Monitoring
+2025-09-23 18:02:47 - INFO: Update Monitoring Stopped
+2025-09-23 18:02:47 - INFO: Auto-Download Successful: 250923_CB_BEF2_VFXVSP_002
+2025-09-24 07:40:34 - INFO: Auto-Download Starting: 252409_TBC_BEF2_VFXVSP_001
+2025-09-24 07:40:34 - INFO: Starting Update Monitoring
+2025-09-24 07:40:35 - INFO: Update Monitoring Stopped
+2025-09-24 07:40:35 - INFO: Auto-Download Successful: 252409_TBC_BEF2_VFXVSP_001
+2025-09-24 08:30:42 - INFO: Auto-Download Starting: 250924_CHO_BEF2_VFXVSP_014
+2025-09-24 08:30:42 - INFO: Starting Update Monitoring
+2025-09-24 08:30:44 - INFO: Update Monitoring Stopped
+2025-09-24 08:30:45 - INFO: Auto-Download Successful: 250924_CHO_BEF2_VFXVSP_014
+2025-09-24 11:18:04 - INFO: Auto-Download Starting: 250924_BEEF_S2_203_026_200_nk_Script_to_Barnstorm
+2025-09-24 11:18:04 - INFO: Starting Update Monitoring
+2025-09-24 11:22:58 - INFO: Update Monitoring Stopped
+2025-09-24 11:22:58 - INFO: Auto-Download Successful: 250924_BEEF_S2_203_026_200_nk_Script_to_Barnstorm
+2025-09-24 12:35:47 - INFO: Auto-Download Starting: 250924_CB_BEF2_VFXVSP_001
+2025-09-24 12:35:47 - INFO: Starting Update Monitoring
+2025-09-24 12:35:48 - INFO: Update Monitoring Stopped
+2025-09-24 12:35:48 - INFO: Auto-Download Successful: 250924_CB_BEF2_VFXVSP_001
+2025-09-24 13:47:21 - INFO: Auto-Download Starting: 250924_BEEF_S2_VFXTO_BWA_030
+2025-09-24 13:47:21 - INFO: Starting Update Monitoring
+2025-09-24 13:47:29 - INFO: Update Monitoring Stopped
+2025-09-24 13:47:29 - INFO: Auto-Download Successful: 250924_BEEF_S2_VFXTO_BWA_030
+2025-09-24 16:07:01 - INFO: Auto-Download Starting: 250924_CB_BEF2_VFXVSP_002
+2025-09-24 16:07:01 - INFO: Starting Update Monitoring
+2025-09-24 16:07:01 - INFO: Update Monitoring Stopped
+2025-09-24 16:07:02 - INFO: Auto-Download Successful: 250924_CB_BEF2_VFXVSP_002
+2025-09-24 17:01:04 - INFO: Auto-Download Starting: 250924_BEEF_S2_VFXTO_BWA_031
+2025-09-24 17:01:04 - INFO: Starting Update Monitoring
+2025-09-24 17:01:08 - INFO: Update Monitoring Stopped
+2025-09-24 17:01:08 - INFO: Auto-Download Successful: 250924_BEEF_S2_VFXTO_BWA_031
+2025-09-24 19:56:49 - INFO: Auto-Download Starting: 250924_CB_BEF2_VFXVSP_003
+2025-09-24 19:56:49 - INFO: Starting Update Monitoring
+2025-09-24 19:56:51 - INFO: Update Monitoring Stopped
+2025-09-24 19:56:51 - INFO: Auto-Download Successful: 250924_CB_BEF2_VFXVSP_003
+2025-09-25 03:22:05 - INFO: Auto-Download Starting: 250925_BEEF_S2_VFXTO_BWA_032
+2025-09-25 03:22:06 - INFO: Starting Update Monitoring
+2025-09-25 03:22:31 - INFO: Update Monitoring Stopped
+2025-09-25 03:22:31 - INFO: Auto-Download Successful: 250925_BEEF_S2_VFXTO_BWA_032
+2025-09-25 15:49:41 - INFO: Auto-Download Starting: 250925_CB_BEF2_VFXVSP_001
+2025-09-25 15:49:41 - INFO: Starting Update Monitoring
+2025-09-25 15:49:43 - INFO: Update Monitoring Stopped
+2025-09-25 15:49:43 - INFO: Auto-Download Successful: 250925_CB_BEF2_VFXVSP_001
+2025-09-25 16:06:40 - INFO: Auto-Download Starting: 250925_CB_BEF2_VFXVSP_002
+2025-09-25 16:06:40 - INFO: Starting Update Monitoring
+2025-09-25 16:06:42 - INFO: Update Monitoring Stopped
+2025-09-25 16:06:42 - INFO: Auto-Download Successful: 250925_CB_BEF2_VFXVSP_002
+2025-09-25 18:12:48 - INFO: Auto-Download Starting: 250925_EXM_BEF2_VFXVSP_003
+2025-09-25 18:12:48 - INFO: Starting Update Monitoring
+2025-09-25 18:13:02 - INFO: Update Monitoring Stopped
+2025-09-25 18:13:02 - INFO: Auto-Download Successful: 250925_EXM_BEF2_VFXVSP_003
+2025-09-26 09:06:40 - INFO: Auto-Download Starting: EXR_250926_BASE_BEF2_VFXDP_003
+2025-09-26 09:06:52 - INFO: Starting Update Monitoring
+2025-09-26 10:54:45 - ERROR: A retry was requested for package with ID "2489918", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 10:54:49 - ERROR: A retry was requested for package with ID "2489918", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 10:55:07 - INFO: Paused account beef-post
+2025-09-26 10:55:46 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-26 10:56:56 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-09-26 10:56:56 - INFO: Added account beef-post
+2025-09-26 10:56:56 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:10:43 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:10:45 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:10:47 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:11:19 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:11:26 - INFO: Paused account beef-OCN
+2025-09-26 12:11:51 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-26 12:11:51 - ERROR: Failed to add account beef-OCN error:{'success': False, 'action': 'add_account', 'username': 'beef-OCN', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/NEXIS_FR_INBOX'}
+2025-09-26 12:12:23 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-26 12:12:24 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-09-26 12:12:24 - INFO: Added account beef-OCN
+2025-09-26 12:29:39 - INFO: Update Monitoring Stopped
+2025-09-26 12:29:39 - INFO: Auto-Download Successful: EXR_250926_BASE_BEF2_VFXDP_003
+2025-09-26 12:29:40 - INFO: Auto-Download Starting: 250926_BASE_BEF2_VFXDP_007
+2025-09-26 12:29:40 - INFO: Starting Update Monitoring
+2025-09-26 12:29:55 - INFO: Update Monitoring Stopped
+2025-09-26 12:29:56 - INFO: Auto-Download Successful: 250926_BASE_BEF2_VFXDP_007
+2025-09-26 12:29:56 - INFO: Auto-Download Starting: 250926_CB_BEF1_VFXVSP_001
+2025-09-26 12:29:56 - INFO: Starting Update Monitoring
+2025-09-26 12:29:57 - INFO: Update Monitoring Stopped
+2025-09-26 12:29:57 - INFO: Auto-Download Successful: 250926_CB_BEF1_VFXVSP_001
+2025-09-26 12:29:58 - INFO: Auto-Download Starting: EXR_250926_BASE_BEF2_VFXDP_003
+2025-09-26 12:29:58 - INFO: Starting Update Monitoring
+2025-09-26 12:43:57 - INFO: Update Monitoring Stopped
+2025-09-26 12:43:57 - INFO: Auto-Download Successful: EXR_250926_BASE_BEF2_VFXDP_003
+2025-09-26 12:56:00 - INFO: Auto-Download Starting: 250926_PIG_BEF2_VFXVSP_002
+2025-09-26 12:56:00 - INFO: Starting Update Monitoring
+2025-09-26 12:57:23 - INFO: Update Monitoring Stopped
+2025-09-26 12:57:23 - INFO: Auto-Download Successful: 250926_PIG_BEF2_VFXVSP_002
+2025-09-26 13:15:56 - INFO: Paused account beef-OCN
+2025-09-26 13:16:50 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-26 13:16:51 - INFO: Starting FileRunner Auto-Downloader for user: beef-OCN
+2025-09-26 13:16:51 - INFO: Added account beef-OCN
+2025-09-26 13:17:00 - INFO: Paused account beef-post
+2025-09-26 13:19:29 - INFO: {'current': [], 'complete': [], 'failed': [], 'cancelled': [], 'details': {}}
+2025-09-26 13:19:30 - INFO: Starting FileRunner Auto-Downloader for user: beef-post
+2025-09-26 13:19:30 - INFO: Added account beef-post
+2025-09-26 13:30:56 - INFO: Auto-Download Starting: 250926_autodownload_test1
+2025-09-26 13:30:56 - INFO: Starting Update Monitoring
+2025-09-26 13:30:57 - INFO: Update Monitoring Stopped
+2025-09-26 13:30:57 - INFO: Auto-Download Successful: 250926_autodownload_test1
+2025-09-26 13:32:37 - INFO: Auto-Download Starting: 250926_autodownload_test1
+2025-09-26 13:32:37 - INFO: Starting Update Monitoring
+2025-09-26 13:32:37 - INFO: Update Monitoring Stopped
+2025-09-26 13:32:37 - INFO: Auto-Download Successful: 250926_autodownload_test1

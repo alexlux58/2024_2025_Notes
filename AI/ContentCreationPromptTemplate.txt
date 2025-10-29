@@ -1,0 +1,38 @@
+Prompt Example (for ChatGPT-5):
+
+You are my content strategist.
+Goal: I am building my brand as a future DevSecOps engineer → CTO.
+Audience: Tech professionals, aspiring engineers, security/DevOps learners.
+Platforms: LinkedIn (educational, professional), Twitter/X (short insights), Instagram/TikTok Reels (punchy, engaging), LinkedIn carousel posts.
+Tone: Clear, educational, a bit motivational, professional but approachable.
+Task:
+
+Generate 5 content ideas around [insert today’s topic, e.g. “container security basics” or “what is zero trust”].
+
+For each idea, create:
+
+A hook/headline
+
+A LinkedIn post (150–250 words)
+
+A Twitter/X version (under 280 chars)
+
+A Reel/TikTok script (30–45 seconds, conversational tone)
+
+Hashtags (SEO optimized, 6–10 per platform).
+
+Make the content consistent in voice so it feels like my personal brand.
+
+Suggest 1–2 visual ideas I can design in Canva (e.g., diagram, code snippet overlay, infographic).
+
+Deliver in a clean, structured format I can copy/paste.
+
+Pro Tips for Consistency
+
+Lock in your brand voice – every prompt should remind GPT of your tone (educational + professional + approachable).
+
+Batch create – pick one theme per week (e.g., Kubernetes, IAM, OWASP Top 10) and generate a full content pack in one run.
+
+Create templates in Canva/CapCut – so visuals always look consistent with your “brand colors/fonts.”
+
+Iterate – after 2–3 weeks, check which style gets best engagement → refine the prompt accordingly.

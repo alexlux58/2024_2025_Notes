@@ -1014,3 +1014,432 @@ Note:
 # RDS and Aurora - Security
 
 - At-rest encryption:
+  - Database master and replicas encryption using AWS KMS - must be defined as launch time
+  - If the master is not encrypted, the read replicas cannot be encrypted
+  - To encrypt an un-encrypted database, go through a DB snapshot and restore as encrypted
+- In-flight encryption:
+  - TLS-ready by default, use the AWS TLS root certificates client-side
+  - IAM Authentication: IAM roles to connect to your database (instead of username/pw)
+  - Security Groups: Control Network access to your RDS / Aurora DB
+  - No SSH available except on RDS Custom
+  - Audit Logs can be enabled and sent to CloudWatch Logs for longer retention
+
+# Amazon RDS Proxy
+
+- Fully managed database proxy for RDS
+- Allows apps to pool and share DB connections established with the database
+- Improving database efficiency by reducing the stress on database resources (e.g., CPU, RAM) and minimize open connections (and timeouts)
+- Serverless, autoscaling, highly available (multi-AZ)
+- Reduced RDS and Aurora failover time by up to 66%
+- Supports RDS (MySQL, PostreSQL, MariaDB, MS SQL Server) and Aurora (MySQL and PostgreSQL)
+- No code changes required for most apps
+- Enforce IAM authentication for DB, and securely store credentials in AWS Secrets Manager
+- RDS Proxy is never publicly accessible (must be accessed from VPC)
+
+# Amazon ElastiCache Overview
+
+- The same way RDS is to get managed Relational Databases...
+- ElastiCache is to get managed Redis or Memcached (in-memory data stores)
+- Caches are in-memory databases with really high performance, low latency
+- Helps reduce load off of databases for read intensive workloads
+- Helps make your application stateless
+- AWS takes care of OS maintenance / patching, optimizations, setup, configuration, monitoring, failure recovery and backups
+- Using ElastiCache involves heavy application code changes
+- Applications queries ElastiCache, if not available, get from RDS and store in ElastiCache
+- Helps relieve load in RDS
+- Cache must have an invalidation strategy to make sure only the most current data is used in there.
+- User logs into any of the applications
+- The application writes the session data into ElastiCache
+- The user hits another instance of our application, the instance retrieves the data and the user is already logged in
+
+# ElastiCache - Redis vs Memcached
+
+- Redis
+
+  - Multi AZ with automatic failover
+  - Read replicas to scale reads and have high availability
+  - Data durability using AOF and persistence
+  - Backup and restore features
+  - Supports Sets and Sorted Sets natively
+  - Supports Pub/Sub natively
+  - More memory efficient than Memcached
+  - Single threaded (but can use cluster mode to scale horizontally)
+
+- Memcached
+  - Multi-node for partitioning of data (sharding)
+  - No high availability or replication
+  - Simpler data model (key/value)
+  - Non persistent (data is lost if node fails)
+  - Multi-threaded
+  - Easier to scale horizontally (add/remove nodes)
+
+# ElastiCache - Security
+
+- ElastiCache supports IAM Authentication for Redis
+- IAM policies on ElastiCache are only used for AWS API-level security
+- Redis AUTH
+  - You can set a "password/token" when you create a Redis cluster
+  - This is an extra level of security for your cache (on top of security groups)
+  - Support SSL in flight encryption
+- Memcached
+  - Supports SASL-based authentication (advanced)
+
+# Patterns for ElastiCache
+
+- Lazy Loading: all the read data is cached, data can become stale in cache
+- Write Through: Adds or update data in the cache when written to a DB (no stale data)
+- Session Store: store temporary session data in a cache (using TTL features)
+- Quote: There are only two hard things in Computer Science: cache invalidation and naming things - Phil Karlton
+
+# ElastiCache - Redis Use Case
+
+- Gaming Leaderboards are computationally complex
+- Redis Sorted sets guarantee both uniqueness and element ordering
+- Each time a new element is added, it's ranked in real time, then added in correct order
+
+# Amazon Route 53
+
+- A highly available, scalable, fully managed and Authoritative DNS
+  - Authoritative = the customer (you) can update the DNS records
+  - Route 53 is also a Domain Registrar
+  - Ability to check the health of your resources
+  - The only AWS service which provides 100% availability SLA
+
+# Route 53 - Records
+
+- How you want to route traffic for a domain
+- Each record contains:
+  - Domain/subdomain Name - e.g., example.com
+  - Record Type - e.g., A or AAAA
+  - Value - e.g., 12.34.56.78
+  - Routing Policy - how Route 53 responds to queries
+  - TTL - amount of time the record cached at DNS Resolvers
+- Route 53 supports the following DNS record types:
+  - **A**: Maps a domain name to an IPv4 address.
+  - **AAAA**: Maps a domain name to an IPv6 address.
+  - **CNAME**: Maps a domain name to another domain name (alias).
+  - **CAA**: Specifies which certificate authorities are allowed to issue certificates for a domain.
+  - **MX**: Specifies mail servers for email delivery.
+  - **NAPTR**: Used for dynamic DNS and URI resolution, often in VoIP applications.
+  - **NS**: Specifies the authoritative name servers for the domain.
+  - **PTR**: Maps an IP address to a domain name (reverse DNS lookup).
+  - **SOA**: Provides information about the domain, including the primary name server and admin email.
+  - **SPF**: Specifies mail servers allowed to send emails on behalf of the domain (deprecated, use TXT instead).
+  - **SRV**: Specifies the location of services, such as SIP or LDAP.
+  - **TXT**: Allows arbitrary text data, often used for verification and SPF/DKIM/DMARC records.
+  - **DS**: Delegation Signer record used in DNSSEC to secure delegations.
+
+# Route 53 - Hosted Zones
+
+- A container for records that define how to route traffic to a domain and its subdomains
+- Public Hosted Zones - contains records that specify how to route traffic on the internet (public domain names)
+  applicaion1.mypublicdomain.com
+- Private Hosted Zones - contain records that specify how you route traffic within one or more VPCs (private domain names) application1.company.internal
+- You pay $0.50 per month per hosted zone
+
+# CNAME vs Alias
+
+- AWS Resources (Load Balancer, CloudFront...) expose an AWS hostname:
+
+  - my-load-balancer-1234567890.us-west-2.elb.amazonaws.com and you want myapp.example.com to point to it
+
+- CNAME:
+
+  - You can create a CNAME record for myapp.example.com to point to the AWS hostname
+  - You cannot create a CNAME record for the root domain (example.com) - only for subdomains (www.example.com, app.example.com)
+  - CNAME records have a cost per million queries
+
+- Alias:
+  - You can create an Alias record for myapp.example.com to point to the AWS hostname
+  - You can create an Alias record for the root domain (example.com)
+  - Alias records are free
+  - Alias records are not supported outside of AWS
+  - Native health checks
+  - Automatic updates if the AWS resource changes (IP)
+  - Unlike CNAME, it can be used for the top node of a DNS namespace (zone apex)
+  - Alias Record is always of type A/AAAA for AWS resources (IPv4/IPv6)
+  - You can't set the TTL
+
+# Route 53 - Alias Records Targets
+
+- Elastic Load Balancers
+- CloudFront Distributions
+- API Gateway
+- Elastic Beanstalk environments
+- S3 Websites
+- VPC Interface Endpoints
+- Global Accelerator accelerators
+- Route 53 record in the same hosted zone
+- You cannot set an ALIAS record for an EC2 DNS name
+
+# Route 53 - Routing Policies
+
+- Define how Route 53 responds to DNS queries
+- Don't get confused by the word "Routing"
+  - It's not the same as Load balancer routing which routes the traffic
+  - DNS does not route any traffic, it only responds to the DNS queries
+- Route 53 Supports the following Routing Policies
+  - Simple
+  - Weighted
+  - Latency-based
+  - Failover
+  - Geolocation
+  - Geoproximity (Traffic Flow only)
+  - Multi-value answer
+
+# Routing Policies - Simple
+
+- Typically, route traffic to a single resource
+- Can specify multiple values in the same record
+- If multiple values are returned, a random one is chosen by the client
+- When Alias enabled, specify only one AWS resource
+- Can't be associated with health checks
+
+# Routing Policies - Weighted
+
+- Control the % of the requests that go to each specific resource
+- Assign each record a relative weight:
+  - traffic (%) = weight of record / sum of weights of all records
+  - Weights don't need to sum up to 100
+- DNS records must have the same name and type
+- Can be associated with health checks
+- Use cases: load balancing between regions, testing new application versions
+- Assign a weight of 0 to a record to stop sending traffic to a resource
+- If all records have weight of 0, then all records will be returned equally
+
+# Routing Policies - Latency-based
+
+- Redirects to the resource that has the least latency close to us
+- Super helpful when latency for users is a priority
+- Latency is based on traffic between users and AWS Regions
+- Germany users may be directed to the US (if that's the lowest latency)
+- Can be associated with Health Checks (has a failover capability)
+
+# Route 53 - Health Checks
+
+- HTTP health checks are only for public resources
+- Health Check => Automated DNS Failover:
+  - Health checks that monitor an endpoint (application, server, other AWS resource)
+  - Health checks that monitor other health checks (Calculated Health Checks)
+  - Health checks that monitor CloudWatch Alarms, full control. (e.g, throttles DynamoDB, alarms on RDS, custom metrics, helpful for private resources)
+- Health Checks are integrated with CW metrics
+
+# Health Checks - Monitoring an Endpoint
+
+- About 15 global health checkers will check the endpoint health
+  - Healthy/Unhealthy thresholds - 3 (default)
+  - Interval - 30 sec (can set to 10 sec - higher cost)
+  - Supported protocol: HTTP, HTTPS and TCP
+  - If > 18% of health checkers report the endpoint is healthy, Route 53 considers it Healthy. Otherwise, it's Unhealthy
+  - Ability to choose which locations you want Route 53 to use
+- Health Checks pass only when the endpoint responds with the 2xx and 3xx status codes
+- Health Checks can be setup to pass / fail based on the text in the first 5120 bytes of the response
+- Configure your router/firewall to allow incoming requests from Route 53 health checkers
+
+# Route 53 - Calculated Health Checks
+
+- Combine the results of multiple Health Checks into a single health check
+- You can use OR, AND, or NOT
+- Can monitor up to 256 Child Health Checks
+- Specify how many of the health checks need to pass to make the parent pass
+- Usage: perform maintenance to your website without causing all health checks to fail
+
+# Health Checks - Private Hosted Zones
+
+- Route 53 health checkers are outside the VPC
+- They can't access private endpoints (private VPC or on-premises resources)
+- You can create a CloudWatch Metric and associate a CloudWatch Alarm, then create a Health Check that checks the alarm itself
+
+# Routing Policies - Geolocation
+
+- Different from Latency-based
+- This routing is based on user location
+- Specify location by Continent, Country or by US State (if there's overlapping, most precise location selected)
+- Should create a "Default" record (in case there's no match on location)
+- Use cases: website localization, restrict content distribution, load balancing
+- Can be associated with Health Checks
+
+# Geoproximity Routing Policy (Traffic Flow only)
+
+- Route traffic to your resources based on the geographic location of users and resources
+- Ability to shift more traffic to resources based on the defined bias
+- To change the size of the geographic region, specify bias values:
+
+  - To expand (1 to 99) - more traffic to the resource
+  - To shrink (-1 to -99) - less traffic to the resource
+
+- Resources can be:
+  - AWS resources (specify AWS region)
+  - Non-AWS resources (specify Latitude and Longitude)
+- You must use Route 53 Traffic Flow (advanced) to use this feature
+
+# Routing Policies - IP based Routing
+
+- Routing is based on clients IP addresses
+- You provide a list of CIDRs for your clients and the corresponding endpoints/locations (user-IP-to-endpoint mappings)
+- Use cases: Optimize performance, reduce network costs...
+- Example: route end users from a particular ISP to a specific endpoint
+
+# Routing Policies - Multi-value
+
+- Use when routing traffic to multiple resources
+- Route 53 return multiple values/resources
+- Can be associated with Health Checks (return only values for healthy resources)
+- Up to 8 healthy records are returned for each Multi-Value query
+- Multi-Value is not substitute for having an ELB
+
+# Domain Registrar vs DNS service
+
+- You buy or register your domain name with a Domain Registrar typically by paying annual charges (e.g., GoDaddy, NameCheap, Route 53)
+- The Domain Registrar usually provides you with a DNS service to manage your DNS records
+- But you can use another DNS service to manage your DNS records
+- Example: purchase the domain from GoDaddy and use Route 53 to manage your DNS records
+
+# Route 53 - Hybrid DNS
+
+- By default, Route 53 Resolver automatically answers DNS queries for:
+  - Local domain names for EC2 instances
+  - Records in Private Hosted Zones
+  - Records in public Name Servers
+- Hybrid DNS - resolving DNS queries between VPC (Route 53 Resolver) and your networks (other DNS resolvers)
+- Networks can be:
+  - VPC itself / Peered VPC
+  - On-premises Network (connected through Direct Connect or AWS VPN)
+
+# Route 53 - Resolver Endpoints
+
+- Inbound Endpoint - allows your DNS Resolvers to resolve domain names for AWS resources (e.g., EC2 instances) and records in Private Hosted Zones
+- Outbound Endpoint
+  - Route 53 Resolver forwards DNS queries to your DNS Resolvers
+
+# Elastic Beanstalk - Overview
+
+- Elastic Beanstalk is a developer centric view of deploying an application on AWS
+- It uses all the component's we've seen before: EC2, ASG, ELB, RDS,...
+- Managed service
+  - Automatically handles capacity provisioning, load balancing, scaling, application health monitoring, instance configuration,...
+  - Just the application code is the responsibility of the developer
+- We still have full control over the configuration
+- Beanstalk is free but you pay for the underlying resources
+
+# Elastic Beanstalk - Components
+
+- Application: collection of Elastic Beanstalk components (environments, versions, configurations,...)
+- Application Version: an iteration of your application code
+- Environment
+  - Collection of AWS resources running an application version (only one application version at a time)
+  - Tiers: Web Server Environment Tier and Worker Environment Tier
+  - You can create multiple environments (dev,test,prod,...)
+
+# Amazon S3 Use cases
+
+- Backup and restore
+- Archive
+- Data lakes and big data analytics
+- Static website hosting
+- Hybrid cloud storage
+- Cloud-native applications
+- Media hosting
+- Software delivery
+- Disaster recovery
+- Internet of Things (IoT)
+- Machine learning
+
+# Amazon S3 - Buckets
+
+- Amazon S3 allows people to store objects (files) in "buckets" (directories)
+- Buckets must have a globally unique name (across all regions all accounts)
+- Buckets are defined at the region level
+- S3 looks like a global service but buckets are created in a region
+- Naming convention
+  - No uppercase, No underscore
+  - 3-63 characters long
+  - No an IP
+  - Must start with lowercase letter or number
+  - Must NOT start with the prefix xn--
+  - Must NOT end with the suffix -s3alias
+
+# Amazon S3 - Objects
+
+- Objects (files) have a Key
+- The key is the FULL path:
+  - s3://my-bucket/my_file.txt
+  - s3://my-bucket/my_folder/another_folder/my_file.txt
+- The key is composed of prefix + object name
+  - s3://my-bucket/my_folder/another_folder/my_file.txt
+- There's no concept of "directories" within buckets (although the UI will trick you to think otherwise)
+- Object values are the content of the body:
+  - Max, Object Size is 5TB (5000GB)
+  - If uploading more than 5GB, must use "multi-part upload"
+- Metadata (list of text key / value pairs - system or user metadata)
+- Tags (Unicode key / value pair - up to 10 tags per object) - useful for security / lifecycle
+- Version ID (if versioning is enabled on the bucket)
+
+# Amazon S3 - Security
+
+- User-based
+  - IAM Policies - which API calls should be allowed for a specific user from IAM
+- Resource-Based
+  - Bucket Policies - bucket wide rules from the S3 console - allows cross account
+  - Object Access Control List (ACL) - finer grain (can be disabled)
+  - Bucket Access Control List (ACL) - less common (can be disabled)
+- Note: an IAM principal can access an S3 object if
+  - The user IAM permissions ALLOW it OR the resource policy ALLOWS it
+  - AND there's no explicit DENY
+- Encryption:
+  - encrypt objects in Amazon S3 using encryption keys
+
+# S3 Bucket Policies
+
+- JSON based policies
+
+  - Resources: buckets and objects
+  - Effect: Allow/Deny
+  - Actions: s3:PutObject, s3:GetObject, s3:ListBucket,...
+  - Principal: account, user, role
+
+- Use S3 bucket for policy to:
+  - Grant public access to the bucket
+  - Force objects to be encrypted at upload
+  - Grant access to another account (Cross Account)
+
+# Amazon S3 - Versioning
+
+- You can version your files in Amazon S3
+- It is enabled at the bucket level
+- Same key overwrite will change the "version": 1,2,3...
+- It is best practice to version your buckets
+  - Protect against unintended deletes (ability to restore previous version)
+- Notes:
+  - Any file that is not versioned prior to enabling versioning will have version "null"
+  - Suspending versioning does not delete the previous versions
+
+# Amazon S3 - Replication (CRR & SRR)
+
+- Must enable versioning in source and destination buckets
+- Cross-Region Replication (CRR)
+- Same-Region Replication (SRR)
+- Buckets can be in different AWS accounts
+- Copying is asynchronous (not real-time)
+- Must give proper IAM permissions to S3 to replicate on your behalf
+
+User cases:
+
+- CRR - compliance, lower latency, replication across accounts
+- SRR - log aggregation, live replication for data in the same region
+
+# Amazon S3 - Replication Notes
+
+- After you enable Replication, only new objects are replicated (not existing ones)
+- Optionally, you can replicate existing objects using S3 Batch Replication
+
+  - Replicates existing objects and objects that failed replication
+
+- For DELETE operations
+
+  - Can replicate delete markers from source to target (optional setting)
+  - Deletions with a version ID are not replicated (to avoid malicious deletes)
+
+- There is no "chaining" of replication
+  - If bucket 1 has replication into bucket 2, which has replication into bucket 3
+  - Then objects created in bucket 1 are not replicated to bucket 3

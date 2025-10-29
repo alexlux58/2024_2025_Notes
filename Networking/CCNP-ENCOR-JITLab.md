@@ -216,3 +216,21 @@ R1 receives a packet destined for 192.168.1.35. The following routes are in its 
   - If L3 tries to send a 1600-byte packet but the Ethernet MTU is 1500 bytes, the packet would be dropped
 - If you increase the Ethernet MTU of an interface, the IP MTU is automatically increased to match it.
   - You can manually configure the IP MTU lower than the Ethernet MTU, but usually they will be the same.
+
+# MSS (Maximum Segment Size)
+
+- The Maximum Segment Size (MSS) is the largest amount of data (in bytes) that a device can receive in a single TCP segment.
+
+  - It does not include the TCP header or IP header just the payload size.
+  - The MSS is specified in the Options field of the TCP header.
+
+- Hosts can specify their MSS in the SYN messages in the Three-Way Handshake.
+
+  - The first [SYN] from the client to the server and the [SYN, ACK] from the server to the client can both include an MSS value.
+  - The MSS value is typically calculated by subtracting the size of the TCP and IP headers from the MTU of the interface.
+  - For example, if the MTU is 1500 bytes, the MSS would be 1460 bytes (1500 - 20 - 20).
+  - If a host doesn't specify its MSS, the following are the defaults: IPv4 = 536 bytes, IPv6 = 1220 bytes.
+
+- Large MSS values can lead to fragmentation.
+  - If the segment + IP header is larger than the IP MTU of a device in the path, fragmentation will occur.
+- Small MSS values can reduce the chance of fragmentation, but overhead is higher (Data: Header ration is reduced)

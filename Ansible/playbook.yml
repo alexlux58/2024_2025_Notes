@@ -1,0 +1,5 @@
+- name: Deploy a web application
+  hosts: ansible-puppet, ubuntuserv
+  tasks:
+    - name: Try Ping
+      ping:

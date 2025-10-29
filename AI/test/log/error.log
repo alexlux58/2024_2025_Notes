@@ -1,0 +1,181 @@
+2025-07-15 09:30:04 - ERROR: Failed to load state
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 312, in _load_saved_state
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/moviola/.filerunner-auto-download/state'
+2025-07-15 09:36:32 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 09:37:33 - ERROR: Could not validate credentials for beefpost2025@gmail.com
+2025-07-15 09:37:34 - ERROR: Could not validate credentials for beefpost2025@gmail.com
+2025-07-15 09:37:34 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-15 09:45:38 - ERROR: Could not validate credentials for beef-post1
+2025-07-15 09:45:39 - ERROR: Could not validate credentials for beef-post1
+2025-07-15 09:45:39 - ERROR: Failed to add account beef-post1 error:{'success': False, 'action': 'add_account', 'username': 'beef-post1', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-15 09:46:37 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-15 09:46:37 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-15 09:46:37 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-15 09:59:21 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:33:23 - ERROR: Failed to add account Beef-Post error:{'success': False, 'action': 'add_account', 'username': 'Beef-Post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:41:22 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:42:58 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:43:52 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:46:23 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:46:54 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:49:59 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:50:24 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:52:57 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:56:24 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:56:46 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 18:59:05 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-15 19:00:02 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'Could not create download folder: Permission Denied.'}
+2025-07-16 10:53:14 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-07-16 10:53:44 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-07-16 14:24:46 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-07-16 17:16:38 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:16:39 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:16:39 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:23:11 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:23:12 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:23:12 - ERROR: Failed to add account beef OCN error:{'success': False, 'action': 'add_account', 'username': 'beef OCN', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:25:55 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:25:55 - ERROR: Could not validate credentials for beef OCN
+2025-07-16 17:25:55 - ERROR: Failed to add account beef OCN error:{'success': False, 'action': 'add_account', 'username': 'beef OCN', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:27:08 - ERROR: Could not validate credentials for Beef OCN
+2025-07-16 17:27:08 - ERROR: Could not validate credentials for Beef OCN
+2025-07-16 17:27:08 - ERROR: Failed to add account Beef OCN error:{'success': False, 'action': 'add_account', 'username': 'Beef OCN', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-16 17:28:30 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:28:30 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-07-16 17:28:30 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-07-22 04:00:51 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-08-05 04:09:02 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-08-26 03:47:31 - ERROR: Listing packages failed (fail count: 1): 502 - b'<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-08-26 03:51:37 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-08-27 03:10:10 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 10:49:20 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:08:13 - ERROR: A retry was requested for package with ID "2461647", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:09:35 - ERROR: A retry was requested for package with ID "2464190", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:09:39 - ERROR: A retry was requested for package with ID "2461647", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:55:11 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:44 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:45 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:45 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+PermissionError: [Errno 13] Permission denied: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-08-29 16:55:52 - ERROR: A retry was requested for package with ID "2461647", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:55:53 - ERROR: A retry was requested for package with ID "2464190", but this package is still queued for download (or in progress). Retry request ignored.
+2025-08-29 16:55:53 - ERROR: A retry was requested for package with ID "2464989", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-02 10:14:41 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-09-02 10:15:48 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/INBOX/SYNOLOGY_FR_INBOX/FileRunner-beef-OCN'
+2025-09-02 10:16:00 - ERROR: A retry was requested for package with ID "2464989", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-02 10:16:02 - ERROR: A retry was requested for package with ID "2464989", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-02 10:28:56 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-09-02 10:28:56 - ERROR: Could not validate credentials for beefocn@gmail.com
+2025-09-02 10:28:56 - ERROR: Failed to add account beefocn@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefocn@gmail.com', 'error': 'Failed to download package list - check credentials and package listing URL. (Status: 401)'}
+2025-09-09 04:00:37 - ERROR: Listing packages failed (fail count: 1): 504 - b'<html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-09-15 13:51:19 - ERROR: An unexpected error occurred in the download worker.
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 493, in download_worker
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/BS2_06_VFX/NEXIS_FR_INBOX/FileRunner-beef-post'
+2025-09-15 15:55:45 - ERROR: A retry was requested for package with ID "2479360", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-15 16:00:23 - ERROR: Failed to add account beef-post error:{'success': False, 'action': 'add_account', 'username': 'beef-post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-09-15 16:00:53 - ERROR: Failed to add account beefpost2025@gmail.com error:{'success': False, 'action': 'add_account', 'username': 'beefpost2025@gmail.com', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-09-16 03:51:31 - ERROR: Listing packages failed (fail count: 1): 502 - b'<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n</body>\r\n</html>\r\n'
+2025-09-16 16:08:22 - ERROR: Failed to add account beef-Post error:{'success': False, 'action': 'add_account', 'username': 'beef-Post', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/INBOX'}
+2025-09-19 03:37:50 - ERROR: Timed out getting package list from the hub.
+Traceback (most recent call last):
+  File "urllib3/connection.py", line 174, in _new_conn
+  File "urllib3/util/connection.py", line 95, in create_connection
+  File "urllib3/util/connection.py", line 85, in create_connection
+TimeoutError: [Errno 60] Operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "urllib3/connectionpool.py", line 703, in urlopen
+  File "urllib3/connectionpool.py", line 386, in _make_request
+  File "urllib3/connectionpool.py", line 1040, in _validate_conn
+  File "urllib3/connection.py", line 358, in connect
+  File "urllib3/connection.py", line 179, in _new_conn
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPSConnection object at 0x10694f5b0>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "requests/adapters.py", line 489, in send
+  File "urllib3/connectionpool.py", line 785, in urlopen
+  File "urllib3/util/retry.py", line 592, in increment
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694f5b0>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 1824, in poll
+  File "requests/api.py", line 73, in get
+  File "requests/api.py", line 59, in request
+  File "requests/sessions.py", line 587, in request
+  File "requests/sessions.py", line 701, in send
+  File "requests/adapters.py", line 553, in send
+requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694f5b0>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+2025-09-19 03:38:50 - ERROR: Timed out getting package list from the hub.
+Traceback (most recent call last):
+  File "urllib3/connection.py", line 174, in _new_conn
+  File "urllib3/util/connection.py", line 95, in create_connection
+  File "urllib3/util/connection.py", line 85, in create_connection
+TimeoutError: [Errno 60] Operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "urllib3/connectionpool.py", line 703, in urlopen
+  File "urllib3/connectionpool.py", line 386, in _make_request
+  File "urllib3/connectionpool.py", line 1040, in _validate_conn
+  File "urllib3/connection.py", line 358, in connect
+  File "urllib3/connection.py", line 179, in _new_conn
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPSConnection object at 0x10694e020>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "requests/adapters.py", line 489, in send
+  File "urllib3/connectionpool.py", line 785, in urlopen
+  File "urllib3/util/retry.py", line 592, in increment
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694e020>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "filerunner_auto_download/auto_download.py", line 1824, in poll
+  File "requests/api.py", line 73, in get
+  File "requests/api.py", line 59, in request
+  File "requests/sessions.py", line 587, in request
+  File "requests/sessions.py", line 701, in send
+  File "requests/adapters.py", line 553, in send
+requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='hub.sohonet.com', port=443): Max retries exceeded with url: /filerunner2/userpackage/list/ (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x10694e020>, 'Connection to hub.sohonet.com timed out. (connect timeout=60)'))
+2025-09-26 10:54:45 - ERROR: A retry was requested for package with ID "2489918", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 10:54:49 - ERROR: A retry was requested for package with ID "2489918", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 10:56:56 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:10:43 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:10:45 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:10:47 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:11:19 - ERROR: A retry was requested for package with ID "2489911", but this package is still queued for download (or in progress). Retry request ignored.
+2025-09-26 12:11:51 - ERROR: Failed to add account beef-OCN error:{'success': False, 'action': 'add_account', 'username': 'beef-OCN', 'error': 'An unexpected OSError occurred when validating download location /Volumes/BS2_06_VFX/NEXIS_FR_INBOX'}

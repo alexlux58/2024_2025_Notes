@@ -1,0 +1,21 @@
+# Ansible Inventory File
+
+# Network Devices
+switch ansible_host=192.168.4.53
+acer ansible_host=192.168.4.108
+pivpn ansible_host=192.168.4.127
+proxmox1 ansible_host=192.168.4.146
+eveng ansible_host=192.168.4.175
+proxmox2 ansible_host=192.168.4.180
+p2pweb ansible_host=192.168.4.185
+lux-server ansible_host=192.168.4.205
+sohonets-laptop ansible_host=192.168.5.7 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible-puppet ansible_host=192.168.5.8 ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_user=alexlux ansible_ssh_pass=T@ng3rine
+ubuntuserv2 ansible_host=192.168.5.9
+ubuntuserv ansible_host=192.168.5.13 ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_user=alexlux ansible_ssh_pass=T@ng3rine
+watch ansible_host=192.168.5.16
+pnetlab ansible_host=192.168.5.18
+phones ansible_host=192.168.5.25
+kalired ansible_host=192.168.4.159
+kalipurple ansible_host=192.168.4.148
+n8n ansible_host=192.168.4.210
