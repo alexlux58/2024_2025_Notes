@@ -13,7 +13,7 @@ Cloud Economics
 
 Serverless Foundations
 
-Computing Solutions
+Computing Solutions (Done)
 
 Content Delivery Networks
 
