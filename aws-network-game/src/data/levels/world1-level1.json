@@ -1,0 +1,153 @@
+{
+  "id": "w1-l1",
+  "worldId": 1,
+  "levelNumber": 1,
+  "title": "First Steps: Internet Gateway",
+  "description": "Connect a public subnet to the internet using an Internet Gateway",
+  "story": "Welcome to your first day as a cloud network architect! Your team has deployed an EC2 instance in a public subnet, but it can't reach the internet. Fix the routing to enable internet access.",
+
+  "nodes": [
+    {
+      "id": "vpc-1",
+      "type": "vpc",
+      "name": "Main VPC",
+      "position": { "x": 300, "y": 200 },
+      "config": {
+        "cidr": "10.0.0.0/16"
+      }
+    },
+    {
+      "id": "subnet-public",
+      "type": "subnet",
+      "name": "Public Subnet",
+      "position": { "x": 300, "y": 280 },
+      "config": {
+        "cidr": "10.0.1.0/24",
+        "subnetType": "public",
+        "availabilityZone": "us-east-1a",
+        "routes": []
+      }
+    },
+    {
+      "id": "igw-1",
+      "type": "igw",
+      "name": "Internet Gateway",
+      "position": { "x": 300, "y": 80 },
+      "config": {}
+    },
+    {
+      "id": "ec2-web",
+      "type": "ec2",
+      "name": "Web Server",
+      "position": { "x": 300, "y": 360 },
+      "config": {
+        "privateIp": "10.0.1.10",
+        "publicIp": "54.123.45.67",
+        "securityGroups": [
+          {
+            "id": "sg-web",
+            "name": "Web SG",
+            "inboundRules": [
+              {
+                "protocol": "tcp",
+                "portRange": { "from": 80, "to": 80 },
+                "source": "0.0.0.0/0",
+                "action": "allow"
+              },
+              {
+                "protocol": "tcp",
+                "portRange": { "from": 443, "to": 443 },
+                "source": "0.0.0.0/0",
+                "action": "allow"
+              }
+            ],
+            "outboundRules": [
+              {
+                "protocol": "all",
+                "destination": "0.0.0.0/0",
+                "action": "allow"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "internet",
+      "type": "internet",
+      "name": "Internet",
+      "position": { "x": 300, "y": 0 },
+      "config": {}
+    }
+  ],
+
+  "connections": [
+    {
+      "id": "conn-igw-internet",
+      "from": "igw-1",
+      "to": "internet",
+      "type": "internet",
+      "bidirectional": true,
+      "cost": 0,
+      "latency": 5
+    },
+    {
+      "id": "conn-vpc-igw",
+      "from": "vpc-1",
+      "to": "igw-1",
+      "type": "route",
+      "bidirectional": true,
+      "cost": 0,
+      "latency": 1
+    }
+  ],
+
+  "objectives": [
+    {
+      "id": "obj-internet-access",
+      "description": "Enable internet access from the web server",
+      "type": "connectivity",
+      "required": true
+    },
+    {
+      "id": "obj-use-igw",
+      "description": "Route traffic through the Internet Gateway",
+      "type": "connectivity",
+      "required": true
+    }
+  ],
+
+  "testPackets": [
+    {
+      "id": "packet-1",
+      "sourceIp": "10.0.1.10",
+      "destIp": "8.8.8.8",
+      "protocol": "icmp"
+    }
+  ],
+
+  "scoring": {
+    "threeStars": {
+      "maxCost": 0,
+      "maxLatency": 10,
+      "minSecurityScore": 80,
+      "requiredObjectives": ["obj-internet-access", "obj-use-igw"]
+    },
+    "twoStars": {
+      "maxCost": 0,
+      "requiredObjectives": ["obj-internet-access", "obj-use-igw"]
+    },
+    "oneStar": {
+      "requiredObjectives": ["obj-internet-access"]
+    }
+  },
+
+  "hints": [
+    "A route table needs a default route (0.0.0.0/0) to send internet traffic",
+    "The Internet Gateway should be the target for the default route",
+    "Check the route table associated with the public subnet"
+  ],
+
+  "lockedNodes": ["vpc-1", "ec2-web", "igw-1", "internet"],
+  "lockedConnections": ["conn-igw-internet", "conn-vpc-igw"]
+}
