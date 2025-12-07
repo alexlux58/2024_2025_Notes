@@ -1443,3 +1443,530 @@ User cases:
 - There is no "chaining" of replication
   - If bucket 1 has replication into bucket 2, which has replication into bucket 3
   - Then objects created in bucket 1 are not replicated to bucket 3
+
+# S3 Storage Classes
+
+- Amazon S3 Standard - General Purpose
+- Amazon S3 Standard Infrequent Access
+- Amazon S3 One Zone Infrequent Access
+- Amazon S3 Glacier Instant Retrieval
+- Amazon S3 Glacier Flexible Retrieval
+- Amazon S3 Glacier Deep Archive
+- Amazon S3 Intelligent Tiering
+
+- Can move between classes manually or using S3 lifecycle configurations
+
+# S3 Durability and Availability
+
+- Durability:
+  - High durability (99.99999999999%, 11 9's) of objects across multiple AZ
+  - If you store 10,000,000 objects with Amazon S3, you can on average expect to incur a loss of single object once every 10,000 years
+  - Same for all storage classes
+- Availability:
+  - Measures how readily available a service is
+  - Varies depending on storage class
+  - Example: S3 standard has 99.99% availability = not available 53 minutes a year
+
+# S3 Standard - General Purpose
+
+- 99.99% Availability
+- Used for frequently accessed data
+- Low latency and high throughput
+- Sustain 2 concurrent facility failures
+
+- Use cases: Big Data analytics, mobile and gaming applications, content distribution...
+
+# S3 Infrequent Access
+
+- For data that is less frequently accessed, but requires rapid access when needed
+- Lower cost than S3 Standard
+- Amazon S3 Standard-Infrequent Access (S3 Standard-IA)
+  - 99.9% Availability
+  - Higher retrieval cost
+  - Use cases: backups, disaster recovery, long-tail multimedia content
+- Amazon S3 One Zone-Infrequent Access (S3 One Zone-IA)
+  - High durability (99.99999999999%) in a single AZ; data lost when AZ is destroyed
+
+# S3 Glacier Storage Classes
+
+- Low-cost object storage meant for archiving / backup
+- pricing: price for storage + object retrieval cost
+
+# Amazon S3 Glacier Instant Retrieval
+
+- Millisecond retrieval, great for data accessed once a quarter
+- Minimum storage duration: 90 days
+
+# Amazon S3 Glacier Flexible Retrieval
+
+- Expedited (1-5 minutes), Standard (3-5 hours), Bulk (5-12 hours)
+- Minimum Storage duration of 90 days
+
+# Amazon S3 Glacier Deep Archive
+
+- Standard (12 hours), Bulk (48 hours)
+- Minimum storage duration of 180 days
+
+# S3 Intelligent Tiering
+
+- Small monthly monitoring and auto-tiering fee per object
+- Moves objects automatically between Access Tiers based on usage
+- There are no retrieval charges in S3 intelligent tiering
+- Frequent Access Tier (automatic): default tier
+- Infrequent Access Tier (automatic): objects not access for 30 days
+- Archive Instant Access Tier (automatic): objects not accessed for 90 days
+- Archive Access Tier (automatic): objects not accessed for 90 days to 700+ days
+- Deep Archive Access Tier (automatic): objects not accessed for 180 to 700+ days
+
+# Life Cycle Rules
+
+- Transition Actions - configure objects to transition to another storage class
+  - Move objects to Standard IA class 60 days after creation
+  - Move to Glacier for archiving after 6 months
+- Expiration actions - configure objects to expire (delete) after some time
+
+  - Access log files can be set to delete after 365 days
+  - Can be used to delete old versions of files (if versioning is enabled)
+  - Can be used to delete incomplete multi-part uploads
+
+- Rules can be created for a certain prefix (example: s3://my-bucket/logs/\*)
+- Rules can be created for certain objects Tags (example: Department=Finance)
+
+# S3 - Requester Pays
+
+- In general, bucket owners pay for all Amazon S3 storage and data transfer costs associated with their bucket
+- With Requester Pays buckets, the requester instead of the bucket owner pays the cost of the request and the data download from the bucket
+- Helpful when you want to share large datasets with other accounts
+- The requester must be authenticated in AWS (cannot be anonymous)
+
+# S3 Event Notifications with Amazon EventBridge
+
+- Advanced filtering options with JSON rules (metadata, object size, name...)
+- Multiple Destinations - ex: Step functions, kinesis streams / firehose
+- EventBridge Capabilities - Archive, Replay Events, Reliable delivery
+
+# S3 - Baseline Performance
+
+- Amazon S3 automatically scales to high request rates, latency 100-200 ms
+- Your application can achieve at least 3,500 PUT/COPY/POST/DELETE or 5,500 GET/HEAD requests per second per prefix in a bucket
+- There are no limits to the number of prefixes in a bucket
+- There are no limits to the number of prefixes in a bucket
+- Example (object path => prefix):
+  - bucket/folder1/sub1/file => folder1/sub1/
+  - bucket/folder1/sub2/file => folder1/sub2/
+  - bucket/1/file => /1/
+  - bucket/2/file => /2/
+- If you spread reads across all four prefixes evenly, you can achieve 22,000 requests per second for GET and HEAD
+
+# S3 Performance
+
+- Multi-Part upload:
+
+  - recommended for files > 100MB, must use for files > 5GB
+  - Can help parallelize uploads (speed up transfers)
+
+- S3 Transfer Acceleration:
+  - Increase transfer speed by transferring file to an AWS edge location which will forward the data to the S3 bucket in the target region
+  - Compatible with multi-part upload
+
+# S3 Batch Operations
+
+- Perform bulk operations on existing S3 objects with a single request, example:
+  - Modify object metadata and properties
+  - Copy objects between S3 buckets
+  - Encrypt un-encrypted objects
+  - Modify ACLs, tags
+  - Restore objects from S3 Glacier
+  - Invoke Lambda function to perform custom action on each object
+- A job consists of a list of objects, the action to perform, and optional parameters
+- S3 batch operations manages retries, tracks progress, sends completion notifications, generate reports
+- You can use S3 Inventory to get object list and use Athena to query and filter your objects
+
+# S3 Storage Lens
+
+- Understand, analyze, and optimize storage across entire AWS organization
+- Discover anomolies, identify cost efficiencies, and apply data protection best practices across entire AWS organization (30 days usages and activity metrics)
+- Aggregate data for Organization, specific accounts, buckets, or prefixes
+- Default dashboard or create your own dashboards
+- Can be configured to export metrics daily to an S3 bucket (CSV, Parquet)
+
+# Storage Lens - Default Dashboard
+
+- Visualize summarized insights and trends for both free and advanced metrics
+- Default dashboard shows Multi-Region and Multi-Account data
+- Preconfigured by Amazon S3
+- Can't be deleted, but can be disabled
+
+# Storage Lens - Metrics
+
+- Summary Metrics
+  - General insights about your S3 storage
+  - StorageBytes, ObjectCount...
+  - Use cases: identify the fastest-growing (or not used) buckets and prefixes
+- Cost-optimization Metrics
+  - Provide insigths to manage and optimize your storage costs
+  - NonCurrentVersionStorageBytes IncompleteMultipartUploadStorageBytes...
+  - Use cases: identify with incomplete multipart uploaded older than 7 days, Identify which objects could be transitioned to lower-cost storage class
+
+# Storage Lens - Metrics
+
+- Data-Protection Metrics
+
+  - Provide insights for data protection features
+  - VersioningEnabledBucketCount, MFADeleteEnabledBucketCount, SSEKMSEnabledBucketCount, CrossRegionReplicationCount...
+  - Use cases: identify buckets that aren't following data-protection best practices
+
+- Access-management Metrics
+
+  - Provide insights for S3 Object Ownership
+  - ObjectOwnershipBucketOwnerEnforcedBucketCount...
+  - Use cases: identify buckets that aren't following access-management best practices
+
+- Event Metrics
+
+  - Provide insights for S3 Event Notifications
+  - EventNotificationEnabledBucketCount (identify which buckets have S3 Event Notifications configured)
+
+- Performance Metrics
+
+  - Provide insights for S3 Transfer Acceleration
+  - TransferAccelerationEnabledBucketCount (identify which buckets have S3 Transfer Acceleration enabled)
+
+- Activity Metrics
+
+  - Provide insights about how your storage is requested
+  - AllRequests, GetRequests, PutRequests, ListRequests, BytesDownloaded...
+
+- Detailed Status Code Metrics
+  - Provide insights for HTTP status codes
+  - 200OKStatusCount, 403Forbidden
+
+# Storage Lens - Free vs. Paid
+
+- Free Metrics
+
+  - Automatically available for all customers
+  - Contains around 28 usage metrics
+  - Data is available for queries for 14 days
+
+- Advanced Metrics and Recommendations
+  - Additional paid metrics and features
+  - Advanced Metrics - Activity, Advanced Cost Optimization, Advanced Data protection, Status Code
+  - CloudWatch Publishing - Access metrics in CloudWatch without additional charges
+  - Prefix Aggregation - Collect metrics at the prefix level
+  - Data is available for queries for 15 months
+
+# Amazon S3 - Object Encryption
+
+- You can encrypt objects in S3 buckets using one of 4 methods
+- Server-Side Encryption (SSE)
+  - Server-Side Encryption with Amazon S3-Managed Keys (SSE-S3) - Enabled by Default
+    - Encrypts S3 objects using keys handled, managed, and owned by AWS
+  - Server-Side Encryption with KMS Keys stored in AWS KMS (SSE-KMS)
+    - Leverage AWS Key Management Service (AWS KMS) to manage encryption keys
+  - Server-Side Encryption with Customer-Provided Keys (SSE-C)
+    - When you want to manage your own encryption keys
+- Client-Side Encryption (CSE)
+  - When you want to encrypt data client-side before uploading to S3
+
+# Amazon S3 Encryption - SSE-S3
+
+- Encryption using keys handled, managed, and owned by AWS
+- Object is encrypted server-side
+- Encryption types is AES-256
+- Must set header "x-amz-server-side-encryption: AES256" when uploading the object
+- Enabled by default in new S3 buckets and new objects
+
+# Amazon S3 Encryption - SSE-KMS
+
+- Encryption using keys handled and managed by AWS KMS (Key Management Service)
+- KMS advantages: user control + audit key usage using CloudTrail
+- Object is encrypted server side
+- Must set header "x-amz-server-side-encryption: aws:kms" when uploading the object
+- You can use the AWS managed KMS key (aws/s3) or create your own Customer Managed Key (CMK)
+- Additional cost for using KMS
+
+# SSE-KMS Limitation
+
+- If you use SSE-KMS, you may be impacted by the KMS limits
+- When you upload, it calls the GenerateDataKey KMS API
+- When you download, it calls the Decrypt KMS API
+- Count towards the KMS quota per second (5500, 10000, 30000 req/s based on region)
+- You can request a quota increase using the Service Quotas Console
+
+# Amazon S3 Encryption - SSE-C
+
+- Server-Side Encryption using keys fully managed by the customer outside of AWS
+- Amazon S3 does NOT store the encryption key you provide
+- HTTPS must be used
+- Encryption key must be provided in HTTP headers, for every HTTP request made
+
+# Amazon S3 Encryption - Client-Side Encryption
+
+- Use client libraries such as Amazon S3 Client-Side Encryption Library
+- Clients must encrypt data themselves before sending to Amazon S3
+- Clients must decrypt data themselves when retrieving from Amazon S3
+- Customer fully managed the keys and encryption cycle
+
+# Amazon S3 - Encryption in transit (SSL/TLS)
+
+- Encryption in flight is also called SSL/TLS
+- Amazon S3 exposes two endpoints:
+  - HTTP Endpoint - non encrypted
+  - HTTPS Endpoint - encryption in flight
+
+# Amazon S3 - Default Encryption vs. Bucket Policies
+
+- SSE-S3 encryption is automatically applied to new objects stored in S3 bucket
+- Optionally, you can "force encryption" using a bucket policy and refuse any API call to PUT an S3 object without encryption headers (SSE-KMS or SSE-C)
+
+# Amazon S3 CORS
+
+- If a client makes a cross-origin request on our S3 bucket, we need to enable the correct CORS headers
+- It's a popular exam question
+- You can allow for a specific origin or for \* (all origins)
+
+# Amazon S3 - MFA Delete
+
+- MFA (Multi-Factor Authentication) - force users to generate a code on a device (usually a mobile phone or hardware) before doing important operations on S3
+- MFA will be required to:
+  - Permanently delete an object version
+  - Suspend Versioning on the bucket
+- MFA won't be required to:
+  - Enable Versioning
+  - List deleted versions
+- To use MFA Delete, Versioning must be enabled on the bucket
+- Only the bucket owner (root account) can enable/disable MFA Delete
+
+# S3 Access Logs
+
+- For audit purpose, you may want to log all access to S3 buckets
+- Any request made to S3, from any account, authorized or denied, will be logged into another S3 bucket
+- That data can be analyzed using data analysis tools...
+- The target logging bucket must be in the same AWS region
+
+- The log format is at:
+  https://docs.aws.amazon.com/AmazonS3/latest/userguide/LogFormat.html
+
+## WARNING
+
+- Do not set your logging bucket to be the monitored bucket (infinite loop)
+
+# Amazon S3 - Pre-Signed URLs
+
+- Generate pre-signed URLs using the S3 Console, AWS CLI or SDK
+- URL Expiration
+  - S3 Console - 1 min up to 720 mins (12 hours)
+  - AWS CLI - configure expiration with --expires-in parameter in seconds (default 3600 secs, max. 604800 secs ~ 168 hours)
+- Users given a pre-signed URL inherit the permissions of the user that generated the URL for GET / PUT
+
+- Examples:
+  - Allow only logged-in users to download a premium video from your S3 bucket
+  - Allow an ever-changing list of users to download files by generating URLs dynamically
+  - Allow temporarily a user to upload a file to a precise location in your S3 bucket
+
+# S3 Glacier - Vault Lock
+
+- Adpot a WORM (Write Once Read Many) model
+- Create a Vault Lock Policy
+- Lock the policy for future edits (can no longer be changed or deleted)
+- Helpful for compliance and data retention
+
+# S3 Object Lock (versioning must be enabled)
+
+- Adopt a WORM (Write Once Read Many) model at the object level
+- Block an object version deletion for a specified amount of time
+- Retention mode - compliance:
+  - Object versions can't be overwritten or deleted by any user, including the root user
+  - Objects retention modes can't be changed, and retention periods can't be shortened
+- Retention mode - governance:
+  - Most users can't overwrite or delete an object version or alter its lock settings
+  - Some users have special permissions to change the retention or delete the object version
+- Retention period - specify how long an object version is locked
+- Legal hold:
+- can be placed on an object version to prevent it from being deleted or overwritten indefinitely until the legal hold is removed
+- can be freely placed and removed using the s3:PutObjectLegalHold IAM permission
+
+# S3 - Access Points
+
+- Access Points simplify security management for S3 buckets
+- Each Access Point has:
+  - its own DNS name (Internet Origin or VPC Origin)
+  - an access point policy (similar to bucket policy) - manage security at scale
+
+# S3 - Access Points - VPC Origin
+
+- We can define the access point to be accessible only from within the VPC
+- You must create a VPC Endpoint to access the Access Point (Gateway or Interface Endpoint)
+- The VPC Endpoint Policy must allow access to the target bucket and Access Point
+
+# S3 - Object Lambda
+
+- Use AWS Lambda Functions to change the object before it is retrieved by the caller application
+- Only one S3 bucket is needed, on top of which we create S3 Access Point and S3 Object Lambda Access Points
+- Use cases:
+  - Redacting personally identifiable information (PII) for analytics or non-production environments
+  - Converting across data formats, such as converting XML to JSON
+  - Resizing and watermarking images on the fly using caller-specific details, such as the user who requested the object
+
+# AWS CloudFront
+
+- Content Delivery Network (CDN)
+- Improves read performance, content is cached at the edge
+- Improves users experience
+- Hundreds of Point of Presence globally (edge locations, caches)
+- DDoS protection (because worldwide), integration with Shield, AWS Web Application Firewall (WAF)
+
+# CloudFront - Origins
+
+- S3 bucket
+
+  - For distributing files and caching them at the edge
+  - For uploading files to S3 through CloudFront
+  - Secured using Origin Access Control (OAC)
+
+- VPC Origin
+
+  - For applications hosted in VPC private subnets
+  - Application Load Balancer / Network Load Balancer / EC2 Instances
+
+- Custom Origin (HTTP)
+
+  - S3 Website (must first enable the bucket as a static S3 website)
+
+# CloudFront vs S3 Cross Region Replication
+
+- CloudFront:
+
+  - Global Edge network
+  - Files are cached for a TTL (maybe a day)
+  - Great for static content that must be available everywhere
+
+- S3 Cross Region Replication:
+  - Must be setup for each region you want replication to happen
+  - Files are updated in near real-time
+  - Read only
+  - Great for dynamic content that needs to be available at low latency in few regions
+
+# CloudFront - ALB or EC2 as an origin Using VPC Origins
+
+- Allows you to deliver content from your applications hosted in your VPC private subnets (no ned to expose them on the Internet)
+- Deliver traffic to private:
+  - Application Load Balancer
+  - Network Load Balancer
+  - EC2 Instances
+
+# CloudFront Geo Restriction
+
+- You can restrict who can access your distribution
+  - Allowlist: Allow your users to access your content only if they're in one of the countries on a list of approved countries
+  - Blocklist: Prevent your users from accessing your content if they're in one of the countries on a list of banned countries
+- The "country" is determined using a 3rd party Geo-IP database
+- Use case: copyright laws to control access to content
+
+# CloudFront - Price Classes
+
+- You can reduce the number of edge locations for cost reduction
+- Three price classes:
+  - Price Class All - use all edge locations (most expensive)
+  - Price Class 200 - most regions, excluding the most expensive ones (Asia, South America, Africa)
+  - Price Class 100 - use only cheap locations in US and Europe (cheapest)
+- Use case: if most of your users are in US and Europe, you can use Price Class 100 to save cost (less edge locations)
+
+# CloudFront - Cache Invalidations
+
+- In case you update the back-end origin, CloudFront doesn't know about it and will only get the refreshed content after the TTL has expired
+- However, you can force an entire or partial cache refresh (thus bypassing the TTL) by performing a CloudFront Invalidation
+- You can invalidate all files (\*) or a special path (/images/\*)
+
+# Global users for our application
+
+- You have deployed an application and have global users who want to access it directly
+- They go over the public internet, which can add a lot of latency due to many hops
+- We wish to go as fast as possible through AWS network to minimize latency
+
+# AWS Global Accelerator
+
+- Leverage the AWS internal network to route to your application
+- 2 Anycast IP are are created for your application
+- The Anycast IP send traffic directly to Edge Locations
+- The Edge locations send the traffic to your application
+- Works with Elastic IP, EC2 instances, ALB, NLB, public or private
+- Consistent Performance
+  - Intelligent routing to lowest latency and fast regional failover
+  - No issue with client cache (because the IP doesn't change)
+  - Internal AWS network
+- Health Checks
+  - Global Accelerator performs a health check of your applications
+  - Helps make your application global (failover less than 1 minute for unhealthy)
+  - Great for disaster (thanks to the health checks)
+- Security
+  - only 2 external IP need to be whitelisted
+  - DDoS protection thanks to AWS Shield
+
+# AWS Global Accelerator vs. CloudFront
+
+- They both use the AWS global network and its edge locations around the world
+- Both services integrate with AWS Shield for DDoS protection
+
+- CloudFront
+
+  - Improves performance for both cacheable content (such as images and videos)
+  - Dynamic content (such as API acceleration and dynamic site delivery)
+  - Content is served at the edge
+
+- Global Accelerator
+  - Improves performance for a wide range of applications over TCP or UDP
+  - Proxying packets at the edge to applications running in one or more AWS Regions
+  - Good fit for non-HTTP use cases, such as gaming (UDP), IoT (MQTT), or Voice over IP
+  - Good for HTTP use cases that require static IP addresses
+  - Good for HTTP use cases that require deterministic, fast regional failover
+
+# AWS Snowball
+
+- Highly-secure, portable devices to collect and process data at the edge, and migrate data into and out of AWS
+- Helps migrate up to Petabytes of data
+
+# Amazon FSx
+
+- Launch 3rd party high-performance file systems on AWS
+- Fully managed service
+
+# Amazon FSx for Windows File Server
+
+- FSx for Windows is a fully managed Windows file system share drive
+- Supports SMB protocol and Windows NTFS
+- Microsoft Active Directory integration, ACLs, user quotas
+- Can be mounted on Linux EC2 instances
+- Supports Microsoft's Distributed File System (DFS) Namespaces (group files across multiple FS)
+- Scale up to 10s of GB/s, millions of IOPS, 100s PB of data
+- Storage Options:
+  - SSD - latency sensitive workloads (databases, media processing, data analytics,..)
+  - HDD - broad spectrum of workloads (home directory, CMS,...)
+- Can be accessed from your on-premises infrastructure (VPN or Direct Connect)
+- Data is backed-up daily to S3
+
+# Amazon FSx for Lustre
+
+- Lustre is a type of parallel distributed file system, for large-scale computing
+- The name Lustre is derived from "Linux" and "cluster"
+- Machine Learning, High Performance Computing (HPC), Video Processing,...
+- High throughput, low latency, scalable
+- Can be linked to an S3 bucket (import/export data)
+- Storage options:
+  - SSD - high-performance workloads
+  - HDD - throughput optimized workloads
+- Data is backed-up daily to S3
+
+# FSx File System Deployment Options
+
+- Scratch File System
+  - Temporary storage
+  - Data is not replicated (doesn't persist if file server fails)
+  - High burst (6x faster, 200MBps per TiB)
+  - Usage: short-term processing, optimize costs
+- Persistent File System
+  - Long-term storage
+  - Data is replicated within same AZ
+  - Replace failed files within minutes
+  - Usage: long-term processing, sensitive data

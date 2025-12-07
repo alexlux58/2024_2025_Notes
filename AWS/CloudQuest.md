@@ -22,7 +22,7 @@ Networking & Connectivity
 
 Analyzing Network Traffic
 
-Connecting VPCs
+Connecting VPCs (Done)
 
 Scaling Network Connectivity
 
